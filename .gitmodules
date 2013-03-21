@@ -7,3 +7,12 @@
 [submodule "modules/php-mode"]
 	path = modules/php-mode
 	url = https://github.com/ejmr/php-mode.git
+[submodule "modules/flycheck"]
+	path = modules/flycheck
+	url = https://github.com/lunaryorn/flycheck.git
+[submodule "modules/s"]
+	path = modules/s
+	url = https://github.com/magnars/s.el.git
+[submodule "modules/dash"]
+	path = modules/dash
+	url = https://github.com/magnars/dash.el.git

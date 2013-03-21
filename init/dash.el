@@ -1,0 +1,2 @@
+;;dash mode
+(require 'dash)
