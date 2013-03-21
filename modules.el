@@ -24,5 +24,6 @@
 (load-module "dash")
 (load-module "flycheck")
 (load-module "haskell-mode")
+(load-module "scala-mode2")
 (provide 'modules)
 ;;; modules.el ends here

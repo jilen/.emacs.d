@@ -19,3 +19,6 @@
 [submodule "modules/haskell-mode"]
 	path = modules/haskell-mode
 	url = https://github.com/haskell/haskell-mode.git
+[submodule "modules/scala-mode2"]
+	path = modules/scala-mode2
+	url = https://github.com/hvesalai/scala-mode2.git
