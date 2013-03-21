@@ -14,4 +14,4 @@
   (load-file (module-init-file module)))
 
 (load-module "yasnippet")
-
+(load-module "auto-complete")

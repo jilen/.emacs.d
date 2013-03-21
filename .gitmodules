@@ -4,3 +4,6 @@
 [submodule "modules/auto-complete"]
 	path = modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete.git
+[submodule "modules/php-mode"]
+	path = modules/php-mode
+	url = https://github.com/ejmr/php-mode.git
