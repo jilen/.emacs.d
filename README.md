@@ -7,7 +7,8 @@ How to use?
 --------
 In your .emacs file , add follwing line:
 
-```(load-file "~/.emacs.d/init.el")
+```lisp
+(load-file "~/.emacs.d/init.el")
 ```
 
 What's inside?
