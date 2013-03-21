@@ -1,14 +1,13 @@
-;;; Package --- Summary
+;;; modules --- all modules, possible hosted on github, using git submodule feature
 
 ;;; Commentary:
 ;;; all modules are loaded here
+
 ;;; Code:
 
-;;get module dir
 (defun module-dir (module)
   (concat "~/.emacs.d/modules/" module))
 
-;;get module init file name
 (defun module-init-file (module)
   (concat "~/.emacs.d/init/"
 	  (concat module ".el")))
