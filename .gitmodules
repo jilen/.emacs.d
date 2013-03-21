@@ -16,3 +16,6 @@
 [submodule "modules/dash"]
 	path = modules/dash
 	url = https://github.com/magnars/dash.el.git
+[submodule "modules/haskell-mode"]
+	path = modules/haskell-mode
+	url = https://github.com/haskell/haskell-mode.git
