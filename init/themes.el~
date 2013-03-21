@@ -1,0 +1,3 @@
+;;;themes are loaded here
+;;load path
+(add-to-list 'custom-theme-load-path (file-name-directory load-file-name))
