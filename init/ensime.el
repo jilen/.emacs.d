@@ -2,4 +2,4 @@
 (require 'ensime)
 
 ;;hook to start ensime
-(add-hook 'scala-mode-hook 'ensime-mode-hook)
+(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
