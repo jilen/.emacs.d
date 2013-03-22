@@ -22,3 +22,6 @@
 [submodule "modules/scala-mode2"]
 	path = modules/scala-mode2
 	url = https://github.com/hvesalai/scala-mode2.git
+[submodule "modules/ensime"]
+	path = modules/ensime
+	url = https://github.com/jilen/ensime.git
