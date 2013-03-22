@@ -9,7 +9,7 @@ How to use?
 2. cd to the .emacs.d folder
 3. git submodule init
 4. git submodule update
-In your .emacs file , add follwing line:
+5. In your .emacs file , add follwing line:
 
 ```lisp
 (load-file "~/.emacs.d/init.el")
