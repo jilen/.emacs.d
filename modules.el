@@ -45,6 +45,6 @@
 (load-module "haskell-mode")
 (load-module "scala-mode2")
 (load-module "ensime")
-
+(load-module "undo-tree")
 (provide 'modules)
 ;;; modules.el ends here
