@@ -1,48 +1,64 @@
 [submodule "modules/yasnippet"]
 	path = modules/yasnippet
 	url = https://github.com/capitaomorte/yasnippet.git
+	ignore = dirty
 [submodule "modules/auto-complete"]
 	path = modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete.git
+	ignore = dirty
 [submodule "modules/php-mode"]
 	path = modules/php-mode
 	url = https://github.com/ejmr/php-mode.git
+	ignore = dirty
 [submodule "modules/flycheck"]
 	path = modules/flycheck
 	url = https://github.com/lunaryorn/flycheck.git
+	ignore = dirty
 [submodule "modules/s"]
 	path = modules/s
 	url = https://github.com/magnars/s.el.git
+	ignore = dirty
 [submodule "modules/dash"]
 	path = modules/dash
 	url = https://github.com/magnars/dash.el.git
+	ignore = dirty
 [submodule "modules/haskell-mode"]
 	path = modules/haskell-mode
 	url = https://github.com/haskell/haskell-mode.git
+	ignore = dirty
 [submodule "modules/scala-mode2"]
 	path = modules/scala-mode2
 	url = https://github.com/hvesalai/scala-mode2.git
+	ignore = dirty
 [submodule "modules/ensime"]
 	path = modules/ensime
 	url = https://github.com/jilen/ensime.git
+	ignore = dirty
 [submodule "modules/popup"]
 	path = modules/popup
 	url = https://github.com/auto-complete/popup-el.git
+	ignore = dirty
 [submodule "modules/fuzzy"]
 	path = modules/fuzzy
 	url = https://github.com/auto-complete/fuzzy-el.git
+	ignore = dirty
 [submodule "modules/undo-tree"]
 	path = modules/undo-tree
 	url = https://github.com/emacsmirror/undo-tree.git
+	ignore = dirty
 [submodule "modules/mmm-mode"]
 	path = modules/mmm-mode
 	url = https://github.com/purcell/mmm-mode.git
+	ignore = dirty
 [submodule "rainbow-mode"]
 	path = modules/rainbow-mode
 	url = https://github.com/emacsmirror/rainbow-mode.git
+	ignore = dirty
 [submodule "modules/rainbow-mode"]
 	path = modules/rainbow-mode
 	url = https://github.com/emacsmirror/rainbow-mode.git
+	ignore = dirty
 [submodule "modules/rainbow-delimiters"]
 	path = modules/rainbow-delimiters
 	url = https://github.com/jlr/rainbow-delimiters.git
+	ignore = dirty
