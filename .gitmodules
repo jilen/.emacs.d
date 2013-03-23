@@ -43,3 +43,6 @@
 [submodule "modules/rainbow-mode"]
 	path = modules/rainbow-mode
 	url = https://github.com/emacsmirror/rainbow-mode.git
+[submodule "modules/rainbow-delimiters"]
+	path = modules/rainbow-delimiters
+	url = https://github.com/jlr/rainbow-delimiters.git

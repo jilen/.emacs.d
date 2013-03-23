@@ -13,12 +13,12 @@
 	  (concat module ".el")))
 
 (defun add-module-path (module)
-  (cond(
-	(file-exists-p (module-dir module))
-	(add-to-list 'load-path (module-dir module))))
-  (cond(
-	(file-exists-p (module-dir (concat module "/elisp")))
-	(add-to-list 'load-path (module-dir(concat module "/elisp"))))))
+  (cond
+   ((file-exists-p (module-dir (concat module "/elisp")))
+    (add-to-list 'load-path (module-dir(concat module "/elisp"))))
+   ((file-exists-p (module-dir module))
+     (add-to-list 'load-path (module-dir module)))))
+
 
 (defun init-module (module)
   (cond
@@ -49,5 +49,6 @@
 (load-module "multi-web-mode")
 (load-module "mmm-mode")
 (load-module "rainbow-mode")
+(load-module "rainbow-delimiters")
 (provide 'modules)
 ;;; modules.el ends here
