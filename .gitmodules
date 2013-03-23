@@ -31,3 +31,6 @@
 [submodule "modules/fuzzy"]
 	path = modules/fuzzy
 	url = https://github.com/auto-complete/fuzzy-el.git
+[submodule "modules/undo-tree"]
+	path = modules/undo-tree
+	url = https://github.com/emacsmirror/undo-tree.git
