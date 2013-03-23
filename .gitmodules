@@ -34,3 +34,12 @@
 [submodule "modules/undo-tree"]
 	path = modules/undo-tree
 	url = https://github.com/emacsmirror/undo-tree.git
+[submodule "modules/mmm-mode"]
+	path = modules/mmm-mode
+	url = https://github.com/purcell/mmm-mode.git
+[submodule "rainbow-mode"]
+	path = modules/rainbow-mode
+	url = https://github.com/emacsmirror/rainbow-mode.git
+[submodule "modules/rainbow-mode"]
+	path = modules/rainbow-mode
+	url = https://github.com/emacsmirror/rainbow-mode.git

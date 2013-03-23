@@ -46,5 +46,8 @@
 (load-module "scala-mode2")
 (load-module "ensime")
 (load-module "undo-tree")
+(load-module "multi-web-mode")
+(load-module "mmm-mode")
+(load-module "rainbow-mode")
 (provide 'modules)
 ;;; modules.el ends here
