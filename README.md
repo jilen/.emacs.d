@@ -25,4 +25,6 @@ What's inside?
 -    monokai-theme
 -    php-mode
 -    haskell-mode
+-    html/css/javascirpt (mmm)
+-    rainbow-mode
 ...
