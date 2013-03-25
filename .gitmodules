@@ -50,10 +50,6 @@
 	path = modules/mmm-mode
 	url = https://github.com/purcell/mmm-mode.git
 	ignore = dirty
-[submodule "rainbow-mode"]
-	path = modules/rainbow-mode
-	url = https://github.com/emacsmirror/rainbow-mode.git
-	ignore = dirty
 [submodule "modules/rainbow-mode"]
 	path = modules/rainbow-mode
 	url = https://github.com/emacsmirror/rainbow-mode.git
