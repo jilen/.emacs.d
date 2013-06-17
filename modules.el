@@ -49,5 +49,7 @@
 (load-module "mmm-mode")
 (load-module "rainbow-mode")
 (load-module "rainbow-delimiters")
+(load-module "markdown-mode")
+(load-module "emacs-eclim")
 (provide 'modules)
 ;;; modules.el ends here
