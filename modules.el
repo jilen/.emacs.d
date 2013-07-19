@@ -44,7 +44,6 @@
 (load-module "flycheck")
 (load-module "haskell-mode")
 (load-module "scala-mode2")
-(load-module "ensime")
 (load-module "undo-tree")
 (load-module "mmm-mode")
 (load-module "rainbow-mode")

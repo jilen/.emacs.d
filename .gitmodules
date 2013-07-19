@@ -30,10 +30,6 @@
 	path = modules/scala-mode2
 	url = https://github.com/hvesalai/scala-mode2.git
 	ignore = dirty
-[submodule "modules/ensime"]
-	path = modules/ensime
-	url = https://github.com/jilen/ensime.git
-	ignore = dirty
 [submodule "modules/popup"]
 	path = modules/popup
 	url = https://github.com/auto-complete/popup-el.git
