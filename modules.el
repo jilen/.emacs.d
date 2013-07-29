@@ -39,7 +39,7 @@
 
 ;;modes
 (load-module "yasnippet")
-(load-module "auto-complete")
+(load-module "company-mode")
 (load-module "php-mode")
 (load-module "flycheck")
 (load-module "haskell-mode")

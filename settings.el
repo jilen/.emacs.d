@@ -21,3 +21,14 @@
     (set-face-background 'show-paren-match-face (face-background 'default))
     (set-face-foreground 'show-paren-match-face "#def")
     (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+
+;;semantic-mode settings
+(setq semantic-default-submodes '(global-semantic-idle-scheduler-mode
+                                  global-semanticdb-minor-mode
+                                  global-semantic-idle-summary-mode
+                                  global-semantic-mru-bookmark-mode
+				  (global-semantic-highlight-edits-mode
+				   (if window-system 1 -1))
+				  (global-semantic-show-unmatched-syntax-mode 1)
+				  (global-semantic-show-parser-state-mode 1)))
+(semantic-mode 1)
