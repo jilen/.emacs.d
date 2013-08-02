@@ -13,5 +13,4 @@
 (require 'company-emacs-eclim)
 (company-emacs-eclim-setup)
 (global-company-mode t)
-;; add company completion keys
-(customize-set-variable 'company-auto-complete-chars (quote (32 40 41 46 56)))
+
