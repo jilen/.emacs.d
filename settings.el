@@ -8,7 +8,7 @@
 
 
 ;;theme
-(load-theme 'solarized-dark t)
+(load-theme 'tango t)
 
 ;;backup directory
 (setq backup-directory-alist
@@ -18,9 +18,9 @@
 
 ;;paren-showing
 (require 'paren)
-    (set-face-background 'show-paren-match-face (face-background 'default))
-    (set-face-foreground 'show-paren-match-face "#def")
-    (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+(set-face-background 'show-paren-match-face (face-background 'default))
+(set-face-foreground 'show-paren-match-face "#def")
+(set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
 
 ;;semantic-mode settings
 (setq semantic-default-submodes '(global-semantic-idle-scheduler-mode

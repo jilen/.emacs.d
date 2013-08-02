@@ -4,12 +4,6 @@
 (require 'eclimd)
 
 
-
-(custom-set-variables
- '(eclim-eclipse-dirs '("~/Dev/eclipse")))
-(custom-set-variables
- '(eclim-executable "/home/jilen/Dev/eclipse/plugins/org.eclim_2.2.6/bin/eclim"))
-
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
@@ -19,4 +13,5 @@
 (require 'company-emacs-eclim)
 (company-emacs-eclim-setup)
 (global-company-mode t)
-
+;; add company completion keys
+(customize-set-variable 'company-auto-complete-chars (quote (32 40 41 46 56)))
