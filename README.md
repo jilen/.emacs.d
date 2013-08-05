@@ -9,7 +9,7 @@ How to use?
 2. cd to the .emacs.d folder
 3. git submodule init
 4. git submodule update
-5. In your .emacs file , add follwing line:
+5. In your .emacs file , add follwing line(Optional):
 
 ```lisp
 (load-file "~/.emacs.d/init.el")
@@ -20,7 +20,7 @@ What's inside?
 -    scala-mode2
 -    ensime
 -    yasnippet
--    auto-complete
+-    company
 -    flycheck
 -    monokai-theme
 -    php-mode
