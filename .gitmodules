@@ -66,6 +66,6 @@
 [submodule "modules/company-mode"]
 	path = modules/company-mode
 	url = https://github.com/company-mode/company-mode.git
-[submodule "snippets/yasnippet-java-mode"]
-	path = snippets/yasnippet-java-mode
+[submodule "snippets/java-mode"]
+	path = snippets/java-mode
 	url = https://github.com/nekop/yasnippet-java-mode.git
