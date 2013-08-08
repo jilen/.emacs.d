@@ -1,15 +1,8 @@
 ;;;gui related settings
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-(show-paren-mode 1)
-(electric-pair-mode 1)
-(ido-mode t)
 (setq inhibit-startup-message t)
-
-
-;;theme
-(load-theme 'tango t)
-
+(load-theme 'zenburn t)
 ;;backup directory
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
@@ -26,9 +19,12 @@
 (setq semantic-default-submodes '(global-semantic-idle-scheduler-mode
                                   global-semanticdb-minor-mode
                                   global-semantic-idle-summary-mode
-                                  global-semantic-mru-bookmark-mode
-				  (global-semantic-highlight-edits-mode
-				   (if window-system 1 -1))
-				  (global-semantic-show-unmatched-syntax-mode 1)
-				  (global-semantic-show-parser-state-mode 1)))
+                                  global-semantic-mru-bookmark-mode))
+
 (semantic-mode 1)
+
+;;built in modes
+(show-paren-mode 1)
+(electric-pair-mode 1)
+(ido-mode t)
+(setq-default indent-tabs-mode nil)
