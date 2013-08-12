@@ -2,7 +2,7 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (setq inhibit-startup-message t)
-(load-theme 'zenburn t)
+(load-theme 'solarized-dark t)
 ;;backup directory
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
