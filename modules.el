@@ -50,5 +50,6 @@
 (load-module "rainbow-delimiters")
 (load-module "markdown-mode")
 (load-module "emacs-eclim")
+(load-module "jdibug")
 (provide 'modules)
 ;;; modules.el ends here
