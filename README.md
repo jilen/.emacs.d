@@ -1,6 +1,6 @@
 `Deprecated`
 ==========
-I am now using [https://github.com/jilen/.emacs.d](config) forked from [https://github.com/bbatsov/prelude](emacs prelude)
+I am now using [config](https://github.com/jilen/.emacs.d) forked from [emacs prelude](https://github.com/bbatsov/prelude)
 
 
 .emacs.d
