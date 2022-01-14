@@ -6,3 +6,5 @@ projects
 recentf
 eln-cache/
 .cache/
+tramp
+transient/
