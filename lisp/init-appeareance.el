@@ -17,8 +17,10 @@
   :custom
   (dashboard-image-banner-max-width 600)
   (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons t)
   (dashboard-projects-backend 'project-el)
+  (dashboard-set-file-icons t)
+  (dashboard-items '((recents  . 5)
+                     (projects . 5)))
   (dashboard-banner-logo-title "If someone ever tells me it's a mistake to have hope, well, then, I'll just tell them they're wrong. And I'll keep telling them 'til they believe! No matter how many times it takes.")
   (dashboard-startup-banner (concat dotfiles-dir "logo.png"))
 
