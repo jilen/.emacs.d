@@ -7,26 +7,21 @@
 ;;; Code:
 
 (use-package consult
-  :bind (
-         ("C-s" . consult-line)
-         ("C-c h i" . consult-imenu))
+  :bind (("C-s" . consult-line)
+         ("C-c h i" . consult-imenu)
+         ("C-x b" . consult-buffer))
 
   :hook (completion-list-mode . consult-preview-at-point-mode)
 
   :init
   (setq register-preview-delay 0
         register-preview-function #'consult-register-format)
-
   (advice-add #'register-preview :override #'consult-register-window)
-
   (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
-
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
 
   :config
-
-
   (consult-customize
    consult-theme
    :preview-key '(:debounce 0.2 any)
@@ -97,6 +92,17 @@
 (use-package all-the-icons-completion
   :config
   (all-the-icons-completion-mode))
+
+(use-package anzu
+  :demand t
+  :config
+  (global-anzu-mode 1)
+  ;; Anzu provides a version of `query-replace' and friends which give visual
+  ;; feedback when composing regexps. Let's replace the regular versions.
+  :bind(("C-%" . anzu-query-replace-at-cursor)
+        ("M-%" . anzu-query-replace)
+        ("C-M-%" . anzu-query-replace-regexp))
+  :diminish anzu-mode)
 
 (provide 'init-consult)
 

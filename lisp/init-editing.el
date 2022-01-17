@@ -88,6 +88,16 @@ point reaches the beginning or end of the buffer, stop there."
 ;; Use y/n instead of yes/no
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+;; Auto revert if file changed
+(global-auto-revert-mode)
+
+;; Make other-window command much more usable 
+(use-package ace-window
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :bind
+  ("C-x o" . ace-window))
+
 (provide 'init-editing)
 
 ;;; init-editing.el ends here

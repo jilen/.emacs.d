@@ -11,10 +11,6 @@
   (setq web-mode-script-padding 0)
   (setq web-mode-style-padding 0))
 
-
-
-
-
 (require 'project)
 
 (cl-defmethod project-root ((project (head vue-module)))
@@ -36,7 +32,7 @@
 (add-hook 'vue-mode-hook #'flycheck-mode)
 (add-hook 'vue-mode-hook #'set-project-root-for-vue)
 
-(with-eval-after-load 'flycheck
+(with-eval-after-load "flycheck"
   (advice-add 'flycheck-eslint-config-exists-p :override (lambda() t))
   (flycheck-add-mode 'javascript-eslint 'vue-mode))
 

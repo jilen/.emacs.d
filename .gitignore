@@ -8,3 +8,4 @@ eln-cache/
 .cache/
 tramp
 transient/
+.mc-lists.el

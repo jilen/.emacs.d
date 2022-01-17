@@ -35,8 +35,12 @@
 (require 'init-corfu)
 (require 'init-project)
 (require 'init-codestyle)
+(require 'init-ligatures)
+(require 'init-flycheck)
+(require 'init-javascript)
 (require 'init-scala)
 (require 'init-vue)
+
 
 (provide 'init)
 
