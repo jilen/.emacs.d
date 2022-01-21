@@ -56,7 +56,9 @@
         completion-category-defaults nil
         completion-category-overrides '((file (styles . (partial-completion))))))
 
-(define-key project-prefix-map "s" 'consult-ripgrep)
+(with-eval-after-load "project"
+  (define-key project-prefix-map "s" 'consult-ripgrep))
+
 
 (use-package embark
   :ensure t

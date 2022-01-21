@@ -9,3 +9,5 @@ eln-cache/
 tramp
 transient/
 .mc-lists.el
+pyim/
+custom.el

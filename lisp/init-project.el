@@ -17,4 +17,4 @@ to directory DIR."
        (call-interactively 'project-find-file))))
 
 (provide 'init-project)
-;;; init-projectile.el ends here
+;;; init-project.el ends here

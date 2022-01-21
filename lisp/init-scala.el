@@ -52,6 +52,10 @@
 (global-set-key (kbd "C-c b b") 'sbt-compile)
 (global-set-key (kbd "C-c b p") 'sbt-publish-local)
 
+;; Prevent things like flycheck run against sbt file
+(define-derived-mode sbt-build-mode scala-mode ".sbt")
+(add-to-list 'auto-mode-alist '("\\.sbt\\'" . sbt-build-mode))
+
 (provide 'init-scala)
 
 ;;; init-scala.el ends here
