@@ -9,7 +9,9 @@
 (use-package consult
   :bind (("C-s" . consult-line)
          ("C-c h i" . consult-imenu)
-         ("C-x b" . consult-buffer))
+         ("C-x b" . consult-buffer)
+         ([remap project-search] . #'consult-ripgrep))
+
 
   :hook (completion-list-mode . consult-preview-at-point-mode)
 
@@ -46,6 +48,10 @@
           (when-let (project (project-current))
             (car (project-roots project))))))
 
+(with-eval-after-load "project"
+  (keymap-unset project-prefix-map "s")
+  (keymap-set project-prefix-map "s" 'project-search))
+
 (use-package selectrum
   :config
   (selectrum-mode +1))
@@ -55,9 +61,6 @@
   (setq completion-styles '(orderless)
         completion-category-defaults nil
         completion-category-overrides '((file (styles . (partial-completion))))))
-
-(with-eval-after-load "project"
-  (define-key project-prefix-map "s" 'consult-ripgrep))
 
 
 (use-package embark
