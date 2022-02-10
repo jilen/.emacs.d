@@ -27,7 +27,7 @@
    :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-file consult--source-project-file consult--source-bookmark
+   consult--source-recent-file consult--source-project-file consult--source-bookmark
    :preview-key (kbd "M-."))
 
   ;; Optionally configure the narrowing key.
@@ -94,17 +94,14 @@
 (use-package all-the-icons-completion
   :config
   (all-the-icons-completion-mode))
-
-(use-package anzu
-  :demand t
+(use-package wgrep
   :config
-  (global-anzu-mode 1)
-  ;; Anzu provides a version of `query-replace' and friends which give visual
-  ;; feedback when composing regexps. Let's replace the regular versions.
-  :bind(("C-%" . anzu-query-replace-at-cursor)
-        ("M-%" . anzu-query-replace)
-        ("C-M-%" . anzu-query-replace-regexp))
-  :diminish anzu-mode)
+  (require 'wgrep))
+
+(use-package visual-regexp
+  :demand t
+  :bind
+  (([remap query-replace] . #'vr/query-replace)))
 
 (provide 'init-consult)
 

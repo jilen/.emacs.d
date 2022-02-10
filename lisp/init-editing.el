@@ -47,13 +47,6 @@
   :commands er/expand-region
   :bind ("C-=" . er/expand-region))
 
-(eval-after-load 'semantic
-  (add-hook 'semantic-mode-hook
-            (lambda ()
-              (dolist (x (default-value 'completion-at-point-functions))
-                (when (string-prefix-p "semantic-" (symbol-name x))
-                  (remove-hook 'completion-at-point-functions x))))))
-
 (setq split-width-threshold nil)
 (setq split-height-threshold nil)
 
@@ -91,7 +84,7 @@ point reaches the beginning or end of the buffer, stop there."
 ;; Auto revert if file changed
 (global-auto-revert-mode)
 
-;; Make other-window command much more usable 
+;; Make other-window command much more usable
 (use-package ace-window
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
