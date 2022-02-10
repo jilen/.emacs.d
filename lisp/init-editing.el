@@ -91,6 +91,10 @@ point reaches the beginning or end of the buffer, stop there."
   :bind
   ("C-x o" . ace-window))
 
+(use-package which-key
+  :config
+  (which-key-mode))
+
 (provide 'init-editing)
 
 ;;; init-editing.el ends here
