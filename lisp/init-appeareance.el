@@ -3,6 +3,7 @@
 ;;; Commentary:
 ;;
 
+;;; Code:
 
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
@@ -11,7 +12,7 @@
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
-(set-face-attribute 'default nil :height 140 :weight 'medium)
+(set-face-attribute 'default nil :height 160)
 
 (use-package dashboard
   :custom
@@ -21,7 +22,7 @@
   (dashboard-set-file-icons t)
   (dashboard-items '((recents  . 5)
                      (projects . 5)))
-  (dashboard-banner-logo-title "If someone ever tells me it's a mistake to have hope, well, then\n I'll just tell them they're wrong. \n And I'll keep telling them 'til they believe!\n No matter how many times it takes.")
+  (dashboard-banner-logo-title "\nIf someone ever tells me it's a mistake to have hope, well, then\nI'll just tell them they're wrong. \nAnd I'll keep telling them 'til they believe!\nNo matter how many times it takes.")
   (dashboard-startup-banner (concat dotfiles-dir "logo.png"))
 
   :config
@@ -30,9 +31,11 @@
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
-(use-package doom-themes
+(use-package kaolin-themes
   :config
-  (load-theme 'doom-one-light t))
+  (load-theme 'kaolin-valley-light t)
+  (set-face-attribute 'line-number nil :height 120)
+  (set-face-attribute 'line-number-current-line nil :height 120))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
@@ -44,6 +47,10 @@
   :hook
   (dired-mode . all-the-icons-dired-mode)
   (dired-mode . dired-hide-details-mode))
+
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 
 (provide 'init-appeareance)
