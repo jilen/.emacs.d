@@ -52,6 +52,7 @@
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
+(show-paren-mode 1)
 
 (provide 'init-appeareance)
 

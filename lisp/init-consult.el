@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+
+
 (use-package consult
   :bind (("C-s" . consult-line)
          ("C-c h i" . consult-imenu)
@@ -52,9 +54,11 @@
   (keymap-unset project-prefix-map "s")
   (keymap-set project-prefix-map "s" 'project-search))
 
-(use-package selectrum
+(use-package vertico
   :config
-  (selectrum-mode +1))
+  (vertico-mode))
+
+
 
 (use-package orderless
   :init
@@ -101,10 +105,10 @@
   :config
   (require 'wgrep))
 
-(use-package visual-regexp
+(use-package anzu
   :demand t
   :bind
-  (([remap query-replace] . #'vr/query-replace)))
+  (([remap query-replace] . #'anzu-query-replace)))
 
 (provide 'init-consult)
 

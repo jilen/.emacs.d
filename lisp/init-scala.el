@@ -56,6 +56,47 @@
 (define-derived-mode sbt-build-mode scala-mode ".sbt")
 (add-to-list 'auto-mode-alist '("\\.sbt\\'" . sbt-build-mode))
 
+
+
+
+
+;;; Scala3 flycheck checker, comment this if not using scalac 3
+
+(defconst error-start-re "\\-+[[:space:]]\\[E[[:digit:]]+\\]")
+(defconst error-first-line-re "Syntax Error: \\([^\\:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)")
+
+(require 'flycheck)
+(defun extract-errors (lines errors)
+  "Extract errors from LINES, init ERRORS should be nil."
+  (let* ((filter-lines (seq-drop-while (lambda(s) (not (string-match error-start-re s))) lines))
+         (first-line (car filter-lines)))
+    (if (null first-line)
+        errors
+      (progn (string-match error-first-line-re first-line)
+             (let ((file (match-string 1 first-line))
+                   (row (string-to-number (match-string 2 first-line)))
+                   (col (string-to-number (match-string 3 first-line)))
+                   (msg (car (seq-drop lines 3))))
+               (extract-errors (seq-drop lines 4) (cons (flycheck-error-new-at row col 'error msg ) errors)))))
+    )
+  )
+
+(defun scala3-error-parser (output checker buffer)
+  "Parse scala3 compiler output errors from OUTPUT."
+  (extract-errors (string-lines output) nil))
+
+(flycheck-define-checker scala3
+  "A Scala syntax checker using the Scala compiler.
+See URL `https://www.scala-lang.org/'."
+  :command ("scalac" "-Ystop-after:parser" "-color:never" source)
+  :error-parser scala3-error-parser
+  :modes scala-mode
+  :next-checkers ((warning . scala-scalastyle)))
+
+(add-to-list 'flycheck-disabled-checkers 'scala)
+(add-to-list 'flycheck-checkers 'scala3)
+
+
 (provide 'init-scala)
 
 ;;; init-scala.el ends here
