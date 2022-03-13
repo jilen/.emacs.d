@@ -76,8 +76,8 @@
              (let ((file (match-string 1 first-line))
                    (row (string-to-number (match-string 2 first-line)))
                    (col (string-to-number (match-string 3 first-line)))
-                   (msg (car (seq-drop lines 3))))
-               (extract-errors (seq-drop lines 4) (cons (flycheck-error-new-at row col 'error msg ) errors)))))
+                   (msg (car (seq-drop filter-lines 3))))
+               (extract-errors (seq-drop filter-lines 4) (cons (flycheck-error-new-at row col 'error msg ) errors)))))
     )
   )
 
@@ -88,7 +88,7 @@
 (flycheck-define-checker scala3
   "A Scala syntax checker using the Scala compiler.
 See URL `https://www.scala-lang.org/'."
-  :command ("scalac" "-Ystop-after:parser" "-color:never" source)
+  :command ("scalac3" "-Ystop-after:parser" "-color:never" source)
   :error-parser scala3-error-parser
   :modes scala-mode
   :next-checkers ((warning . scala-scalastyle)))
