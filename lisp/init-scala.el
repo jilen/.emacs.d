@@ -62,13 +62,12 @@
 
 ;;; Scala3 flycheck checker, comment this if not using scalac 3
 
-(defconst error-start-re "\\-+[[:space:]]\\[E[[:digit:]]+\\]")
-(defconst error-first-line-re "Syntax Error: \\([^\\:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)")
+(defconst error-first-line-re "Error: \\([^\\:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)")
 
 (require 'flycheck)
 (defun extract-errors (lines errors)
   "Extract errors from LINES, init ERRORS should be nil."
-  (let* ((filter-lines (seq-drop-while (lambda(s) (not (string-match error-start-re s))) lines))
+  (let* ((filter-lines (seq-drop-while (lambda(s) (not (string-match error-first-line-re s))) lines))
          (first-line (car filter-lines)))
     (if (null first-line)
         errors
@@ -88,7 +87,7 @@
 (flycheck-define-checker scala3
   "A Scala syntax checker using the Scala compiler.
 See URL `https://www.scala-lang.org/'."
-  :command ("scalac3" "-Ystop-after:parser" "-color:never" source)
+  :command ("scalac" "-Ystop-after:parser" "-color:never" source)
   :error-parser scala3-error-parser
   :modes scala-mode
   :next-checkers ((warning . scala-scalastyle)))
