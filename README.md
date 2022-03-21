@@ -21,7 +21,16 @@ Keymap `project-prefix-map` rebinded to `C-c p` as `projectile`
 
 | Binding | Action                             |
 |---------|------------------------------------|
-| C-c p p | Open project                       |
-| C-c p f | Open file in projec                |
+| C-c p p | Switch project                       |
+| C-c p f | Open file in project                |
 | C-c p s | Do ripegrep inside project         |
 | C-c p r | Do search-replace-regex in project |
+
+### Consult
+
+| Binding | Action         | Desc                        |
+|---------|----------------|-----------------------------|
+| C-s     | consult-line   | Search in buffer            |
+| C-x b   | consult-buffer | List recent buffers         |
+| C-c h i | consult-imenu  | Show imenu item             |
+| C-.     | embark-act     | Contextual actions an point |
