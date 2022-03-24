@@ -9,10 +9,17 @@
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
+;; Specify font for Chinese characters
+(cl-loop for font in '("LXGW WenKai Mono")
+         when (font-installed-p font)
+         return (set-fontset-font t '(#x4e00 . #x9fff) font))
+
+
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
-(set-face-attribute 'default nil :height 160)
+
+(set-face-attribute 'default nil :height 170)
 
 (use-package dashboard
   :custom
@@ -31,11 +38,12 @@
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
-(use-package kaolin-themes
+(use-package modus-themes
   :config
-  (load-theme 'kaolin-valley-light t)
-  (set-face-attribute 'line-number nil :height 120)
-  (set-face-attribute 'line-number-current-line nil :height 120))
+  (load-theme 'modus-operandi t)
+  (set-face-attribute 'line-number nil :height 130)
+  (set-face-attribute 'line-number-current-line nil :height 130)
+  )
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))

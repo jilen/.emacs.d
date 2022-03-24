@@ -2,14 +2,22 @@
 ;;; Code:
 
 ;;; Commentary:
-;; 
+;;
 
 (use-package web-mode)
 (use-package add-node-modules-path)
+(require 'css-mode)
+
+(defun web-mode-completion-at-point ()
+  "Completion at point."
+  (let ((lang (web-mode-language-at-pos)))
+    (cond ((string= "css" lang) (css-completion-at-point))
+          ((string= "html" lang) (html-comple)))))
 
 (define-derived-mode vue-mode web-mode "Vue"
   (setq web-mode-script-padding 0)
-  (setq web-mode-style-padding 0))
+  (setq web-mode-style-padding 0)
+  (add-to-list 'completion-at-point-functions #'web-mode-completion-at-point))
 
 (require 'project)
 
@@ -24,7 +32,10 @@
     (project-try-vc dir)))
 
 
+
+
 (defun set-project-root-for-vue ()
+  "Set prj root for eglot."
   (add-hook 'project-find-functions #'vue-prj-root))
 
 

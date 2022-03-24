@@ -12,6 +12,9 @@
   :mode "\\.js\\'"
   :hook (js-mode . add-node-modules-path))
 
+(define-derived-mode json-mode js-mode "Json")
+(add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
+
 (provide 'init-javascript)
 
 ;;; init-javascript.el ends here
