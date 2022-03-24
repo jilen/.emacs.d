@@ -11,8 +11,7 @@
 (defun web-mode-completion-at-point ()
   "Completion at point."
   (let ((lang (web-mode-language-at-pos)))
-    (cond ((string= "css" lang) (css-completion-at-point))
-          ((string= "html" lang) (html-comple)))))
+    (cond ((string= "css" lang) (css-completion-at-point)))))
 
 (define-derived-mode vue-mode web-mode "Vue"
   (setq web-mode-script-padding 0)
