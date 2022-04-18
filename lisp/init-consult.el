@@ -51,8 +51,8 @@
             (car (project-roots project))))))
 
 (with-eval-after-load "project"
-  (keymap-unset project-prefix-map "s")
-  (keymap-set project-prefix-map "s" 'project-search))
+  (define-key project-prefix-map "s" nil)
+  (define-key project-prefix-map "s" 'project-search))
 
 (use-package vertico
   :config
@@ -98,6 +98,19 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package marginalia
+  ;; Either bind `marginalia-cycle` globally or only in the minibuffer
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  (marginalia-mode t))
+
 (use-package all-the-icons-completion
   :config
   (all-the-icons-completion-mode))
@@ -109,6 +122,8 @@
   :demand t
   :bind
   (([remap query-replace] . #'anzu-query-replace)))
+
+
 
 (provide 'init-consult)
 
