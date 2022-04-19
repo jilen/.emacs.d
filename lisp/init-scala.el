@@ -95,6 +95,8 @@ See URL `https://www.scala-lang.org/'."
 (add-to-list 'flycheck-disabled-checkers 'scala)
 (add-to-list 'flycheck-checkers 'scala3)
 
+(use-package web-mode
+  :mode (("\\.scala\\.html$" . web-mode)))
 
 (provide 'init-scala)
 
