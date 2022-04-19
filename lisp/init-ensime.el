@@ -5,6 +5,7 @@
 ;;; Code:
 
 (use-package company)
+(use-package popup)
 (use-package ensime-mode
   :ensure nil
   :load-path "~/.emacs.d/site-lisp/ensime/lisp"
@@ -20,8 +21,7 @@
   :config
   (require 'company-template)
   (with-eval-after-load "cape"
-
-  (add-to-list 'completion-at-point-functions (cape-company-to-capf #'ensime-company))))
+    (add-to-list 'completion-at-point-functions  (cape-company-to-capf #'ensime-company))))
 
 (provide 'init-ensime)
 
