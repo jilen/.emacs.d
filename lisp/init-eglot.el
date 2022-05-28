@@ -9,8 +9,8 @@
 
 (use-package eldoc-box
   :config
-  (set-face-foreground 'eldoc-box-body (face-foreground 'region))
-  (set-face-background 'eldoc-box-border (face-background 'region))
+  ;; (set-face-foreground 'eldoc-box-body (face-foreground 'region))
+  ;; (set-face-background 'eldoc-box-border (face-background 'region))
   (with-eval-after-load "eglot"
     (add-hook 'eglot--managed-mode-hook #'eldoc-box-hover-at-point-mode t)))
 

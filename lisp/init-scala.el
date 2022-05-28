@@ -4,6 +4,7 @@
 ;; 
 
 (use-package scala-mode
+  :mode "\\.sc\\'"
   :config
   (setq use-dialog-box nil)
 

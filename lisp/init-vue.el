@@ -50,21 +50,19 @@
 
 (setq gc-cons-threshold 200000000)
 
-(use-package eglot)
-
-(defclass eglot-vls (eglot-lsp-server) ()
-  :documentation "Vue Language Server.")
-
-
 (with-eval-after-load "eglot"
+  (defclass eglot-vls (eglot-lsp-server) ()
+    :documentation "Vue Language Server.")
+
+  (cl-defmethod eglot-initialization-options ((server eglot-vls))
+    "Passes through required vetur SERVER initialization options to VLS."
+    '(:vetur
+      (:validation
+       (:template t :style t :script t))))
   (add-to-list 'eglot-server-programs
                '(vue-mode . (eglot-vls . ("vls")))))
 
-(cl-defmethod eglot-initialization-options ((server eglot-vls))
-  "Passes through required vetur SERVER initialization options to VLS."
-  '(:vetur
-    (:validation
-     (:template t :style t :script t))))
+
 
 (provide 'init-vue)
 

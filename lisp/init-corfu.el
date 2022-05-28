@@ -18,7 +18,7 @@
   (corfu-scroll-margin 5)        ;; Use scroll margin
 
   :init
-  (corfu-global-mode))
+  (global-corfu-mode))
 
 (use-package kind-icon
   :ensure t

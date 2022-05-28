@@ -89,11 +89,18 @@ point reaches the beginning or end of the buffer, stop there."
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind
-  ("C-x o" . ace-window))
+  ("C-x o" . ace-window)
+  ("C-x C-o" . ace-swap-window))
 
 (use-package which-key
   :config
   (which-key-mode))
+
+(when (boundp 'mac-carbon-version-string)
+  (setq mac-option-modifier 'meta)
+  (setq mac-command-modifier 'super)
+  (setq mac-pass-command-to-system nil))
+
 
 (provide 'init-editing)
 

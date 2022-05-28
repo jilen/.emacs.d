@@ -19,8 +19,6 @@
   (when (fboundp mode) (funcall mode -1)))
 
 
-(set-face-attribute 'default nil :height 170)
-
 (use-package dashboard
   :custom
   (dashboard-image-banner-max-width 600)
@@ -38,15 +36,30 @@
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
+;; Theme, modeline setup
 (use-package modus-themes
+  :init
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend)
+        modus-themes-mode-line '(accented borderless (height . 0.9)))
   :config
-  (load-theme 'modus-operandi t)
-  (set-face-attribute 'line-number nil :height 130)
-  (set-face-attribute 'line-number-current-line nil :height 130)
-  )
+  (load-theme 'modus-operandi t))
+
 
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (setq doom-modeline-height 16)
+  )
+
+;; Font setting.
+(set-face-attribute 'default nil :family "Victor Mono")
+(defconst preferred-font-height 150)
+(defconst preferred-line-number-height (- preferred-font-height 20))
+(set-face-attribute 'default nil :height preferred-font-height)
+(set-face-attribute 'line-number nil :height preferred-line-number-height)
+(set-face-attribute 'line-number-current-line nil :height preferred-line-number-height)
 
 (use-package all-the-icons
   :if (display-graphic-p))
