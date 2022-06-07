@@ -42,20 +42,16 @@
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs nil
         modus-themes-region '(bg-only no-extend)
-        modus-themes-mode-line '(accented borderless (height . 0.9)))
+        modus-themes-mode-line '(accented borderless))
   :config
   (load-theme 'modus-operandi t))
 
-
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
-  :init
-  (setq doom-modeline-height 16)
-  )
+  :hook (after-init . doom-modeline-mode))
 
 ;; Font setting.
-(set-face-attribute 'default nil :family "Victor Mono")
-(defconst preferred-font-height 150)
+;;(set-face-attribute 'default nil :family "Victor Mono")
+(defconst preferred-font-height 130)
 (defconst preferred-line-number-height (- preferred-font-height 20))
 (set-face-attribute 'default nil :height preferred-font-height)
 (set-face-attribute 'line-number nil :height preferred-line-number-height)

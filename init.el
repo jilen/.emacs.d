@@ -10,9 +10,12 @@
 ;;(setq debug-on-error t)
 (setq dotfiles-dir (file-name-directory
                     (or (buffer-file-name) (file-chase-links load-file-name))))
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 
-
+(let ((default-directory  "~/.emacs.d/site-lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
+
+
 ;; Adjust garbage collection thresholds during startup, and thereafter
 
 (let ((normal-gc-cons-threshold (* 20 1024 1024))
@@ -21,7 +24,9 @@
   (add-hook 'emacs-startup-hook
             (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
 
-
+(setq max-lisp-eval-depth 10000)
+
+
 ;; Bootstrap config
 
 
@@ -43,6 +48,10 @@
 (require 'init-typescript)
 (require 'init-php)
 (require 'init-pyim)
+(require 'init-yaml)
+(require 'init-ensime)
+(require 'init-org)
+(require 'init-eglot)
 
 (provide 'init)
 
