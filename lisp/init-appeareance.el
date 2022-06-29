@@ -50,7 +50,6 @@
   :hook (after-init . doom-modeline-mode))
 
 ;; Font setting.
-;;(set-face-attribute 'default nil :family "Victor Mono")
 (defconst preferred-font-height 130)
 (defconst preferred-line-number-height (- preferred-font-height 20))
 (set-face-attribute 'default nil :height preferred-font-height)
@@ -61,6 +60,9 @@
   :if (display-graphic-p))
 
 (use-package all-the-icons-dired
+  :init
+  (add-to-list 'all-the-icons-data/alltheicons-alist '("sc" . "\xe908"))
+  (add-to-list 'all-the-icons-extension-icon-alist '("sc"  all-the-icons-alltheicon  "scala"  :face all-the-icons-red))
   :hook
   (dired-mode . all-the-icons-dired-mode)
   (dired-mode . dired-hide-details-mode))

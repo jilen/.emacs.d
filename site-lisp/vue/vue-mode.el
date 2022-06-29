@@ -726,6 +726,7 @@ Called by `unload-feature'."
 Code inside a <script> element is indented using the rules from
 `js-mode'; and code inside a <style> element is indented using
 the rules from `css-mode'."
+  (setq-local sgml-quick-keys 'close)
   (setq-local indent-line-function #'vue-indent-line)
   (setq-local syntax-propertize-function #'vue-syntax-propertize)
   (setq-local font-lock-fontify-region-function

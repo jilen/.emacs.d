@@ -7,8 +7,9 @@
 (require 'vue-mode)
 (use-package web-mode)
 (use-package add-node-modules-path)
-
 (require 'project)
+
+(setq vue-tag-relative-indent nil)
 
 (cl-defmethod project-root ((project (head vue-module)))
   (cdr project))
@@ -40,19 +41,40 @@
 
 (setq gc-cons-threshold 200000000)
 
-(with-eval-after-load "eglot"
-  (defclass eglot-vls (eglot-lsp-server) ()
-    :documentation "Vue Language Server.")
+;; (with-eval-after-load "eglot"
+;;   (defclass eglot-vls (eglot-lsp-server) ()
+;;     :documentation "Vue Language Server.")
 
-  (cl-defmethod eglot-initialization-options ((server eglot-vls))
-    "Passes through required vetur SERVER initialization options to VLS."
-    '(:vetur
-      (:validation
-       (:template t :style t :script t))))
-  (add-to-list 'eglot-server-programs
-               '(vue-mode . (eglot-vls . ("vls")))))
+;;   (cl-defmethod eglot-initialization-options ((server eglot-vls))
+;;     "Passes through required vetur SERVER initialization options to VLS."
+;;     '(:typescript
+;;       (:serverPath "")
+;;       :languageFeatures
+;;       (:references t
+;;                    :definition t
+;;                    :implementation t
+;;                    :typeDefinition t
+;;                    :callHierarchy t
+;;                    :hover t
+;;                    :rename t
+;;                    :signatureHelp t
+;;                    :codeAction t
+;;                    :workspaceSymbol: t
+;;                    :completion (:defaultTagNameCase t))
 
+;;       :documentFeatures
+;;       (:selectionRange t :foldingRange t :documentSymbol t)
+;;       )
+;;     )
 
+;;   (add-to-list 'eglot-server-programs
+;;                '(typescript-mode . (eglot-vls . ("vue-language-server" "--stdio"))))
+;;   (add-to-list 'eglot-server-programs
+;;                '(vue-mode . (eglot-vls . ("vue-language-server" "--stdio")))))
+
+(use-package "lsp-mode"
+  :hook (vue-mode . lsp-deferred)
+  :commands (lsp lsp-deferred))
 
 (provide 'init-vue)
 

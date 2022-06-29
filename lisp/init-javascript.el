@@ -3,14 +3,19 @@
 ;;; Commentary:
 ;;
 
-(use-package add-node-modules-path)
+
+;;; Code:
+
+(use-package add-node-modules-path
+  :custom
+  (add-node-modules-path-command  "yarn bin")
+  :hook js2-mode)
 
 (use-package js2-mode
   :custom
   (js2-strict-missing-semi-warning nil)
   (js-switch-indent-offset 2)
-  :mode "\\.js\\'"
-  :hook (js-mode . add-node-modules-path))
+  :mode "\\.js\\'")
 
 (define-derived-mode json-mode js-mode "Json")
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))

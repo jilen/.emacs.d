@@ -88,7 +88,7 @@
 (flycheck-define-checker scala3
   "A Scala syntax checker using the Scala compiler.
 See URL `https://www.scala-lang.org/'."
-  :command ("scalac" "-Ystop-after:parser" "-color:never" source)
+  :command ("scalac3" "-Ystop-after:parser" "-color:never" source)
   :error-parser scala3-error-parser
   :modes scala-mode
   :next-checkers ((warning . scala-scalastyle)))

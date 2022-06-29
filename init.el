@@ -43,6 +43,7 @@
 (require 'init-ligatures)
 (require 'init-flycheck)
 (require 'init-javascript)
+(require 'init-lsp)
 (require 'init-scala)
 (require 'init-vue)
 (require 'init-typescript)
@@ -51,7 +52,8 @@
 (require 'init-yaml)
 (require 'init-ensime)
 (require 'init-org)
-(require 'init-eglot)
+;; (require 'init-eglot)
+
 
 (provide 'init)
 

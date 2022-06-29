@@ -7,7 +7,7 @@
     (add-to-list 'exec-path-from-shell-variables var)))
 
 
-(when (or (memq window-system '(mac ns x))
+(when (or (memq window-system '(pgtk mac ns x))
           (unless (memq system-type '(ms-dos windows-nt))
             (daemonp)))
   (exec-path-from-shell-initialize))
