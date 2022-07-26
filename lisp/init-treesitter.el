@@ -6,10 +6,15 @@
 ;;; Code:
 
 (use-package tree-sitter)
-(use-package tree-sitter-langs)
+(use-package tree-sitter-langs
+  :config
+  (global-tree-sitter-mode)
+  :hook
+  (tree-sitter-after-on . tree-sitter-hl-mode))
 
-(global-tree-sitter-mode)
-(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+(use-package ts-fold
+  :ensure nil
+  :load-path "~/.emacs.d/site-lisp/ts-fold")
 
 (provide 'init-treesitter)
 

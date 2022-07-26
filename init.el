@@ -12,10 +12,6 @@
                     (or (buffer-file-name) (file-chase-links load-file-name))))
 (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 
-(let ((default-directory  "~/.emacs.d/site-lisp/"))
-  (normal-top-level-add-subdirs-to-load-path))
-
-
 ;; Adjust garbage collection thresholds during startup, and thereafter
 
 (let ((normal-gc-cons-threshold (* 20 1024 1024))
@@ -38,12 +34,12 @@
 (require 'init-git)
 (require 'init-project)
 (require 'init-consult)
-(require 'init-corfu)
+(require 'init-company)
+;; (require 'init-corfu)
 (require 'init-codestyle)
 (require 'init-ligatures)
 (require 'init-flycheck)
 (require 'init-javascript)
-(require 'init-lsp)
 (require 'init-scala)
 (require 'init-vue)
 (require 'init-typescript)
@@ -52,6 +48,8 @@
 (require 'init-yaml)
 (require 'init-ensime)
 (require 'init-org)
+(require 'init-lsp)
+;; (require 'init-lsp-bridge)
 ;; (require 'init-eglot)
 
 

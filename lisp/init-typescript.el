@@ -8,7 +8,7 @@
 
 (use-package typescript-mode)
 (use-package add-node-modules-path
-  :hook typescript-mode)
+  :hook (typescript-mode))
 
 (provide 'init-typescript)
 

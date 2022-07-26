@@ -231,7 +231,8 @@ May ask the user to disambiguate."
              (remove (current-buffer) (buffer-list)))))))
 
 (defun ensime--launcher ()
-  (when (not buffer-read-only)
+  (when (and buffer-file-name
+             (not buffer-read-only))
     (let ((launcher (concat "~/.cache/ensime" buffer-file-name)))
       (when (file-exists-p launcher)
         launcher))))
@@ -328,6 +329,9 @@ May ask the user to disambiguate."
   "ENhanced Scala Interaction Mode for Emacs."
   :lighter " ENSIME"
   :keymap (make-sparse-keymap)
+  (make-local-variable 'company-backends)
+  (add-to-list 'company-backends #'ensime-company)
+  (company-mode 1)
   (ensime--installation))
 
 (provide 'ensime-mode)

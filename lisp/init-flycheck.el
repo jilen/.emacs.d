@@ -70,6 +70,11 @@ CALLBACK is the function that we need to call when we are done, on all the error
          (fboundp 'flymake--diag-locus))
     (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
 
+(use-package flycheck-pos-tip
+  :config
+  (with-eval-after-load 'flycheck
+    (flycheck-pos-tip-mode)))
+
 (provide 'init-flycheck)
 
 ;;; init-flycheck.el ends here

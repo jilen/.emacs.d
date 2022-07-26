@@ -20,11 +20,32 @@
   :init
   (global-corfu-mode))
 
+
+(use-package svg-lib
+  :init
+  (setq svg-lib-icon-collections
+        '(("bootstrap" .
+           "https://icons.getbootstrap.com/icons/%s.svg")
+          ("simple" .
+           "https://mirror.ghproxy.com/https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/%s.svg")
+          ("material" .
+           "https://mirror.ghproxy.com/https://raw.githubusercontent.com/Templarian/MaterialDesign/master/svg/%s.svg")
+          ("octicons" .
+           "https://mirror.ghproxy.com/https://raw.githubusercontent.com/primer/octicons/master/icons/%s-24.svg")
+          ("boxicons" .
+           "https://boxicons.com/static/img/svg/regular/bx-%s.svg"))
+        ))
+
+
+(defconst scale-factor 0.5)
+
 (use-package kind-icon
   :ensure t
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :init
+  (setq kind-icon-default-style '(:height 0.7 :stroke 0 :padding 0 :margin 0))
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
@@ -37,6 +58,15 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-keyword)
   (add-to-list 'completion-at-point-functions #'cape-abbrev))
+
+(with-eval-after-load 'eglot
+  (setq completion-category-defaults nil))
+
+
+(use-package corfu-doc
+  :init
+  (setq corfu-doc-display-within-parent-frame nil)
+  :hook (corfu-mode . corfu-doc-mode))
 
 (provide 'init-corfu)
 

@@ -46,13 +46,19 @@
   :config
   (load-theme 'modus-operandi t))
 
+;; (use-package doom-themes
+;;   :config
+;;   (load-theme 'doom-one-light t))
+
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (setq doom-modeline-enable-word-count nil))
 
 ;; Font setting.
 (defconst preferred-font-height 130)
 (defconst preferred-line-number-height (- preferred-font-height 20))
-(set-face-attribute 'default nil :height preferred-font-height)
+(set-face-attribute 'default nil :height preferred-font-height :weight 'regular)
 (set-face-attribute 'line-number nil :height preferred-line-number-height)
 (set-face-attribute 'line-number-current-line nil :height preferred-line-number-height)
 
