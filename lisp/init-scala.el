@@ -26,6 +26,9 @@
    'self-insert-command
    minibuffer-local-completion-map))
 
+(require 'em-term)
+(add-to-list 'eshell-visual-commands "millw")
+
 (defun sbt-compile ()
   "Compile sbt project."
   (interactive)
@@ -41,17 +44,18 @@
   "Format specified file. C is the config, F is the file path."
   (shell-command (concat "scalariform -q " "--preferenceFile=" c " " f)))
 
+
 (defun format-project ()
   "Format project."
   (interactive)
-  (let ((default-directory (sbt:find-root)))
+  (let ((default-directory (locate-dominating-file (buffer-file-name (current-buffer)) ".scalafmt.conf")))
     (cond
      ((file-exists-p ".scalafmt.conf") (scalafmt (buffer-file-name (current-buffer))))
      ((file-exists-p ".scalariform.conf") (scalariform ".scalariform.conf" (buffer-file-name (current-buffer)))))))
 
 (global-set-key (kbd "C-c b f") 'format-project)
-(global-set-key (kbd "C-c b b") 'sbt-compile)
-(global-set-key (kbd "C-c b p") 'sbt-publish-local)
+;;(global-set-key (kbd "C-c b b") 'sbt-compile)
+;;(global-set-key (kbd "C-c b p") 'sbt-publish-local)
 
 ;; Prevent things like flycheck run against sbt file
 (define-derived-mode sbt-build-mode scala-mode ".sbt")

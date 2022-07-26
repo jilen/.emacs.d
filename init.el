@@ -32,6 +32,7 @@
 (require 'init-exec-path)
 (require 'init-appeareance)
 (require 'init-git)
+(require 'init-treesitter)
 (require 'init-project)
 (require 'init-consult)
 (require 'init-company)
@@ -48,9 +49,9 @@
 (require 'init-yaml)
 (require 'init-ensime)
 (require 'init-org)
-(require 'init-lsp)
+;; (require 'init-lsp)
 ;; (require 'init-lsp-bridge)
-;; (require 'init-eglot)
+(require 'init-eglot)
 
 
 (provide 'init)
