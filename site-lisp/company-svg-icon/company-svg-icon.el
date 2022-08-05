@@ -153,13 +153,14 @@ float FRAC."
   "Company kind icon (caculated from CANDIDATE, SELECTED) margin function."
   (let*
       ((kind (company-call-backend 'kind candidate))
-       (icon-info (alist-get kind company-svg-icon-mapping))
+       (icon-info-from-kind (alist-get kind company-svg-icon-mapping))
+       (icon-info (if icon-info-from-kind icon-info-from-kind (alist-get 't company-svg-icon-mapping)))
        (icon-name (plist-get  icon-info :icon))
        (icon-face (plist-get icon-info :face))
        (icon-fg (face-foreground icon-face))
        (default-bg (face-background 'default))
        (icon-bg (company-svg-icon--rgb-blend (color-name-to-rgb icon-fg) (color-name-to-rgb default-bg) 0.12)))
-    (message (format "show icon with bg: %s, fg: %s" icon-bg icon-fg))
+    (message (format "show icon with face: %s, fg: %s bg: %s" icon-face icon-bg icon-fg))
     (company-svg-icon-build "material" icon-name icon-fg icon-bg)))
 
 (provide 'company-svg-icon)
