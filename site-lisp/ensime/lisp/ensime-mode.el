@@ -329,9 +329,11 @@ May ask the user to disambiguate."
   "ENhanced Scala Interaction Mode for Emacs."
   :lighter " ENSIME"
   :keymap (make-sparse-keymap)
-  (make-local-variable 'company-backends)
-  (add-to-list 'company-backends #'ensime-company)
-  (company-mode 1)
+  (with-eval-after-load "company"
+    (make-local-variable 'company-backends)
+    (add-to-list 'company-backends #'ensime-company))
+
+  (require 'company-template)
   (ensime--installation))
 
 (provide 'ensime-mode)

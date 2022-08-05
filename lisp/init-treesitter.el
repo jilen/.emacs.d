@@ -12,9 +12,6 @@
   :hook
   (tree-sitter-after-on . tree-sitter-hl-mode))
 
-(use-package ts-fold
-  :ensure nil
-  :load-path "~/.emacs.d/site-lisp/ts-fold")
 
 (provide 'init-treesitter)
 

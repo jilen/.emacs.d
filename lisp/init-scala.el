@@ -5,10 +5,10 @@
 
 (use-package scala-mode
   :mode "\\.sc\\'"
-  :config
+  :init
   (setq use-dialog-box nil)
-
-  (setq-default scala-indent:use-javadoc-style t))
+  (setq-default scala-indent:use-javadoc-style t)
+  )
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -34,6 +34,22 @@
   (interactive)
   (sbt-command "compile"))
 
+(defun mill-compile ()
+  "Compile mill project."
+  (interactive)
+  (require 'eshell)
+  (let ((current-root (project-root (project-current))))
+    (other-window 1)
+    (let ((default-directory current-root))
+      (with-current-buffer (project-eshell)
+      (eshell-return-to-prompt)
+      (insert "millw __.compile")
+      (eshell-send-input))
+      )
+    )
+  (other-window 1)
+  )
+
 (require 'sbt-mode-project)
 
 (defun scalafmt (p)
@@ -53,8 +69,8 @@
      ((file-exists-p ".scalafmt.conf") (scalafmt (buffer-file-name (current-buffer))))
      ((file-exists-p ".scalariform.conf") (scalariform ".scalariform.conf" (buffer-file-name (current-buffer)))))))
 
+(global-set-key (kbd "C-c b b") 'mill-compile)
 (global-set-key (kbd "C-c b f") 'format-project)
-;;(global-set-key (kbd "C-c b b") 'sbt-compile)
 ;;(global-set-key (kbd "C-c b p") 'sbt-publish-local)
 
 ;; Prevent things like flycheck run against sbt file
