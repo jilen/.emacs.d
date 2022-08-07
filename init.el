@@ -49,9 +49,9 @@
 (require 'init-yaml)
 (require 'init-ensime)
 (require 'init-org)
-;; (require 'init-lsp)
+(require 'init-lsp)
 ;; (require 'init-lsp-bridge)
-(require 'init-eglot)
+;; (require 'init-eglot)
 
 
 (provide 'init)
