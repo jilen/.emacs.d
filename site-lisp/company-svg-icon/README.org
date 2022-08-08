@@ -1,0 +1,14 @@
+* Svg kind icon for [company-mode](https://github.com/company-mode/company-mode).
+
+A custom [company-mode](https://github.com/company-mode/company-mode) icon set ported from [Kind-icon](https://github.com/jdtsmith/kind-icon)
+
+** Usage
+
+First, install company-mode
+
+#+BEGIN_SRC lisp
+  (add-to-list 'load-path path-to-this-lib)
+  (require 'company-mode)
+  (require 'company-svg-icon)
+  (setq company-format-margin-function #'company-svg-icon-format-margin-function)
+#+END_SRC
