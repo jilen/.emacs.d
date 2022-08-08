@@ -1,6 +1,6 @@
 * Kind icon for company-mode
 
-A custom [[company-mode][https://github.com/company-mode/company-mode]] icon set ported from [[Kind-icon][https://github.com/jdtsmith/kind-icon]]
+A custom [[https://github.com/company-mode/company-mode][company-mode]] icon set ported from [[https://github.com/jdtsmith/kind-icon][kind-icon]]
 
 ** Usage
 
