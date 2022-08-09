@@ -100,6 +100,7 @@
 
 ;; If use lsp-mode
 (with-eval-after-load "lsp-mode"
+  (add-hook 'typescript-mode-hook #'lsp-deferred)
   (add-hook 'vue-mode-hook #'lsp-deferred))
 
 

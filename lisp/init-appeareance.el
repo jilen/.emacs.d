@@ -46,38 +46,51 @@
   :config
   (load-theme 'modus-operandi t))
 
-;; (use-package doom-themes
-;;   :config
-;;   (load-theme 'doom-one-light t))
-
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
-  :init
-  (setq doom-modeline-enable-word-count nil))
+  :config
+  (doom-modeline-mode 1))
 
 ;; Font setting.
-(defconst preferred-font-height 130)
+(defconst preferred-font-height 120)
 (defconst preferred-line-number-height (- preferred-font-height 20))
 (set-face-attribute 'default nil :height preferred-font-height :weight 'regular)
 (set-face-attribute 'line-number nil :height preferred-line-number-height)
 (set-face-attribute 'line-number-current-line nil :height preferred-line-number-height)
 
 (use-package all-the-icons
-  :if (display-graphic-p))
-
-(use-package all-the-icons-dired
+  :if (display-graphic-p)
   :init
   (add-to-list 'all-the-icons-data/alltheicons-alist '("sc" . "\xe908"))
   (add-to-list 'all-the-icons-extension-icon-alist '("sc"  all-the-icons-alltheicon  "scala"  :face all-the-icons-red))
-  :hook
-  (dired-mode . all-the-icons-dired-mode)
-  (dired-mode . dired-hide-details-mode))
+  )
+
+(use-package dirvish
+  :ensure t
+  :custom
+  (dirvish-bookmark-entries
+   '(("h" "~/"                          "Home")
+     ("d" "~/Downloads/"                "Downloads")
+     ("t" "~/.local/share/Trash/files/" "TrashCan")))
+  ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
+  (dirvish-mode-line-format ; it's ok to place string inside
+   '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
+  ;; Don't worry, Dirvish is still performant even you enable all these attributes
+  (dirvish-attributes '(all-the-icons file-size collapse subtree-state vc-state git-msg))
+  :init
+  ;; Let Dirvish take over Dired globally
+  (dirvish-override-dired-mode)
+  )
 
 (use-package rainbow-delimiters
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
 (show-paren-mode 1)
+
+(use-package minibuffer-header
+  :config
+  (minibuffer-header-mode)
+  )
 
 (provide 'init-appeareance)
 

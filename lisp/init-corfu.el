@@ -36,16 +36,13 @@
            "https://boxicons.com/static/img/svg/regular/bx-%s.svg"))
         ))
 
-
-(defconst scale-factor 0.5)
-
 (use-package kind-icon
   :ensure t
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :init
-  (setq kind-icon-default-style '(:height 0.7 :stroke 0 :padding 0 :margin 0))
+  (setq kind-icon-default-style '(:height 0.66 :stroke 0 :padding 0 :margin -0.6))
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 

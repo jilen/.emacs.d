@@ -14,11 +14,7 @@
 (use-package lsp-bridge
   :ensure nil
   :load-path "~/.emacs.d/site-lisp/lsp-bridge/"
-  :init
-  (dolist (mode lsp-bridge-mode-hooks)
-    (add-hook mode #'lsp-bridge-mode))
-  (setq lsp-bridge-enable-log t)
-  (setq lsp-bridge-enable-debug t))
+  )
 
 (provide 'init-lsp-bridge)
 

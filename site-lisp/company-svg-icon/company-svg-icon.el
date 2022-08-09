@@ -154,7 +154,6 @@ float FRAC."
     ensure-fg)
   )
 
-
 ;;;###autoload
 (defun company-svg-icon-format-margin-function (candidate selected)
   "Company kind icon (caculated from CANDIDATE, SELECTED) margin function."
@@ -165,7 +164,7 @@ float FRAC."
        (icon-name (plist-get  icon-info :icon))
        (icon-face (plist-get icon-info :face))
        (icon-fg (get-fg-or-default icon-face))
-       (default-bg (face-background 'default))
+       (default-bg (face-background 'company-tooltip))
        (icon-bg (company-svg-icon--rgb-blend (color-name-to-rgb icon-fg) (color-name-to-rgb default-bg) 0.12)))
     (message (format "show icon with face: %s, fg: %s bg: %s" icon-face icon-bg icon-fg))
     (company-svg-icon-build "material" icon-name icon-fg icon-bg)))

@@ -12,7 +12,7 @@
   (lsp-completion-provider :none) ;; we use Corfu!
 
   :init
-  (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  (setq read-process-output-max (* 3 1024 1024)) ;; 1mb
   (defun lsp-mode-setup-completion ()
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless))) ;; Configure orderless
