@@ -2,6 +2,8 @@
 
 A custom [[https://github.com/company-mode/company-mode][company-mode]] icon set ported from [[https://github.com/jdtsmith/kind-icon][kind-icon]]
 
+[[https://raw.githubusercontent.com/jilen/.emacs.d/main/site-lisp/company-svg-icon/scrot.png][screenshot]]
+
 ** Usage
 
 First, install company-mode
