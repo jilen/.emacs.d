@@ -1,0 +1,43 @@
+* Emacs config
+
+Inspired by purcell's config
+
+[[https://raw.githubusercontent.com/jilen/.emacs.d/main/scrot.png]]
+
+## What's inside
++ Improved general editing experience
++ [[https://github.com/bbatsov/projectile][Projectile]] like  ~project.el~ setup.
++ [[https://github.com/minad/consult][Consult]] and [[https://github.com/minad/corfu][Corfu]] or [[https://github.com/company-mode/company-mode][company-mode]] based lightweight completion ui.
++ Useful programming setup.
+  - Scala
+  - Vue
+  - expand-region/whitespace/anzu/multiple cursors and other editing utilites
+
+## Keymaps
+
+### Project management
+
+Keymap ~project-prefix-map~ rebinded to ~C-c p~ as ~projectile~
+
+| Binding | Action                             |
+|---------+------------------------------------|
+| C-c p p | Switch project                     |
+| C-c p f | Open file in project               |
+| C-c p s | Do ripegrep inside project         |
+| C-c p r | Do search-replace-regex in project |
+| C-c p e | Open eshell at project root        |
+
+### Consult
+
+| Binding | Action         | Desc                        |
+|---------|----------------|-----------------------------|
+| C-s     | consult-line   | Search in buffer            |
+| C-x b   | consult-buffer | List recent buffers         |
+| C-c h i | consult-imenu  | Show imenu item             |
+| C-.     | embark-act     | Contextual actions an point |
+
+### Scala
+| Binding | Action         | Desc                        |
+|---------+----------------+-----------------------------|
+| C-c b f | format-project | Format project use scalafmt |
+| C-c b b | mill-compile   | Compile prj with mill       |
