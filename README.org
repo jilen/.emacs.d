@@ -4,7 +4,7 @@ Inspired by purcell's config
 
 [[https://raw.githubusercontent.com/jilen/.emacs.d/main/scrot.png]]
 
-## What's inside
+** What's inside
 + Improved general editing experience
 + [[https://github.com/bbatsov/projectile][Projectile]] like  ~project.el~ setup.
 + [[https://github.com/minad/consult][Consult]] and [[https://github.com/minad/corfu][Corfu]] or [[https://github.com/company-mode/company-mode][company-mode]] based lightweight completion ui.
