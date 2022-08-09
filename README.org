@@ -19,9 +19,9 @@ Inspired by purcell's config
   - expand-region/whitespace/anzu/multiple cursors and other editing utilites
   - custom [[https://github.com/jilen/.emacs.d/tree/main/site-lisp/company-svg-icon][company svg icon]]
 
-## Keymaps
+** Keymaps
 
-### Project management
+*** Project management
 
 Keymap ~project-prefix-map~ rebinded to ~C-c p~ as ~projectile~
 
@@ -33,7 +33,7 @@ Keymap ~project-prefix-map~ rebinded to ~C-c p~ as ~projectile~
 | C-c p r | Do search-replace-regex in project |
 | C-c p e | Open eshell at project root        |
 
-### Consult
+*** Consult
 
 | Binding | Action         | Desc                        |
 |---------|----------------|-----------------------------|
@@ -42,7 +42,7 @@ Keymap ~project-prefix-map~ rebinded to ~C-c p~ as ~projectile~
 | C-c h i | consult-imenu  | Show imenu item             |
 | C-.     | embark-act     | Contextual actions an point |
 
-### Scala
+*** Scala
 | Binding | Action         | Desc                        |
 |---------+----------------+-----------------------------|
 | C-c b f | format-project | Format project use scalafmt |
