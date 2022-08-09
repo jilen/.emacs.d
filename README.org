@@ -10,8 +10,14 @@ Inspired by purcell's config
 + [[https://github.com/minad/consult][Consult]] and [[https://github.com/minad/corfu][Corfu]] or [[https://github.com/company-mode/company-mode][company-mode]] based lightweight completion ui.
 + Useful programming setup.
   - Scala
+    + [[https://ensime.github.io/][Ensime]] based ide experience
+    + Simple ~eshell~ based mill intergration
+    + Scala3 ~flycheck~ checker
   - Vue
+    + mhtml-mode based vue-mode
+    + lsp with volar
   - expand-region/whitespace/anzu/multiple cursors and other editing utilites
+  - custom [[https://github.com/jilen/.emacs.d/tree/main/site-lisp/company-svg-icon][company svg icon]]
 
 ## Keymaps
 
