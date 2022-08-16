@@ -131,7 +131,7 @@ If COLOR-NAME is unknown to Emacs, then return COLOR-NAME as-is."
              (icon-text (gethash icon-key company-svg-icon-cache)))
         (unless icon-text
           (setq icon-text (propertize
-                           (apply #'concat (make-list company-svg-icon-width "-"))
+                           (apply #'concat (make-list company-svg-icon-width " "))
                            'display (company-svg-icon collection name fg-color bg-color)))
           (puthash icon-key icon-text company-svg-icon-cache))
         icon-text)
@@ -147,23 +147,16 @@ float FRAC."
                       (+ (* a frac) (* b (- 1.0 frac))))
                     rgb1 rgb2)))
 
-(defsubst get-fg-or-default (face)
-  "Get foreground color of FACE or default face if no fg."
-  (let* ((face-fg (face-foreground face))
-         (ensure-fg (if face-fg face-fg (face-foreground 'default))))
-    ensure-fg)
-  )
-
 ;;;###autoload
 (defun company-svg-icon-format-margin-function (candidate selected)
   "Company kind icon (caculated from CANDIDATE, SELECTED) margin function."
   (let*
       ((kind (company-call-backend 'kind candidate))
-       (icon-info-from-kind (alist-get kind company-svg-icon-mapping))
-       (icon-info (if icon-info-from-kind icon-info-from-kind (alist-get 't company-svg-icon-mapping)))
+       (icon-info-from-kind )
+       (icon-info (or (alist-get kind company-svg-icon-mapping) (alist-get 't company-svg-icon-mapping)))
        (icon-name (plist-get  icon-info :icon))
        (icon-face (plist-get icon-info :face))
-       (icon-fg (get-fg-or-default icon-face))
+       (icon-fg (or (face-foreground icon-face) (face-foreground 'default)))
        (default-bg (face-background 'company-tooltip))
        (icon-bg (company-svg-icon--rgb-blend (color-name-to-rgb icon-fg) (color-name-to-rgb default-bg) 0.12)))
     (message (format "show icon with face: %s, fg: %s bg: %s" icon-face icon-bg icon-fg))
