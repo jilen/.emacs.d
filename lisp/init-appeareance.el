@@ -21,14 +21,14 @@
 
 (use-package dashboard
   :custom
-  (dashboard-image-banner-max-width 600)
+  (dashboard-image-banner-max-width (* (window-width) 0.7))
   (dashboard-set-heading-icons t)
   (dashboard-projects-backend 'project-el)
   (dashboard-set-file-icons t)
   (dashboard-items '((recents  . 5)
                      (projects . 5)))
   (dashboard-banner-logo-title "\nIf someone ever tells me it's a mistake to have hope, well, then\nI'll just tell them they're wrong. \nAnd I'll keep telling them 'til they believe!\nNo matter how many times it takes.")
-  (dashboard-startup-banner (concat dotfiles-dir "logo.png"))
+  (dashboard-startup-banner (concat dotfiles-dir "logo.svg"))
 
   :config
   (dashboard-setup-startup-hook))
@@ -37,14 +37,22 @@
   (global-display-line-numbers-mode))
 
 ;; Theme, modeline setup
-(use-package modus-themes
-  :init
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-mode-line '(accented borderless))
+;; (use-package modus-themes
+;;   :init
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-links '(faint)
+;;         modus-themes-region '(bg-only no-extend)
+;;         modus-themes-mode-line '(accented borderless))
+;;   :config
+;;   (load-theme 'modus-operandi t))
+
+(use-package ef-themes
   :config
-  (load-theme 'modus-operandi t))
+  (load-theme 'ef-light t)
+  )
+
+
 
 (use-package doom-modeline
   :config
@@ -53,8 +61,10 @@
 ;; Font setting.
 (defconst preferred-font-height 120)
 (defconst preferred-line-number-height (- preferred-font-height 20))
-(set-face-attribute 'default nil :height preferred-font-height :weight 'regular)
-(set-face-attribute 'line-number nil :height preferred-line-number-height)
+(set-face-attribute 'default nil
+                    :weight 'light
+                    :height preferred-font-height)
+(set-face-attribute 'line-number nil :height preferred-line-number-height )
 (set-face-attribute 'line-number-current-line nil :height preferred-line-number-height)
 
 (use-package all-the-icons
@@ -67,10 +77,6 @@
 (use-package dirvish
   :ensure t
   :custom
-  (dirvish-bookmark-entries
-   '(("h" "~/"                          "Home")
-     ("d" "~/Downloads/"                "Downloads")
-     ("t" "~/.local/share/Trash/files/" "TrashCan")))
   ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
   (dirvish-mode-line-format ; it's ok to place string inside
    '(:left (sort file-time " " file-size symlink) :right (omit yank index)))

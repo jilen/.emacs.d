@@ -7,6 +7,7 @@
 
 (use-package tree-sitter)
 (use-package tree-sitter-langs
+  :after tree-sitter
   :config
   (global-tree-sitter-mode)
   :hook
