@@ -5,11 +5,11 @@
 
 ;;; Code:
 
-(use-package tree-sitter)
-(use-package tree-sitter-langs
-  :after tree-sitter
+(use-package tree-sitter
   :config
-  (global-tree-sitter-mode)
+  (global-tree-sitter-mode))
+
+(use-package tree-sitter-langs
   :hook
   (tree-sitter-after-on . tree-sitter-hl-mode))
 
