@@ -14,19 +14,20 @@
          when (font-installed-p font)
          return (set-fontset-font t '(#x4e00 . #x9fff) font))
 
-
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
 
 (use-package dashboard
   :custom
-  (dashboard-image-banner-max-width (* (window-width) 0.7))
+  (dashboard-image-banner-max-width 600)
   (dashboard-set-heading-icons t)
   (dashboard-projects-backend 'project-el)
   (dashboard-set-file-icons t)
+  (dashboard-week-agenda t)
   (dashboard-items '((recents  . 5)
-                     (projects . 5)))
+                     (projects . 5)
+                     agenda))
   (dashboard-banner-logo-title "\nIf someone ever tells me it's a mistake to have hope, well, then\nI'll just tell them they're wrong. \nAnd I'll keep telling them 'til they believe!\nNo matter how many times it takes.")
   (dashboard-startup-banner (concat dotfiles-dir "logo.svg"))
 
@@ -36,27 +37,15 @@
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
-;; Theme, modeline setup
-;; (use-package modus-themes
-;;   :init
-;;   (setq modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-links '(faint)
-;;         modus-themes-region '(bg-only no-extend)
-;;         modus-themes-mode-line '(accented borderless))
-;;   :config
-;;   (load-theme 'modus-operandi t))
 
+;; Theme setup.
 (use-package ef-themes
   :config
-  (load-theme 'ef-light t)
-  )
-
-
+  (load-theme 'ef-light t))
 
 (use-package doom-modeline
   :config
-  (doom-modeline-mode 1))
+  (doom-modeline-mode))
 
 ;; Font setting.
 (defconst preferred-font-height 120)
@@ -74,29 +63,25 @@
   (add-to-list 'all-the-icons-extension-icon-alist '("sc"  all-the-icons-alltheicon  "scala"  :face all-the-icons-red))
   )
 
-(use-package dirvish
-  :ensure t
-  :custom
-  ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
-  (dirvish-mode-line-format ; it's ok to place string inside
-   '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
-  ;; Don't worry, Dirvish is still performant even you enable all these attributes
-  (dirvish-attributes '(all-the-icons file-size collapse subtree-state vc-state git-msg))
-  :init
-  ;; Let Dirvish take over Dired globally
-  (dirvish-override-dired-mode)
+(use-package dired-subtree
+  :bind
+  (:map dired-mode-map
+        ("<tab>" . dired-subtree-toggle))
   )
+
+(use-package all-the-icons-dired
+  :init
+  :hook
+  (dired-mode . all-the-icons-dired-mode)
+  (dired-mode . dired-hide-details-mode)
+  )
+
 
 (use-package rainbow-delimiters
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
 (show-paren-mode 1)
-
-(use-package minibuffer-header
-  :config
-  (minibuffer-header-mode)
-  )
 
 (provide 'init-appeareance)
 
