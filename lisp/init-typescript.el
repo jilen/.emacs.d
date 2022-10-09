@@ -10,7 +10,7 @@
   :mode "\\.tsx\\'"
   )
 (use-package add-node-modules-path
-  :hook (typescript-mode))
+  :hook (typescript-mode . add-node-modules-path))
 
 (provide 'init-typescript)
 

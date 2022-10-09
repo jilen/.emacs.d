@@ -17,13 +17,12 @@
   "Get agendar dirs."
   (let* ((base-dir (symbol-value 'agendar-base-dir))
          (year (format-time-string "%Y"))
-         (year-base-dir (concat base-dir year))
-         (subdirs (directory-files year-base-dir nil "[[:digit:]]+")))
-    (seq-map (lambda(s) (concat year-base-dir "/" s)) subdirs)
-    )
+         (year-base-dir (concat base-dir year)))
+    (list year-base-dir))
   )
 
 (setq org-agenda-files (agendar-dirs))
+(setq recentf-exclude (org-agenda-files))
 
 (use-package org-super-agenda)
 

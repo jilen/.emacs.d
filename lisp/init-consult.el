@@ -12,7 +12,8 @@
   :bind (("C-s" . consult-line)
          ("C-c h i" . consult-imenu)
          ("C-x b" . consult-buffer)
-         ([remap project-search] . #'consult-ripgrep))
+         ([remap project-search] . #'consult-ripgrep)
+         ([remap goto-line] . #'consult-goto-line))
 
 
   :hook (completion-list-mode . consult-preview-at-point-mode)
