@@ -6,14 +6,14 @@
 
 
 
-(use-package vue-mode
-  :load-path "~/.emacs.d/site-lisp/vue/")
-
 (use-package web-mode)
-(use-package add-node-modules-path)
-(require 'project)
 
-(setq vue-tag-relative-indent nil)
+(define-derived-mode vue-mode web-mode "vue-mode")
+
+(use-package add-node-modules-path
+  :commands add-node-modules-path
+  :hook (vue-mode . add-node-modules-path))
+(require 'project)
 
 (defun find-prj-root (dir)
   "Find the vue project root of DIR."
@@ -22,11 +22,15 @@
 
 (defun vue-lsp-bridge-hook ()
   "Add lsp-bridge hooks."
-  (setq-local lsp-bridge-get-project-path-by-filepath 'find-prj-root))
+  (add-to-list 'lsp-bridge-single-lang-server-mode-list '(vue-mode . "volar"))
+  (setq lsp-bridge-enable-log nil)
+  (setq lsp-bridge-multi-lang-server-mode-list nil)
+  (setq lsp-bridge-multi-lang-server-extension-list nil)
+  (setq-local lsp-bridge-get-project-path-by-filepath 'find-prj-root)
+  (lsp-bridge-mode)
+  )
 
 
-
-(add-hook 'vue-mode-hook #'add-node-modules-path)
 (add-hook 'vue-mode-hook #'flycheck-mode)
 
 
@@ -42,9 +46,11 @@
 ;; If use eglot
 
 (defun typescript-file-path ()
-    (f-join (locate-dominating-file (buffer-file-name (current-buffer)) "package.json") "node_modules/typescript/lib/tsserverlibrary.js"))
+    (f-join (locate-dominating-file (buffer-file-name (current-buffer)) "package.json") "node_modules/typescript/lib/"))
 
 (with-eval-after-load "eglot"
+
+  (setq-default eglot-events-buffer-size 0)
 
   (cl-defmethod project-root ((project (head vue-module)))
     (cdr project))
@@ -69,30 +75,11 @@
 
   (cl-defmethod eglot-initialization-options ((server eglot-vls))
     "Passes through required vetur SERVER initialization options to VLS."
-    `(:typescript
-      (:serverPath ,(typescript-file-path))
-      :languageFeatures
-      (:references t
-                   :definition t
-                   :implementation t
-                   :typeDefinition t
-                   :callHierarchy t
-                   :hover t
-                   :rename t
-                   :signatureHelp t
-                   :codeAction t
-                   :workspaceSymbol: t
-                   :completion (:defaultTagNameCase t))
-
-      :documentFeatures
-      (:selectionRange t :foldingRange t :documentSymbol t)
-      )
+    nil
     )
 
   (add-to-list 'eglot-server-programs
-               '(typescript-mode . (eglot-vls . ("vue-language-server" "--stdio"))))
-  (add-to-list 'eglot-server-programs
-               '(vue-mode . (eglot-vls . ("vue-language-server" "--stdio"))))
+               '((vue-mode) . (eglot-vls . ("vls" "--stdio"))))
 
   )
 

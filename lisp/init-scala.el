@@ -1,14 +1,15 @@
 ;;; init-scala.el --- Scala development env
 
 ;;; Commentary:
-;; 
+;;
+
+;;; Code:
 
 (use-package scala-mode
   :mode "\\.sc\\'"
   :init
   (setq use-dialog-box nil)
-  (setq-default scala-indent:use-javadoc-style t)
-  )
+  (setq-default scala-indent:use-javadoc-style t))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -26,13 +27,13 @@
    'self-insert-command
    minibuffer-local-completion-map))
 
-(require 'em-term)
-(add-to-list 'eshell-visual-commands "millw")
 
 (defun sbt-compile ()
   "Compile sbt project."
   (interactive)
   (sbt-command "compile"))
+
+(use-package xterm-color)
 
 (defun mill-compile ()
   "Compile mill project."
@@ -42,9 +43,9 @@
     (other-window 1)
     (let ((default-directory current-root))
       (with-current-buffer (project-eshell)
-      (eshell-return-to-prompt)
-      (insert "millw __.compile")
-      (eshell-send-input))
+        (eshell-return-to-prompt)
+        (insert "millw -j 4 __.compile\n")
+        (eshell-send-input))
       )
     )
   (other-window 1)
@@ -118,6 +119,8 @@ See URL `https://www.scala-lang.org/'."
 
 (use-package web-mode
   :mode (("\\.scala\\.html$" . web-mode)))
+
+
 
 (provide 'init-scala)
 

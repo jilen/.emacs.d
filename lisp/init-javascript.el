@@ -6,11 +6,6 @@
 
 ;;; Code:
 
-(use-package add-node-modules-path
-  :custom
-  (add-node-modules-path-command  "yarn bin")
-  :hook js2-mode)
-
 (use-package js2-mode
   :custom
   (js2-strict-missing-semi-warning nil)

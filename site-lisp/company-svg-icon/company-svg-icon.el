@@ -5,8 +5,6 @@
 
 ;;; Code:
 
-(require 'company)
-
 (defcustom company-svg-icon-mapping
   '((array . (:icon "code-brackets" :face font-lock-type-face))
     (boolean . (:icon "circle-half-full" :face font-lock-builtin-face))
@@ -146,21 +144,23 @@ float FRAC."
          (cl-mapcar (lambda (a b)
                       (+ (* a frac) (* b (- 1.0 frac))))
                     rgb1 rgb2)))
-
-;;;###autoload
-(defun company-svg-icon-format-margin-function (candidate selected)
-  "Company kind icon (caculated from CANDIDATE, SELECTED) margin function."
+(defun company-svg--get-kind-icon (kind)
+  "Get KIND icon."
   (let*
-      ((kind (company-call-backend 'kind candidate))
-       (icon-info-from-kind )
-       (icon-info (or (alist-get kind company-svg-icon-mapping) (alist-get 't company-svg-icon-mapping)))
+      ((icon-info (or (alist-get kind company-svg-icon-mapping) (alist-get 't company-svg-icon-mapping)))
        (icon-name (plist-get  icon-info :icon))
        (icon-face (plist-get icon-info :face))
        (icon-fg (or (face-foreground icon-face) (face-foreground 'default)))
        (default-bg (face-background 'company-tooltip))
        (icon-bg (company-svg-icon--rgb-blend (color-name-to-rgb icon-fg) (color-name-to-rgb default-bg) 0.12)))
     (message (format "show icon with face: %s, fg: %s bg: %s" icon-face icon-bg icon-fg))
-    (company-svg-icon-build "material" icon-name icon-fg icon-bg)))
+    (company-svg-icon-build "material" icon-name icon-fg icon-bg))
+  )
+
+;;;###autoload
+(defun company-svg-icon-format-margin-function (candidate selected)
+  "Company kind icon (caculated from CANDIDATE, SELECTED) margin function."
+  (company-svg--get-kind-icon (company-call-backend 'kind candidate)))
 
 (provide 'company-svg-icon)
 
