@@ -15,6 +15,54 @@ The feature set is constrained to allow the codebase to be lean and maintainable
 
 # Installation
 
+If upgrading, always delete old versions of ENSIME first
+
+```
+rm -rf ~/.cache/ensime
+```
+
+Then install the latest version with
+
+```
+sbt +install
+```
+
+from this directory and then choose to use LSP with a text editor of your choice, or an optimised Emacs-specific mode.
+
+You may need to install additional builds for specific versions of the compiler for projects (and their project definitions) that are using an older version of the compiler, e.g.
+
+```
+sbt ++2.12.15! install
+```
+
+## LSP
+
+### Server
+
+Type
+
+```
+sbt lsp/install
+```
+
+from this directory and then setup the LSP for your editor.
+
+### Client
+
+#### VSCode
+
+You must compile the LSP client for VSCode, which will require installing npm and typescript.
+
+```
+cd lsp/vscode
+npm install
+npm run package
+```
+
+Then, in VSCode, go to the Extension manager and "Install from VSIX", choosing the `.vsix` file that you just built.
+
+## Emacs
+
 Install the Emacs mode when enabling `scala-mode` and add your keybindings, e.g.
 
 ```lisp

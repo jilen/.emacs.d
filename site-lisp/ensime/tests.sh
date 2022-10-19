@@ -5,7 +5,7 @@ set -eo pipefail
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
 
-SCALA_VERSIONS="${SCALA_VERSIONS:-3.1.1 2.13.8 2.12.15 2.11.12}"
+SCALA_VERSIONS="${SCALA_VERSIONS:-3.2.0 2.13.9 2.12.17 2.11.12}"
 
 JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 >/dev/null | grep 'java.home' | sed 's/.* = //')
 
@@ -44,6 +44,10 @@ for V in $SCALA_VERSIONS ; do
 
   test_ensime src/main/scala/simple.scala type src/main/scala.interactive/simple1.scala 38
   test_ensime src/main/scala/simple.scala symbol src/main/scala.interactive/simple1.scala 38
+
+  # really a test of the line/col syntax
+  test_ensime src/main/scala/simple.scala symbol src/main/scala.interactive/simple1.scala 2:17
+  test_ensime src/main/scala/simple.scala symbol src/main/scala.interactive/simple1.scala 2:22
 
   test_ensime src/main/scala/simple.scala type src/main/scala.interactive/simple1.scala 51
   test_ensime src/main/scala/simple.scala symbol src/main/scala.interactive/simple1.scala 51

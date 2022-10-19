@@ -26,7 +26,7 @@ object Launcher {
     // https://stackoverflow.com/questions/30458195
     val javaVersion = sys.props("java.version").stripPrefix("1.").takeWhile(_.isDigit).toInt
     val javaFlags = if (javaVersion >= 13) {
-      List()
+      List("-XX:+UseZGC")
     } else if (javaVersion >= 9) {
       List("-XX:+ShrinkHeapInSteps")
     } else Nil
@@ -90,5 +90,18 @@ object Launcher {
         baos.write(data, 0, len)
       baos.toString("UTF-8")
     } finally is.close()
+  }
+
+  // row and column are zero-indexed (as per the LSP)
+  def toOffset(row: Int, col: Int, content: Array[Char]): Int = {
+    var i = 0 // offset
+    var line = 0 // current line number
+    while (i < content.length && line < row) {
+      if (content(i) == '\n') {
+        line += 1
+      }
+      i += 1
+    }
+    i + col
   }
 }
