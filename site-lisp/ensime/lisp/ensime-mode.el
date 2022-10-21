@@ -330,8 +330,8 @@ May ask the user to disambiguate."
   :lighter " ENSIME"
   :keymap (make-sparse-keymap)
   (make-local-variable 'company-backends)
-  (add-to-list 'company-backends #'ensime-company)
-  (company-mode 1)
+  ;; (add-to-list 'company-backends #'ensime-company)
+  ;; (company-mode 1)
   (ensime--installation))
 
 (provide 'ensime-mode)

@@ -26,7 +26,7 @@ object Launcher {
     // https://stackoverflow.com/questions/30458195
     val javaVersion = sys.props("java.version").stripPrefix("1.").takeWhile(_.isDigit).toInt
     val javaFlags = if (javaVersion >= 13) {
-      List("-XX:+UseZGC")
+      List("-XX:+UseG1GC", "-Djava.security.manager=allow")
     } else if (javaVersion >= 9) {
       List("-XX:+ShrinkHeapInSteps")
     } else Nil
