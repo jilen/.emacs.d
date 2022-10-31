@@ -27,6 +27,14 @@
 
 (use-package org-super-agenda)
 
+(setq org-latex-pdf-process '("latexmk -f -pdf -%latex -shell-escape -interaction=nonstopmode -output-directory=%o %f"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((dot . t))) ; this line activates dot
+
+(setq org-latex-listings 'minted)
+
 (provide 'init-org)
 
 ;;; init-org.el ends here

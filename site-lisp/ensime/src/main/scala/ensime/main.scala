@@ -3,38 +3,53 @@
 package ensime
 
 import java.io.{ File, PrintStream }
+import java.lang.management.ManagementFactory
 import java.net.URI
-import java.nio.file.{ Files, Path, Paths, FileSystem, FileSystems, FileSystemAlreadyExistsException }
-import java.util.concurrent.Executors
+import java.nio.file.{ FileSystem, FileSystemAlreadyExistsException, FileSystems, Files, Path, Paths }
 import java.util.{ Timer, TimerTask }
+import java.util.concurrent.Executors
 import java.util.regex.Pattern
 
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
-import org.objectweb.asm.{ ClassReader, Opcodes, ClassVisitor, FieldVisitor, MethodVisitor, Label }
-
 import com.facebook.nailgun.{ NGContext, NGServer }
+import org.objectweb.asm.{ ClassReader, ClassVisitor, FieldVisitor, Label, MethodVisitor, Opcodes }
 
 import Compiler._
 
 object Main {
 
-  private var heartbeat_ = System.currentTimeMillis()
-  private var shutdowner = false
+  @volatile private var ensimeLauncherJar: File = _
+  @volatile private var ensimeLauncherModified = -1L
+  @volatile private var heartbeat_ = System.currentTimeMillis()
+  @volatile private var shutdowner = false
   private def heartbeat(ng: NGServer): Unit = synchronized {
+    if (ensimeLauncherModified > 0 && ensimeLauncherJar.exists() && ensimeLauncherJar.lastModified() != ensimeLauncherModified) {
+      System.err.println("ENSIME upgraded, please try again")
+      ng.signalExit()
+    }
+
     heartbeat_ = System.currentTimeMillis()
 
-    val timeout = 60 * 60 * 1000
+    val timeout = 60 * 60 * 1000L
     if (!shutdowner) {
       shutdowner = true
       val checker = new TimerTask {
-        def run(): Unit = if (System.currentTimeMillis() > (heartbeat_ + timeout)) ng.signalExit()
+        def run(): Unit =
+          if (System.currentTimeMillis() > (heartbeat_ + timeout)) ng.signalExit()
+          else System.gc()
       }
-      new Timer("shutdowner", true).scheduleAtFixedRate(checker, timeout, 1000)
+      new Timer("shutdowner", true).scheduleAtFixedRate(checker, 30000L, 30000L)
+    }
+  }
+
+  {
+    val cp = ManagementFactory.getRuntimeMXBean.getClassPath
+    if (cp.endsWith(".jar") && new File(cp).exists()) {
+      ensimeLauncherJar = new File(cp)
+      ensimeLauncherModified = ensimeLauncherJar.lastModified()
     }
   }
 
@@ -51,7 +66,9 @@ object Main {
     run(args, System.out, System.err)
   }
 
-  def run(args: Array[String], out: PrintStream, err: PrintStream): Unit = {
+  // force one query at a time by syncronising, avoiding problems with the
+  // presentation compiler, FileSystems, and giving very predictable loads.
+  def run(args: Array[String], out: PrintStream, err: PrintStream): Unit = synchronized {
     val (settings, params) = mkSettings(args, err)
 
     val results: List[String] = params match {
@@ -270,7 +287,7 @@ object Main {
 
     import ExecutionContext.Implicits.global
     val work = Future.sequence {
-      cp.map(uri => Future(files(uri))(io_pool))
+      cp.distinct.map(uri => Future(files(uri))(io_pool))
     }
     Await.result(work, Duration.Inf).flatten
   }
@@ -279,17 +296,15 @@ object Main {
   private val io_pool: ExecutionContext =
     ExecutionContext.fromExecutor(Executors.newFixedThreadPool(4))
 
+  // This is not thread-safe, since it assumes that the FileSystem needs to be
+  // opened fresh each time (that will throw an exception if one is already
+  // open). However, since the app only services one request at a time, and we
+  // distinct the classpath, we should never double open the same jar.
   def withJarFileSystem[A](jar: URI)(f: Path => A): A = {
     val env = new java.util.HashMap[String, Any]
-    val uri = URI.create("jar:" + jar.toString)
-    val fs =
-      try FileSystems.newFileSystem(uri, env, null)
-      catch {
-        case _: FileSystemAlreadyExistsException => FileSystems.getFileSystem(uri)
-      }
-    f(fs.getRootDirectories.asScala.toList.head)
-    // we don't close the filesystem because it can be accessed again
-    // concurrently and we have no simple way of tracking that
+    val fs = FileSystems.newFileSystem(URI.create("jar:" + jar.toString), env, null)
+    try f(fs.getRootDirectories.asScala.toList.head)
+    finally fs.close()
   }
 }
 

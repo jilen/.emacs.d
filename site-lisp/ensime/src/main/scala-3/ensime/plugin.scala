@@ -6,15 +6,16 @@ import dotty.tools.dotc.CompilationUnit
 import dotty.tools.dotc.ast.Trees._
 import dotty.tools.dotc.config.ScalaSettings
 import dotty.tools.dotc.config.Settings.Setting
-import dotty.tools.dotc.core.Contexts.Context
 import dotty.tools.dotc.core.Mode
+import dotty.tools.dotc.core.Contexts.Context
 import dotty.tools.dotc.parsing.Parser
 import dotty.tools.dotc.plugins.{ PluginPhase, StandardPlugin }
 import dotty.tools.dotc.typer.TyperPhase
 import dotty.tools.io.AbstractFile
 
-import Plugin._
 class Plugin extends StandardPlugin {
+  import Plugin._
+
   override val description: String = "extracts build information for use by ENSIME"
   override val name: String = "ensime"
 
@@ -26,7 +27,7 @@ class Plugin extends StandardPlugin {
     override def runOn(units: List[CompilationUnit])(implicit ctx: Context): List[CompilationUnit] = {
       if (!ctx.mode.is(Mode.Interactive)) {
         val target = ctx.settings.outputDir.value.file
-        val launcher = Launcher.mkScript(ctx.settings.userSetSettings(ctx.settingsState).toList.flatMap(_.unparse))
+        val (launcher, _) = Launcher.mkScript(ctx.settings.userSetSettings(ctx.settingsState).toList.flatMap(_.unparse))
 
         units.foreach { unit =>
           val file = unit.source.file.file

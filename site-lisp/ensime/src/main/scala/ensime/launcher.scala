@@ -2,11 +2,10 @@
 // License: GPLv3+
 package ensime
 
-import java.nio.file.Files
-import java.nio.file.Path
+import java.io.File
+import java.nio.file.{ Files, Path }
 import java.nio.file.StandardOpenOption.{ APPEND, CREATE, TRUNCATE_EXISTING }
 import java.util.UUID
-import java.io.File
 
 // this is the code responsible for generating the content of the launcher
 // script, which is the primary output of the compiler plugin and a dependency
@@ -15,7 +14,7 @@ object Launcher {
   val pluginName = "ensime"
   val cacheDir = sys.props("user.home") + "/.cache/ensime/"
 
-  def mkScript(userSettings: List[String]): String = {
+  def mkScript(userSettings: List[String]): (String, File) = {
     val ensimeJar = userSettings.find(_.matches(s"^-Xplugin:.*${pluginName}.*[.]jar$$")).head.stripPrefix("-Xplugin:")
 
     val userName = sys.props("user.name")
@@ -24,19 +23,15 @@ object Launcher {
 
     // release as much memory back to the OS as possible to keep our overhead low
     // https://stackoverflow.com/questions/30458195
-    val javaVersion = sys.props("java.version").stripPrefix("1.").takeWhile(_.isDigit).toInt
-    val javaFlags = if (javaVersion >= 13) {
-      List("-XX:+UseG1GC", "-Djava.security.manager=allow")
-    } else if (javaVersion >= 9) {
-      List("-XX:+ShrinkHeapInSteps")
-    } else Nil
+    val javaFlags = List("-Xms100m", "-XX:-ShrinkHeapInSteps", "-XX:MinHeapFreeRatio=20", "-XX:MaxHeapFreeRatio=40", "-Djava.security.manager=allow")
 
     // could capture envvars behind an allow-list
     var templ = getResourceAsString("ensime/launcher.sh")
+    val tmpdir = s"/tmp/$userName/ensime"
 
     var replacements = Map(
       "__USERDIR__" -> userDir,
-      "__USER__" -> userName,
+      "__TMPDIR__" -> tmpdir,
       "__JAVA__" -> (userJava :: javaFlags).mkString(" "),
       "__ENSIME_JAR__" -> ensimeJar,
       "__USER_SETTINGS__" -> userSettings.map(s => "\"" + s + "\"").mkString(" ")
@@ -48,7 +43,7 @@ object Launcher {
 
     replacements.foreach { case (k, v) => templ = templ.replace(k, v) }
 
-    templ
+    (templ, new File(tmpdir, hash))
   }
 
   // writes the ensime file for the given source file and appends a reverse

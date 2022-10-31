@@ -1,32 +1,33 @@
+import * as fs from 'fs';
+import * as os from 'os';
 import * as vscode from 'vscode';
 import {
+	ExecuteCommandRequest,
 	LanguageClient,
 	LanguageClientOptions,
 	RevealOutputChannelOn,
 	ServerOptions,
 	TransportKind
-  } from 'vscode-languageclient';
+} from 'vscode-languageclient';
 
 let client: LanguageClient;
 
 export function activate(context: vscode.ExtensionContext) {
-        const os = require("os");
-	const runArgs: string[] = ["-jar", "~/.cache/ensime/lib/ensime-lsp.jar".replace("~", os.homedir)];
-	const debugArgs: string[] = runArgs;
-	const javaPath = "java" ;
 
-        // TODO custom uri support for jar/zip definitions
-        // TODO allow the user to specify the java command
-        // TODO allow the user to specify the ensime jar
-        // TODO some UX to tell the user if the jar (or compiler plugin dir) is missing
-        // TODO bundle the ensime jar by default
-        // TODO add an icon
-        // TODO publish to the extension store
+	const ensime_java = vscode.workspace.getConfiguration().get<string>('ensime.java') || "java";
+	const ensime_javaargs = vscode.workspace.getConfiguration().get<string>('ensime.javaargs') || "";
+	const ensime_lspjar = vscode.workspace.getConfiguration().get<string>('ensime.lspjar')?.replace("~", os.homedir) || "";
+	const runArgs: string[] = ensime_javaargs.split(" ").concat(["-jar", ensime_lspjar]);
+
+	if (!fs.existsSync(ensime_lspjar)) {
+		vscode.window.showErrorMessage(`ENSIME: not available (${ensime_lspjar}). Visit https://ensime.github.io/ to download and install.`);
+	}
 
 	const serverOptions: ServerOptions = {
-		run: { command: javaPath, transport: TransportKind.stdio, args: runArgs },
-		debug: { command: javaPath, transport: TransportKind.stdio, args: debugArgs }
-	  };
+		run: { command: ensime_java, transport: TransportKind.stdio, args: runArgs },
+		// debug is hacked, we don't actually do anything differently...
+		debug: { command: ensime_java, transport: TransportKind.stdio, args: runArgs },
+	};
 
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [
@@ -39,6 +40,16 @@ export function activate(context: vscode.ExtensionContext) {
 		'ENSIME Language Server',
 		serverOptions,
 		clientOptions
+	);
+
+	vscode.commands.registerTextEditorCommand(
+		'ensime.import',
+		(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+			client.sendRequest(ExecuteCommandRequest.type, {
+				command: 'ensime.import',
+				arguments: [editor.document.uri.toString(), editor.selection.active.line, editor.selection.active.character]
+			});
+		}
 	);
 
 	client.start();

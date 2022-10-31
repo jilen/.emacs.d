@@ -3,13 +3,14 @@ organization := "com.fommil"
 licenses := List(License.GPL3_or_later)
 
 ThisBuild / crossScalaVersions := List(
-  "3.2.0",
-  "2.13.9",
+  "3.2.1",
+  "2.13.10",
   "2.12.15", // the version of scala used by sbt 1.6.2
+  "2.12.16", // the version of scala used by sbt 1.7.2
   "2.12.17",
   "2.11.12"
 )
-ThisBuild / scalaVersion := "2.13.9"
+ThisBuild / scalaVersion := "2.13.10"
 
 val install = taskKey[Unit]("Install the ENSIME jar.")
 
@@ -24,7 +25,7 @@ lazy val ensime = (project in file(".")).settings(
     file(s"${dir.getPath}-$major") :: specific
   },
 
-  // scalacOptions += "-deprecation"
+  // scalacOptions += "-deprecation",
   scalacOptions ++= {
     if (scalaVersion.value.startsWith("2.11.")) List("-Xexperimental", "-target:jvm-1.8") else Nil
   },
@@ -40,7 +41,7 @@ lazy val ensime = (project in file(".")).settings(
 
   libraryDependencies ++= Seq(
     "com.facebook" % "nailgun-server" % "1.0.1",
-    "org.ow2.asm"  % "asm"            % "9.2"
+    "org.ow2.asm"  % "asm"            % "9.4"
   ),
 
   crossTarget := target.value / s"scala-${scalaVersion.value}",

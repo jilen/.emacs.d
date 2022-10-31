@@ -13,7 +13,11 @@ The feature set is constrained to allow the codebase to be lean and maintainable
 - import / search for class
 - jump to source
 
+with diagnostics only working in Scala 2. Help out with [DOTTY-329](https://github.com/lampepfl/dotty-feature-requests/issues/329) to unblock diagnostics in Scala 3.
+
 # Installation
+
+## Server
 
 If upgrading, always delete old versions of ENSIME first
 
@@ -25,9 +29,10 @@ Then install the latest version with
 
 ```
 sbt +install
+sbt lsp/install
 ```
 
-from this directory and then choose to use LSP with a text editor of your choice, or an optimised Emacs-specific mode.
+from this directory and then install the extension for the text editor of your choice.
 
 You may need to install additional builds for specific versions of the compiler for projects (and their project definitions) that are using an older version of the compiler, e.g.
 
@@ -35,35 +40,13 @@ You may need to install additional builds for specific versions of the compiler 
 sbt ++2.12.15! install
 ```
 
-## LSP
+To get "jump to source" support for the Java standard library, make sure to install the `src.zip` into `JAVA_HOME/lib/src.zip` for all the JVMs that you are using.
 
-### Server
+## Text Editor
 
-Type
+### Emacs
 
-```
-sbt lsp/install
-```
-
-from this directory and then setup the LSP for your editor.
-
-### Client
-
-#### VSCode
-
-You must compile the LSP client for VSCode, which will require installing npm and typescript.
-
-```
-cd lsp/vscode
-npm install
-npm run package
-```
-
-Then, in VSCode, go to the Extension manager and "Install from VSIX", choosing the `.vsix` file that you just built.
-
-## Emacs
-
-Install the Emacs mode when enabling `scala-mode` and add your keybindings, e.g.
+Install the `ensime-mode` when enabling `scala-mode` and add your keybindings, e.g.
 
 ```lisp
 (use-package ensime-mode
@@ -80,15 +63,62 @@ Install the Emacs mode when enabling `scala-mode` and add your keybindings, e.g.
 (add-hook 'scala-mode-hook #'ensime-mode)
 ```
 
-Further steps will be provided when you start using it.
+### VSCode
+
+First uninstall any other Scala LSPs that you may have installed, e.g. Metals.
+
+Go to the Extension manager and "Install from VSIX", choosing the ENSIME `.vsix` file.
+
+You may wish to bind the custom command "Import Symbol" to a hotkey.
+
+VSIX files are made available at https://ensime.github.io/ but if you want to build from source then use:
+
+```
+cd lsp/vscode
+npm install
+npm run package
+cd -
+```
+
+### NeoVim
+
+Copy the file from the `nvim` subdirectory to wherever extensions are supposed to go in your home directory.
+
+### Sublime
+
+TODO https://github.com/sublimelsp/LSP
+
+## Build Tools
+
+### SBT
+
+When building and installing the compiler plugin, we took the liberty of installing an sbt plugin for you. Everything will be automatic.
+
+### Mill
+
+ENSIME must be installed for every Mill project. Copy the `mill/Ensime.sc` file into the `plugins` folder of your project and follow the instructions in the comments of that file.
+
+Implement and push through https://github.com/com-lihaoyi/mill/discussions/2075 to get this added to Mill by default.
+
+### scala-cli
+
+TODO https://github.com/VirtusLab/scala-cli/issues/1502
+
+# Known Issues
+
+Only tested on GNU/Linux, and to a lesser extent MacOS. Development work is needed to get it to work on Windows.
+
+ScalaJS and Scala Native do not have any special handling and will only work for source files that are compiled to java bytecode.
+
+The Scala 3 compiler regresses many behaviours and features may be degraded, e.g. completions for extension methods might include erroneous extra parameters.
 
 # Contributing
 
 ENSIME is an invite-only project for hobbyists who write tooling to make their lives a little bit more joyful.
 
-If you have access to the repository, you are requested not to share it publicly.
+If you have access to the repository, you are requested not to share the commit history publicly.
 
-Public snapshot releases may appear on https://ensime.github.io/, at the discretion of the authors.
+Public snapshot releases may appear on https://ensime.github.io/, at the discretion of the authors, which may be shared freely.
 
 # Design
 
@@ -113,6 +143,10 @@ For every output directory a file is written into the cache containing the list 
 ## Testing
 
 The most important tests are end-to-end regression tests. Example projects are compiled, and a series of scripted user interactions are performed on them. The output for each action is persisted as a test assertion and variations from this baseline are failures.
+
+## LSP
+
+For editors that cannot invoke the launcher directly, an LSP wrapper is provided which will do this for them. It is written in Scala but could have been written in any language. Only a single LSP is needed to service all open projects since the launcher is managing all of that, however the LSP server does need to be stateful to keep track of the open list of files and their in-memory edits.
 
 ## Features
 
