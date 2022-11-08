@@ -5,10 +5,34 @@
 ;;
 
 
+(defun close-sgml-tag-no-duplicate ()
+    "Close current element.
+Depending on context, inserts a matching close-tag, or closes
+the current start-tag or the current comment or the current cdata, ..."
+  (interactive)
+  (pcase (car (sgml-lexical-context))
+    ('comment   (insert " -->"))
+    ('cdata   (insert "]]>"))
+    ('pi  (insert " ?>"))
+    ('jsp   (insert " %>"))
+    ('tag   (insert " />"))
+    ('text
+     (let ((context (save-excursion (sgml-get-context)))
+           (close-tag (if (eq (char-after) ?>) "" ">")))
+       (if context
+           (progn
+             (insert "</" (sgml-tag-name (car (last context))) close-tag)
+             (indent-according-to-mode)))))
+    (_
+     (error "Nothing to close"))))
 
-(use-package web-mode)
+(use-package vue-mode
+  :load-path "~/.emacs.d/site-lisp/vue"
+  :init
+  (setq-default vue-tag-relative-indent nil)
+  (advice-add #'sgml-close-tag :override #'close-sgml-tag-no-duplicate)
+  )
 
-(define-derived-mode vue-mode web-mode "vue-mode")
 
 (use-package add-node-modules-path
   :commands add-node-modules-path
@@ -45,42 +69,20 @@
 
 ;; If use eglot
 
-(defun typescript-file-path ()
-    (f-join (locate-dominating-file (buffer-file-name (current-buffer)) "package.json") "node_modules/typescript/lib/"))
 
-(with-eval-after-load "eglot"
-
+(with-eval-after-load 'eglot
   (setq-default eglot-events-buffer-size 0)
-
-  (cl-defmethod project-root ((project (head vue-module)))
-    (cdr project))
-
-  (defun vue-prj-root (dir)
-    "Locate Vue root from DIR."
-    (if (boundp 'eglot-lsp-context)
-        (when-let ((root (locate-dominating-file dir "package.json")))
-          (cons 'vue-module root))
-      (project-try-vc dir)))
-
-  (defun set-project-root-for-vue ()
-    "Set prj root for eglot."
-    (add-hook 'project-find-functions #'vue-prj-root))
-
-
-
-  (add-hook 'vue-mode-hook #'set-project-root-for-vue)
 
   (defclass eglot-vls (eglot-lsp-server) ()
     :documentation "Vue Language Server.")
 
   (cl-defmethod eglot-initialization-options ((server eglot-vls))
-    "Passes through required vetur SERVER initialization options to VLS."
+    "Passes through required vetur SERVER initialization options to EGLOT-VLS."
     nil
     )
 
   (add-to-list 'eglot-server-programs
-               '((vue-mode) . (eglot-vls . ("vls" "--stdio"))))
-
+               '(vue-mode . (eglot-vls . ("vls" "--stdio" "--max-old-space-size=4096"))))
   )
 
 

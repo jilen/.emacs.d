@@ -153,7 +153,6 @@ float FRAC."
        (icon-fg (or (face-foreground icon-face) (face-foreground 'default)))
        (default-bg (face-background 'company-tooltip))
        (icon-bg (company-svg-icon--rgb-blend (color-name-to-rgb icon-fg) (color-name-to-rgb default-bg) 0.12)))
-    (message (format "show icon with face: %s, fg: %s bg: %s" icon-face icon-bg icon-fg))
     (company-svg-icon-build "material" icon-name icon-fg icon-bg))
   )
 
