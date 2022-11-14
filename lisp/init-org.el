@@ -23,7 +23,7 @@
 
 (setq org-agenda-files (agendar-dirs))
 (require 'recentf)
-(setq recentf-exclude (agendar-dirs))
+(setq recentf-exclude `(,(expand-file-name agendar-base-dir)))
 
 (use-package org-super-agenda)
 
