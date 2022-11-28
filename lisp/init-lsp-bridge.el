@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+
+(use-package markdown-mode)
+
 (use-package yasnippet
   :config
   (yas-global-mode 1))
@@ -12,6 +15,7 @@
 
 (use-package lsp-bridge
   :ensure nil
+  :init
   :load-path "~/.emacs.d/site-lisp/lsp-bridge/"
   )
 

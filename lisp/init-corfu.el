@@ -9,18 +9,16 @@
   ;; Optional customizations
   :custom
   (corfu-auto-prefix 2)          ;; Trigger auto completion with 2 chars
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-commit-predicate nil)   ;; Do not commit selected candidates on next input
   (corfu-quit-at-boundary t)     ;; Automatically quit at word boundary
   (corfu-quit-no-match t)        ;; Automatically quit if there is no match
-  ;; (corfu-preview-current nil) ;; Disable current candidate preview
   (corfu-preselect-first t)      ;; Disable candidate preselection
-  ;; (corfu-echo-documentation nil) ;; Disable documentation in the echo area
   (corfu-scroll-margin 5)        ;; Use scroll margin
 
   :init
-  (global-corfu-mode))
+  (global-corfu-mode)
+  )
 
 (use-package kind-icon
   :config
@@ -44,13 +42,6 @@
 
 (with-eval-after-load 'eglot
   (setq completion-category-defaults nil))
-
-
-
-(use-package corfu-doc
-  :init
-  (setq corfu-doc-display-within-parent-frame nil)
-  :hook (corfu-mode . corfu-doc-mode))
 
 
 (provide 'init-corfu)

@@ -23,17 +23,7 @@
 (global-set-key (kbd "M-j") 'join-line)
 
 
-;; (defun dummy-sp-overlay (start end id))
-
-;; (use-package smartparens
-;;   :init
-;;   (advice-add #'sp--pair-overlay-create :override #'dummy-sp-overlay)
-;;   :config
-;;   (smartparens-global-mode))
-
-
 (electric-pair-mode 1)
-
 
 ;; Overwrite selection for input
 (delete-selection-mode t)
