@@ -12,8 +12,7 @@ The feature set is constrained to allow the codebase to be lean and maintainable
 - infer type
 - import / search for class
 - jump to source
-
-with diagnostics only working in Scala 2. Help out with [DOTTY-329](https://github.com/lampepfl/dotty-feature-requests/issues/329) to unblock diagnostics in Scala 3.
+- diagnostics (red squigglies)
 
 # Installation
 
@@ -134,7 +133,15 @@ The plugin runs as early as possible, creating the following output:
 
 For every source file a file is written into the cache containing all the information that is needed to launch the interactive compiler.
 
-[`ng`](https://github.com/facebook/nailgun) is compiled and used so that ENSIME runs as a background server with millisecond response times. This only requires `cc` to be available.
+[`nailgun`](https://github.com/facebook/nailgun) is compiled and used so that ENSIME runs as a background server with millisecond response times. Note that we rename the binary so that it does not conflict with the popular nodejs angular framework's `ng` command.
+
+```
+wget https://raw.githubusercontent.com/facebook/nailgun/main/nailgun-client/c/ng.c
+sed -i 's/"ng"/"nailgun"/' ng.c
+cc -O2 ng.c -o nailgun
+sudo install nailgun /usr/local/bin/
+rm -f ng.c nailgun
+```
 
 ### Local Source Lookup
 
