@@ -5,33 +5,8 @@
 ;;
 
 
-(defun close-sgml-tag-no-duplicate ()
-    "Close current element.
-Depending on context, inserts a matching close-tag, or closes
-the current start-tag or the current comment or the current cdata, ..."
-  (interactive)
-  (pcase (car (sgml-lexical-context))
-    ('comment   (insert " -->"))
-    ('cdata   (insert "]]>"))
-    ('pi  (insert " ?>"))
-    ('jsp   (insert " %>"))
-    ('tag   (insert " />"))
-    ('text
-     (let ((context (save-excursion (sgml-get-context)))
-           (close-tag (if (eq (char-after) ?>) "" ">")))
-       (if context
-           (progn
-             (insert "</" (sgml-tag-name (car (last context))) close-tag)
-             (indent-according-to-mode)))))
-    (_
-     (error "Nothing to close"))))
-
-(use-package vue-mode
-  :load-path "~/.emacs.d/site-lisp/vue"
-  :init
-  (setq-default vue-tag-relative-indent nil)
-  (advice-add #'sgml-close-tag :override #'close-sgml-tag-no-duplicate)
-  )
+(use-package web-mode)
+(define-derived-mode vue-mode web-mode "Vue" "Major mode for vue sfc.")
 
 
 (use-package add-node-modules-path
@@ -71,6 +46,8 @@ the current start-tag or the current comment or the current cdata, ..."
 
 
 (with-eval-after-load 'eglot
+  (require 'init-eglot)
+  (add-hook 'vue-mode-hook #'set-project-root-for-npm)
   (setq-default eglot-events-buffer-size 0)
 
   (defclass eglot-vls (eglot-lsp-server) ()
@@ -78,11 +55,10 @@ the current start-tag or the current comment or the current cdata, ..."
 
   (cl-defmethod eglot-initialization-options ((server eglot-vls))
     "Passes through required vetur SERVER initialization options to EGLOT-VLS."
-    nil
-    )
+    nil)
 
   (add-to-list 'eglot-server-programs
-               '(vue-mode . (eglot-vls . ("vls" "--stdio" "--max-old-space-size=4096"))))
+               '(vue-mode . (eglot-vls . ("vls" "--stdio"))))
   )
 
 

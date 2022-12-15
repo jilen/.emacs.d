@@ -6,9 +6,10 @@
 ;;; Code:
 
 
-(use-package typescript-mode
-  :mode "\\.tsx\\'"
-  )
+(if (version<=  emacs-version "29.0")
+    (use-package typescript-mode))
+
+
 (use-package add-node-modules-path
   :hook (typescript-mode . add-node-modules-path))
 

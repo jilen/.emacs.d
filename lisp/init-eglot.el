@@ -12,26 +12,26 @@
   (use-package eglot))
 
 (use-package eldoc-box
-  :config
-  (set-face-foreground 'eldoc-box-body (face-foreground 'region))
-  (set-face-background 'eldoc-box-border (face-background 'region)))
+  :init
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-at-point-mode t))
 
 (defun npm-prj-root (dir)
   "Locate Vue root from DIR."
+  (message "find prj root")
   (if (boundp 'eglot-lsp-context)
       (when-let ((root (locate-dominating-file dir "package.json")))
-        (cons 'vc root))
+        (if (version<= "29.0" emacs-version)
+            (list 'vc 'Git root)
+          (list 'vc root)))
     (project-try-vc dir)))
 
 (defun set-project-root-for-npm ()
   "Set prj root for eglot."
   (add-hook 'project-find-functions #'npm-prj-root))
 
-(with-eval-after-load 'vue-mode
-  (add-hook 'vue-mode-hook #'set-project-root-for-npm))
-(with-eval-after-load 'js-mode
+(with-eval-after-load "js-mode"
   (add-hook 'js-mode-hook #'set-project-root-for-npm))
-(with-eval-after-load 'typescript-mode
+(with-eval-after-load "typescript-mode"
   (add-hook 'typescript-mode #'set-project-root-for-npm))
 
 

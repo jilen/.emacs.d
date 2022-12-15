@@ -12,8 +12,7 @@
 When called in a program, it will use the project corresponding
 to directory DIR."
      (interactive (list (project-prompt-project-dir)))
-     (let ((default-directory dir)
-           (project-current-inhibit-prompt t))
+     (let ((default-directory dir))
        (call-interactively 'project-find-file))))
 
 (provide 'init-project)

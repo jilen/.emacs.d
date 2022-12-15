@@ -2,16 +2,67 @@
 // License: GPLv3+
 package ensime
 
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption.{ APPEND, CREATE, TRUNCATE_EXISTING }
+
+import scala.util.control.NonFatal
+
 import dotty.tools.dotc.CompilationUnit
 import dotty.tools.dotc.ast.Trees._
 import dotty.tools.dotc.config.ScalaSettings
 import dotty.tools.dotc.config.Settings.Setting
 import dotty.tools.dotc.core.Mode
 import dotty.tools.dotc.core.Contexts.Context
+import dotty.tools.dotc.interfaces.Diagnostic.{ ERROR, INFO, WARNING }
 import dotty.tools.dotc.parsing.Parser
 import dotty.tools.dotc.plugins.{ PluginPhase, StandardPlugin }
+import dotty.tools.dotc.reporting.*
 import dotty.tools.dotc.typer.TyperPhase
+import dotty.tools.dotc.util.SourcePosition
 import dotty.tools.io.AbstractFile
+
+class ReporterHack(
+  val underlying: Reporter,
+  val out: File
+) extends Reporter  {
+
+  resetThis()
+
+  override def flush()(using ctx: Context): Unit = underlying.flush()
+
+  override def doReport(diagnostic: Diagnostic)(using ctx: Context): Unit = {
+
+    underlying.doReport(diagnostic)
+    withDiagnosticsFile {
+      val pos = diagnostic.pos
+      val file = new File(pos.source.file.path)
+      if (file.isFile) {
+        // NULL character used as separator
+        val severity = diagnostic.level match{
+          case ERROR => "ERROR"
+          case WARNING => "WARNING"
+          case INFO => "INFO"
+        }
+
+        Files.writeString(out.toPath(), s"$severity\n$file\n${pos.startLine + 1}\n${pos.startColumn + 1}\n${pos.endLine + 1}\n${pos.endColumn + 1}\n${diagnostic.msg}\n\u0000", APPEND, CREATE)
+      }
+    }
+  }
+
+  def resetThis(): Unit = withDiagnosticsFile {
+    Files.writeString(out.toPath, "", CREATE, TRUNCATE_EXISTING)
+  }
+
+  private def withDiagnosticsFile(f: => Unit): Unit = Launcher.synchronized {
+    try {
+      out.getParentFile().mkdirs()
+      f
+    } catch {
+      case NonFatal(_) =>
+    }
+  }
+}
 
 class Plugin extends StandardPlugin {
   import Plugin._
@@ -26,9 +77,12 @@ class Plugin extends StandardPlugin {
 
     override def runOn(units: List[CompilationUnit])(implicit ctx: Context): List[CompilationUnit] = {
       if (!ctx.mode.is(Mode.Interactive)) {
-        val target = ctx.settings.outputDir.value.file
-        val (launcher, _) = Launcher.mkScript(ctx.settings.userSetSettings(ctx.settingsState).toList.flatMap(_.unparse))
 
+
+        val target = ctx.settings.outputDir.value.file
+        val (launcher, tmpdir) = Launcher.mkScript(ctx.settings.userSetSettings(ctx.settingsState).toList.flatMap(_.unparse))
+
+        ctx.typerState.setReporter(new ReporterHack(ctx.reporter, new File(tmpdir, "diagnostics.log")))
         units.foreach { unit =>
           val file = unit.source.file.file
           if (file.isFile)
@@ -39,9 +93,6 @@ class Plugin extends StandardPlugin {
       super.runOn(units)
     }
 
-    // pre-typer plugins are apparently not allowed in releases, just research
-    // plugions, but they apparently forgot to disable it :-D
-    // https://github.com/lampepfl/dotty/pull/13173
     override val runsAfter: Set[String] = Set(Parser.name)
     override val runsBefore: Set[String] = Set(TyperPhase.name)
   }
