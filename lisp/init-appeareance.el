@@ -48,7 +48,8 @@
   (doom-modeline-mode))
 
 ;; Font setting.
-(defconst preferred-font-height 120)
+(set-frame-font "Iosevka Comfy")
+(defconst preferred-font-height 140)
 (defconst preferred-line-number-height (- preferred-font-height 20))
 (set-face-attribute 'default nil
                     :weight 'light
