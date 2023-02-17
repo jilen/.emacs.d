@@ -11,3 +11,7 @@ transient/
 .mc-lists.el
 pyim/
 custom.el
+tree-sitter/
+bookmarks
+.lsp-session*/
+.vscode/
