@@ -17,7 +17,6 @@
 
 (defun npm-prj-root (dir)
   "Locate Vue root from DIR."
-  (message "find prj root")
   (if (boundp 'eglot-lsp-context)
       (when-let ((root (locate-dominating-file dir "package.json")))
         (if (version<= "29.0" emacs-version)
