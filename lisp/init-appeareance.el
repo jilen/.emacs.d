@@ -41,18 +41,22 @@
 ;; Theme setup.
 (use-package ef-themes
   :config
-  (load-theme 'ef-light t))
+  (load-theme 'ef-duo-light t))
+
 
 (use-package doom-modeline
+  :init
+  (setq doom-modeline-height (* (default-font-height) 2))
   :config
-  (doom-modeline-mode))
+  (doom-modeline-mode)
+  )
 
 ;; Font setting.
 (set-frame-font "Iosevka Comfy")
 (defconst preferred-font-height 140)
 (defconst preferred-line-number-height (- preferred-font-height 20))
 (set-face-attribute 'default nil
-                    :weight 'light
+                    :weight 'semilight
                     :height preferred-font-height)
 (set-face-attribute 'line-number nil :height preferred-line-number-height )
 (set-face-attribute 'line-number-current-line nil :height preferred-line-number-height)
@@ -61,8 +65,7 @@
   :if (display-graphic-p)
   :init
   (add-to-list 'all-the-icons-data/alltheicons-alist '("sc" . "\xe908"))
-  (add-to-list 'all-the-icons-extension-icon-alist '("sc"  all-the-icons-alltheicon  "scala"  :face all-the-icons-red))
-  )
+  (add-to-list 'all-the-icons-extension-icon-alist '("sc"  all-the-icons-alltheicon  "scala"  :face all-the-icons-red)))
 
 (use-package dired-subtree
   :bind
@@ -74,8 +77,7 @@
   :init
   :hook
   (dired-mode . all-the-icons-dired-mode)
-  (dired-mode . dired-hide-details-mode)
-  )
+  (dired-mode . dired-hide-details-mode))
 
 
 (use-package rainbow-delimiters

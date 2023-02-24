@@ -5,7 +5,9 @@
 ;;
 
 
-(use-package web-mode)
+(use-package web-mode
+  :config
+  (set-face-attribute 'web-mode-html-tag-face  nil :foreground (face-foreground 'font-lock-keyword-face)))
 (define-derived-mode vue-mode web-mode "Vue" "Major mode for vue sfc.")
 
 
@@ -39,11 +41,17 @@
 
 ;; If use lsp-bridge
 (with-eval-after-load "lsp-bridge"
+  (with-eval-after-load "corfu"
+    (add-to-list 'corfu-excluded-modes 'vue-mode))
   (add-hook 'vue-mode-hook #'vue-lsp-bridge-hook))
 
 
 ;; If use eglot
 
+
+(defun get-ts-sdk ()
+  (let ((eglot-lsp-context t))
+    (f-join (project-root (project-current)) "node_modules/typescript/lib")))
 
 (with-eval-after-load 'eglot
   (require 'init-eglot)
@@ -55,11 +63,11 @@
 
   (cl-defmethod eglot-initialization-options ((server eglot-vls))
     "Passes through required vetur SERVER initialization options to EGLOT-VLS."
-    nil)
+    `(:typescript
+      (:tsdk ,(get-ts-sdk))))
 
   (add-to-list 'eglot-server-programs
-               '(vue-mode . (eglot-vls . ("vls" "--stdio"))))
-  )
+               '(vue-mode . (eglot-vls . ("vls" "--stdio")))))
 
 
 

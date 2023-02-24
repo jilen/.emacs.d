@@ -29,11 +29,10 @@
   :config
   (consult-customize
    consult-theme
-   :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
    consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
-   :preview-key (kbd "M-."))
+   :preview-key "M-.")
 
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
@@ -53,7 +52,7 @@
 
 (with-eval-after-load "project"
   (define-key project-prefix-map "s" nil)
-  (define-key project-prefix-map "s" 'project-search))
+  (define-key project-prefix-map "s" 'consult-ripgrep))
 
 (use-package vertico
   :config

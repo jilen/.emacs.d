@@ -34,7 +34,7 @@
 (require 'init-git)
 (require 'init-project)
 (require 'init-consult)
-;; (require 'init-company)
+(require 'init-node-path)
 (require 'init-corfu)
 (require 'init-codestyle)
 (require 'init-ligatures)

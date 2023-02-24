@@ -1,7 +1,7 @@
 ;;; init-editing.el --- Edit behavior of personal state
 
 ;;; Commentary:
-;; 
+;;
 (use-package auto-sudoedit
   :config
   (auto-sudoedit-mode 1))

@@ -20,7 +20,7 @@
 
   (progn
     (setq-default js-switch-indent-offset 2)
-    (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
     (use-package add-node-modules-path
       :hook (js-ts-mode . add-node-modules-path)))
   )

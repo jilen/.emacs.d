@@ -31,6 +31,7 @@
   (setq lsp-ui-sideline-enable nil)
   (setq lsp-ui-doc-enable t)
   (setq lsp-lens-enable nil)
+  (setq lsp-enable-indentation nil)
   (setq lsp-ui-doc-show-with-cursor t)
   (setq lsp-ui-doc-delay 0.5)
   (setq lsp-ui-doc-position 'at-point)
