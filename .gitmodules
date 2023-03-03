@@ -1,0 +1,3 @@
+[submodule "site-lisp/codeium"]
+	path = site-lisp/codeium
+	url = git@github.com:Exafunction/codeium.el.git

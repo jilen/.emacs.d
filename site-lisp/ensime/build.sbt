@@ -3,14 +3,14 @@ organization := "com.fommil"
 licenses := List(License.GPL3_or_later)
 
 ThisBuild / crossScalaVersions := List(
-  "3.2.1",
   "2.13.10",
   "2.12.15", // the version of scala used by sbt 1.6.2
   "2.12.16", // the version of scala used by sbt 1.7.2
-  "2.12.17",
-  "2.11.12"
+  "2.12.17", // the version of scala used by sbt 1.8.2
+  "2.11.12",
+  "3.2.2"
 )
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions).value.head
 
 val install = taskKey[Unit]("Install the ENSIME jar.")
 
@@ -40,6 +40,9 @@ lazy val ensime = (project in file(".")).settings(
   },
 
   libraryDependencies ++= Seq(
+    // NOTE we are monkey patching NGServer.java from
+    // https://github.com/facebook/nailgun/pull/204
+    // to support Java 19+
     "com.facebook" % "nailgun-server" % "1.0.1",
     "org.ow2.asm"  % "asm"            % "9.4"
   ),
@@ -47,9 +50,11 @@ lazy val ensime = (project in file(".")).settings(
   crossTarget := target.value / s"scala-${scalaVersion.value}",
 
   // tests expect the jar here
+  assembly / mainClass := Some("ensime.Main"),
   assembly / assemblyJarName := "ensime.jar",
   assemblyMergeStrategy := {
     case "rootdoc.txt" => MergeStrategy.discard
+    case x if x.startsWith("com/facebook/nailgun/NGServer") => MergeStrategy.first // monkey patch
     case x => assemblyMergeStrategy.value(x)
   },
 
@@ -83,6 +88,7 @@ val lsp = project
     assembly / assemblyJarName := "ensime-lsp.jar",
     assemblyMergeStrategy := {
       case "rootdoc.txt" => MergeStrategy.discard
+      case x if x.startsWith("com/facebook/nailgun/NGServer") => MergeStrategy.first // monkey patch
       case x => assemblyMergeStrategy.value(x)
     },
 
