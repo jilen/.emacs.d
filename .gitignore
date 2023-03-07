@@ -13,6 +13,6 @@ pyim/
 custom.el
 tree-sitter/
 bookmarks
-.lsp-session*/
+.lsp-session*
 .vscode/
 *.out
