@@ -70,7 +70,14 @@
      ((file-exists-p ".scalafmt.conf") (scalafmt (buffer-file-name (current-buffer))))
      ((file-exists-p ".scalariform.conf") (scalariform ".scalariform.conf" (buffer-file-name (current-buffer)))))))
 
-(global-set-key (kbd "C-c b b") 'mill-compile)
+(defun compile-project()
+  "Compile project, sbt/mill."
+  (interactive)
+  (if (file-exists-p (concat (project-root (project-current)) "build.sc"))
+      (mill-compile)
+    (sbt-compile)))
+
+(global-set-key (kbd "C-c b b") 'compile-project)
 (global-set-key (kbd "C-c b f") 'format-project)
 ;;(global-set-key (kbd "C-c b p") 'sbt-publish-local)
 
