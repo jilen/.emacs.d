@@ -151,7 +151,7 @@ float FRAC."
        (icon-name (plist-get  icon-info :icon))
        (icon-face (plist-get icon-info :face))
        (icon-fg (or (face-foreground icon-face) (face-foreground 'default)))
-       (default-bg (face-background 'company-tooltip))
+       (default-bg (or (face-background 'tooltip) (face-background 'default)))
        (icon-bg (company-svg-icon--rgb-blend (color-name-to-rgb icon-fg) (color-name-to-rgb default-bg) 0.12)))
     (company-svg-icon-build "material" icon-name icon-fg icon-bg))
   )
