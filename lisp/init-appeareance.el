@@ -75,10 +75,9 @@
         ("<tab>" . dired-subtree-toggle)))
 
 (use-package nerd-icons-dired
-  :init
   :hook
-  (dired-mode . nerd-icons-dired)
-  (dired-mode . dired-hide-details-mode))
+  (dired-mode . dired-hide-details-mode)
+  (dired-mode . nerd-icons-dired-mode))
 
 
 (use-package rainbow-delimiters
