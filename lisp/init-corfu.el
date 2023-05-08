@@ -34,6 +34,7 @@
 (use-package cape
   :init
   ;; Add `completion-at-point-functions', used by `completion-at-point'.
+  (setq cape-dict-case-fold t)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-tex)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
@@ -43,6 +44,9 @@
 (with-eval-after-load 'eglot
   (setq completion-category-defaults nil))
 
+(use-package nerd-icons-completion
+  :config
+  (nerd-icons-completion-mode))
 
 (provide 'init-corfu)
 

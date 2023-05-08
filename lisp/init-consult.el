@@ -111,9 +111,6 @@
   ;; enabled right away. Note that this forces loading the package.
   (marginalia-mode t))
 
-(use-package all-the-icons-completion
-  :config
-  (all-the-icons-completion-mode))
 (use-package wgrep
   :config
   (require 'wgrep))
@@ -122,7 +119,6 @@
   :demand t
   :bind
   (([remap query-replace] . #'anzu-query-replace)))
-
 
 
 (provide 'init-consult)
