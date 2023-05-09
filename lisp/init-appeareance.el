@@ -10,9 +10,9 @@
   (find-font (font-spec :name font-name)))
 
 ;; Specify font for Chinese characters
-(cl-loop for font in '("Sarasa Mono SC")
-         when (font-installed-p font)
-         return (set-fontset-font t '(#x4e00 . #x9fff) font))
+;; (cl-loop for font in '("Sarasa Mono SC")
+;;          when (font-installed-p font)
+;;          return (set-fontset-font t '(#x4e00 . #x9fff) font))
 
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
