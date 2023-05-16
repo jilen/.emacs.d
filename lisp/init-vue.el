@@ -10,6 +10,8 @@
   (set-face-attribute 'web-mode-html-tag-face  nil :foreground (face-foreground 'font-lock-keyword-face)))
 (define-derived-mode vue-mode web-mode "Vue" "Major mode for vue sfc.")
 
+(with-eval-after-load 'nerd-icons
+  (add-to-list 'nerd-icons-mode-icon-alist '(vue-mode nerd-icons-sucicon "nf-seti-vue" :face nerd-icons-lgreen)))
 
 (use-package add-node-modules-path
   :commands add-node-modules-path
@@ -28,8 +30,7 @@
   (setq lsp-bridge-multi-lang-server-mode-list nil)
   (setq lsp-bridge-multi-lang-server-extension-list nil)
   (setq-local lsp-bridge-get-project-path-by-filepath 'find-prj-root)
-  (lsp-bridge-mode)
-  )
+  (lsp-bridge-mode))
 
 
 (add-hook 'vue-mode-hook #'flycheck-mode)
@@ -41,8 +42,8 @@
 
 ;; If use lsp-bridge
 (with-eval-after-load "lsp-bridge"
-  (with-eval-after-load "corfu"
-    (add-to-list 'corfu-excluded-modes 'vue-mode))
+  (with-eval-after-load 'corfu
+    (setq-default corfu-exclude-modes '(vue-mode)))
   (add-hook 'vue-mode-hook #'vue-lsp-bridge-hook))
 
 
