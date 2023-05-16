@@ -77,9 +77,7 @@
   (setq lsp-ui-doc-show-with-cursor t)
   (setq lsp-ui-doc-delay 0.5)
   (setq lsp-ui-doc-use-childframe t)
-  (setq lsp-ui-doc-position 'at-point)
-  (setq )
-  )
+  (setq lsp-ui-doc-position 'at-point))
 
 (provide 'init-lsp)
 

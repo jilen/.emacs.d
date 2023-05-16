@@ -11,9 +11,7 @@
     (require 'eglot)
   (use-package eglot))
 
-(use-package eldoc-box
-  :init
-  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-at-point-mode t))
+(use-package eldoc-box)
 
 (defun npm-prj-root (dir)
   "Locate Vue root from DIR."

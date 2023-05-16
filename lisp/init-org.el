@@ -29,9 +29,13 @@
 
 (setq org-latex-pdf-process '("latexmk -f -pdf -%latex -shell-escape -interaction=nonstopmode -output-directory=%o %f"))
 
+;; Allow mermaid inline graph.
+(use-package ob-mermaid)
+
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((dot . t))) ; this line activates dot
+ '((dot . t)
+   (mermaid . t))) ; this line activates dot
 
 (setq org-latex-listings 'minted)
 
