@@ -58,6 +58,10 @@
 (when (font-installed-p default-font-family)
   (set-frame-font default-font-family))
 
+;; Prevent carlet moving laggy in pgtk.
+(when (string= (window-system) "pgtk")
+  (setq pgtk-wait-for-event-timeout nil))
+
 (defconst preferred-font-height 120)
 (defconst preferred-line-number-height (- preferred-font-height 10))
 (set-face-attribute 'default nil
