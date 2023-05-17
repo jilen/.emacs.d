@@ -23,7 +23,7 @@
 
 (defconst corfu-kind-icon-mapping
   `(
-    (array . ,(nerd-icons-codicon "nf-cod-symbol_array" :face 'font-lock-type-face) )
+    (array . ,(nerd-icons-codicon "nf-cod-symbol_array" :face 'font-lock-type-face))
     (boolean . ,(nerd-icons-codicon "nf-cod-symbol_boolean" :face 'font-lock-builtin-face))
     (class . ,(nerd-icons-codicon "nf-cod-symbol_class" :face 'font-lock-type-face))
     (color . ,(nerd-icons-codicon "nf-cod-symbol_color" :face 'success) )
@@ -69,7 +69,7 @@
 
 (defsubst nerd-icon-formatted (kind)
   "Get icon for KIND."
-  (concat " " (alist-get kind corfu-kind-icon-mapping kind) " "))
+  (concat " " (alist-get kind corfu-kind-icon-mapping) " "))
 
 (defun nerd-icon-margin-formatter (metadata)
   "Return a margin-formatter function which produces kind icons.
