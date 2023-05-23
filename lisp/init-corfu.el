@@ -93,10 +93,9 @@ float FRAC."
   (let* ((icon (alist-get kind corfu-kind-icon-mapping))
          (icon-face (get-text-property 0 'face icon))
          (icon-bg (plist-get icon-face :inherit))
-         (left-pad (propertize " " 'face (append '(:height 0.5) icon-bg)))
-         (right-pad (propertize " " 'face '(:height 0.5))))
-    (message "%s" icon)
-    (concat left-pad icon right-pad)))
+         (icon-pad (propertize " " 'face (append '(:height 0.5) icon-bg)))
+         (item-pad (propertize " " 'face '(:height 0.5))))
+    (concat icon-pad icon icon-pad item-pad)))
 
 (defun nerd-icon-margin-formatter (metadata)
   "Return a margin-formatter function which produces kind icons.
@@ -116,7 +115,7 @@ function to the relevant margin-formatters list."
   :init
   (setq cape-dict-case-fold t)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-tex)
+  ;; (add-to-list 'completion-at-point-functions #'cape-tex)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-keyword)
   (add-to-list 'completion-at-point-functions #'cape-abbrev))
