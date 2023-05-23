@@ -91,8 +91,12 @@ float FRAC."
 (defsubst nerd-icon-formatted (kind)
   "Get icon for KIND."
   (let* ((icon (alist-get kind corfu-kind-icon-mapping))
-          (pad (propertize " " 'face '(:height 0.5))))
-    (concat pad icon pad)))
+         (icon-face (get-text-property 0 'face icon))
+         (icon-bg (plist-get icon-face :inherit))
+         (left-pad (propertize " " 'face (append '(:height 0.5) icon-bg)))
+         (right-pad (propertize " " 'face '(:height 0.5))))
+    (message "%s" icon)
+    (concat left-pad icon right-pad)))
 
 (defun nerd-icon-margin-formatter (metadata)
   "Return a margin-formatter function which produces kind icons.
