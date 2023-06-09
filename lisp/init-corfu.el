@@ -110,6 +110,10 @@ function to the relevant margin-formatters list."
 
 (add-to-list 'corfu-margin-formatters #'nerd-icon-margin-formatter)
 
+(use-package dabbrev
+  :custom
+  (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
+
 ;; Add extensions
 (use-package cape
   :init
