@@ -1,3 +1,6 @@
 [submodule "site-lisp/codeium"]
 	path = site-lisp/codeium
 	url = git@github.com:Exafunction/codeium.el.git
+[submodule "site-lisp/indent-bars"]
+	path = site-lisp/indent-bars
+	url = git@github.com:jdtsmith/indent-bars.git

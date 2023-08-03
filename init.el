@@ -47,11 +47,13 @@
 (require 'init-pyim)
 (require 'init-yaml)
 (require 'init-ensime)
+(require 'init-markdown)
 (require 'init-org)
 ;; (require 'init-codeium)
 ;; (require 'init-lsp)
 ;; (require 'init-lsp-bridge)
 (require 'init-eglot)
+(require 'init-kotlin)
 
 
 (provide 'init)
@@ -61,3 +63,4 @@
 ;; no-byte-compile: t
 ;; End:
 ;;; init.el ends here
+(put 'set-goal-column 'disabled nil)

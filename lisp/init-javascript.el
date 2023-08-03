@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(add-to-list 'auto-mode-alist '("\\.cjs\\'" . javascript-mode))
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . javascript-mode))
 
 
 (if (version< emacs-version "29")
@@ -21,6 +23,7 @@
   (progn
     (setq-default js-switch-indent-offset 2)
     (add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
+
     (use-package add-node-modules-path
       :hook (js-ts-mode . add-node-modules-path)))
   )

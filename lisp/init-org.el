@@ -9,25 +9,21 @@
   :config
   (add-hook 'org-mode-hook #'org-modern-mode))
 
-(defvar agendar-base-dir "~/Workspaces/tasks/"
-  "Location store agenda files."
-  )
+(defconst agendar-base-dir '("~/Workspaces/tasks/")
+  "Location store agenda files.")
 
-(defun agendar-dirs ()
-  "Get agendar dirs."
-  (let* ((base-dir (symbol-value 'agendar-base-dir))
-         (year (format-time-string "%Y"))
-         (year-base-dir (concat base-dir year)))
-    (list year-base-dir))
-  )
 
-(setq org-agenda-files (agendar-dirs))
+
+(setq org-agenda-files agendar-base-dir)
 (require 'recentf)
-(setq recentf-exclude (agendar-dirs))
+(setq recentf-exclude org-agenda-files)
 
 (use-package org-super-agenda)
+(setq org-latex-pdf-process '("tectonic -Z shell-escape %f"))
+(setq org-plantuml-exec-mode 'jar)
+(setq org-plantuml-jar-path "~/.local/bin/plantuml-pdf.jar")
 
-(setq org-latex-pdf-process '("latexmk -f -pdf -%latex -shell-escape -interaction=nonstopmode -output-directory=%o %f"))
+
 
 ;; Allow mermaid inline graph.
 (use-package ob-mermaid)
@@ -35,6 +31,7 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((dot . t)
+   (plantuml . t)
    (mermaid . t))) ; this line activates dot
 
 (setq org-latex-listings 'minted)

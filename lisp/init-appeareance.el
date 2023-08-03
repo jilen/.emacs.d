@@ -69,7 +69,9 @@
 (set-face-attribute 'line-number nil :height preferred-line-number-height )
 (set-face-attribute 'line-number-current-line nil :height preferred-line-number-height)
 
-(use-package nerd-icons)
+(use-package nerd-icons
+  :init
+  )
 
 
 

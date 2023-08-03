@@ -17,8 +17,6 @@
   )
 
 
-
-
 (provide 'init-typescript)
 
 ;;; init-typescript.el ends here
