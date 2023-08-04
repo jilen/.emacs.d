@@ -16,3 +16,4 @@ bookmarks
 .lsp-session*
 .vscode/
 *.out
+eshell/
