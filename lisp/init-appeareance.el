@@ -62,6 +62,10 @@
 (when (string= (window-system) "pgtk")
   (setq pgtk-wait-for-event-timeout nil))
 
+(use-package indent-bars
+  :load-path "~/.emacs.d/site-lisp/indent-bars/"
+  :hook ((prog-mode) . indent-bars-mode)) ; or whichever modes you prefer
+
 (defconst preferred-font-height 120)
 (defconst preferred-line-number-height (- preferred-font-height 10))
 (set-face-attribute 'default nil
