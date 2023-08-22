@@ -1,12 +1,7 @@
 ;;; vue-mode.el --- Emacs major mode for Vue -*- lexical-binding:t -*-
-;; Copyright (C) 2020 Leaf.
-
-;; Author: Leaf <leafvocation@gmail.com>
-;; Created: 21 Jan 2020
-;; Keywords: wp languages
-;; Homepage: https://github.com/leafOfTree/vue-mode
-;; Version: 1.0.5
-;; Package-Requires: ((emacs "26.1"))
+;;
+;; Adapated from : https://github.com/leafOfTree/vue-mode
+;; Package-Requires: ((emacs "29" with treesit))
 
 ;; This file is NOT part of GNU Emacs.
 ;; You can redistribute it and/or modify it under the terms of
@@ -49,8 +44,6 @@
 (defvar sass-mode-syntax-table)
 (defvar sass-mode-map)
 (defvar vue--typescript-submode)
-(defvar typescript-mode-syntax-table)
-(defvar typescript-mode-map)
 (defvar emmet-use-style-tag-and-attr-detection)
 
 (defvar vue-block-re "\\({[#:/]\\).*\\(}\\)$" "Block regexp.")
@@ -131,7 +124,7 @@
   "Vue syntax propertize rules.")
 
 (defcustom vue-basic-offset sgml-basic-offset
-  "Specifies the basic indentation level for .vue"
+  "Specifies the basic indentation level for .vue."
   :type 'integer
   :set (lambda (symbol value)
          (customize-set-variable 'sgml-basic-offset value)
@@ -330,16 +323,15 @@ Ignore ORIG-FUN and ARGS."
 ;;; TypeScript mode
 (defun vue--load-typescript-submode ()
   "Load `typescript-mode' and patch it."
-  (when (require 'typescript-mode nil t)
-    (customize-set-variable 'typescript-indent-level vue-basic-offset)
+  (when (require 'typescript-ts-mode nil t)
+    (customize-set-variable 'typescript-ts-mode-indent-offset vue-basic-offset)
     (defconst vue--typescript-submode
-      (vue--construct-submode 'typescript-mode
+      (vue--construct-submode 'typescript-ts-mode
                                  :name "TypeScript"
                                  :end-tag "</script>"
-                                 :syntax-table typescript-mode-syntax-table
-                                 :propertize #'typescript-syntax-propertize
-                                 :indent-function #'js-indent-line
-                                 :keymap typescript-mode-map))))
+                                 :syntax-table typescript-ts-mode--syntax-table
+                                 :indent-function #'treesit-indent
+                                 :keymap typescript-ts-mode-map))))
 
 (defmacro vue--with-locals (submode &rest body)
   "Bind SUBMODE local variables and then run BODY."
@@ -727,7 +719,7 @@ Code inside a <script> element is indented using the rules from
 `js-mode'; and code inside a <style> element is indented using
 the rules from `css-mode'."
   (setq-local sgml-quick-keys 'close)
-  ;; (sgml-electric-tag-pair-mode)
+  (sgml-electric-tag-pair-mode)
   (setq-local indent-line-function #'vue-indent-line)
   (setq-local syntax-propertize-function #'vue-syntax-propertize)
   (setq-local font-lock-fontify-region-function
