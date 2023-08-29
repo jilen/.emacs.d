@@ -5,10 +5,18 @@
 ;;
 
 
-(use-package web-mode
+(use-package vue-mode :load-path "~/.emacs.d/site-lisp/vue/"
+  :init
+  (setq vue-tag-relative-indent nil)
   :config
-  (set-face-attribute 'web-mode-html-tag-face  nil :foreground (face-foreground 'font-lock-keyword-face)))
-(define-derived-mode vue-mode web-mode "Vue" "Major mode for vue sfc.")
+  (defun sgml-electric ()
+    (setq electric-pair-inhibit-predicate
+          (lambda (c)
+            (cond
+             ((char-equal c ?<) t) ;; 忽略 <> 补全
+             ((char-equal c ?{) nil) ;; 强制 {} 补全
+             (t (electric-pair-default-inhibit c))))))
+  (add-hook 'sgml-mode-hook #'sgml-electric))
 
 (with-eval-after-load 'nerd-icons
   (add-to-list 'nerd-icons-mode-icon-alist '(vue-mode nerd-icons-sucicon "nf-seti-vue" :face nerd-icons-lgreen)))
