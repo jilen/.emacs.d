@@ -10,9 +10,9 @@
   (find-font (font-spec :name font-name)))
 
 ;; Specify font for Chinese characters
-;; (cl-loop for font in '("Sarasa Mono SC")
-;;          when (font-installed-p font)
-;;          return (set-fontset-font t '(#x4e00 . #x9fff) font))
+(cl-loop for font in '("LXGW WenKai Mono")
+         when (font-installed-p font)
+         return (set-fontset-font t '(#x4e00 . #x9fff) font))
 
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
@@ -51,20 +51,15 @@
   :config
   (doom-modeline-mode))
 
-;; Font setting.
-
-(defconst default-font-family "monospace")
-
-(when (font-installed-p default-font-family)
-  (set-frame-font default-font-family))
-
-;; Prevent carlet moving laggy in pgtk.
-(when (string= (window-system) "pgtk")
-  (setq pgtk-wait-for-event-timeout nil))
-
 (use-package indent-bars
   :load-path "~/.emacs.d/site-lisp/indent-bars/"
-  :hook ((prog-mode) . indent-bars-mode)) ; or whichever modes you prefer
+  :init
+  (setq
+   indent-bars-pattern ".. "
+   indent-bars-width-frac 0.15
+   indent-bars-display-on-blank-lines nil
+   indent-bars-color '(highlight :face-bg t :blend 0.5))
+  :hook ((prog-mode) . indent-bars-mode))
 
 (defconst preferred-font-height 120)
 (defconst preferred-line-number-height (- preferred-font-height 10))
