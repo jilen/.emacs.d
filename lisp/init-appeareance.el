@@ -40,9 +40,9 @@
 
 
 ;; Theme setup.
-(use-package ef-themes
+(use-package modus-themes
   :config
-  (load-theme 'ef-light t))
+  (load-theme 'modus-operandi-deuteranopia t))
 
 (use-package doom-modeline
   ;; Enable mood-line
@@ -55,22 +55,26 @@
   :load-path "~/.emacs.d/site-lisp/indent-bars/"
   :init
   (setq
-   indent-bars-pattern ".. "
+   indent-bars-pattern "."
    indent-bars-width-frac 0.15
-   indent-bars-display-on-blank-lines nil
-   indent-bars-color '(highlight :face-bg t :blend 0.5))
+   indent-bars-display-on-blank-lines t
+   indent-bars-color '(highlight :face-bg t :blend 0.2)
+   indent-bars-highlight-current-depth '(:face default :blend 0.4))
   :hook ((prog-mode) . indent-bars-mode))
 
 (defconst preferred-font-height 120)
 (defconst preferred-line-number-height (- preferred-font-height 10))
-(set-face-attribute 'default nil
-                    :height preferred-font-height)
-(set-face-attribute 'line-number nil :height preferred-line-number-height )
-(set-face-attribute 'line-number-current-line nil :height preferred-line-number-height)
+(set-face-attribute
+ 'default nil
+ :height preferred-font-height)
 
-(use-package nerd-icons
-  :init
-  )
+(set-face-attribute 'line-number nil :height preferred-line-number-height )
+(set-face-attribute
+ 'line-number-current-line nil
+ :weight (face-attribute 'default :weight)
+ :height preferred-line-number-height)
+
+(use-package nerd-icons)
 
 
 
