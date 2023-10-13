@@ -20,6 +20,7 @@
 
   :init
   (setq register-preview-delay 0
+        consult-fontify-max-size 4096
         register-preview-function #'consult-register-format)
   (advice-add #'register-preview :override #'consult-register-window)
   (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
