@@ -1,9 +1,12 @@
 [submodule "site-lisp/codeium"]
 	path = site-lisp/codeium
-	url = git@github.com:Exafunction/codeium.el.git
+	url = https://github.com/Exafunction/codeium.el.git
 [submodule "site-lisp/indent-bars"]
 	path = site-lisp/indent-bars
-	url = git@github.com:jdtsmith/indent-bars.git
+	url = https://github.com/jdtsmith/indent-bars.git
 [submodule "site-lisp/scala-ts-mode"]
 	path = site-lisp/scala-ts-mode
-	url = git@github.com:KaranAhlawat/scala-ts-mode.git
+	url = https://github.com/KaranAhlawat/scala-ts-mode.git
+[submodule "site-lisp/lsp-bridge"]
+	path = site-lisp/lsp-bridge
+	url = https://github.com/manateelazycat/lsp-bridge.git

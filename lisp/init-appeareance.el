@@ -9,13 +9,11 @@
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
-;; Specify font for Chinese characters
-(cl-loop for font in '("LXGW WenKai Mono")
-         when (font-installed-p font)
-         return (set-fontset-font t '(#x4e00 . #x9fff) font))
-
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
+
+(when (font-installed-p "LXGW WenKai Mono")
+   (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
 
 (use-package dashboard
   :custom
@@ -35,19 +33,19 @@
   :config
   (dashboard-setup-startup-hook))
 
-(when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
+(global-display-line-numbers-mode)
 
 
 ;; Theme setup.
-(use-package modus-themes
+(use-package ef-themes
   :config
-  (load-theme 'modus-operandi-deuteranopia t))
+  (load-theme 'ef-light t))
 
 (use-package doom-modeline
   ;; Enable mood-line
   :init
-  (setq doom-modeline-height (truncate (* (frame-char-height) 1.8)))
+  (setq doom-modeline-enable-word-count nil)
+  (setq doom-modeline-height (truncate (* (frame-char-height) 1.5)))
   :config
   (doom-modeline-mode))
 
@@ -55,15 +53,19 @@
   :load-path "~/.emacs.d/site-lisp/indent-bars/"
   :init
   (setq
+   indent-bars-treesit-support t
    indent-bars-pattern "."
    indent-bars-width-frac 0.15
-   indent-bars-display-on-blank-lines t
-   indent-bars-color '(highlight :face-bg t :blend 0.2)
-   indent-bars-highlight-current-depth '(:face default :blend 0.4))
-  :hook ((prog-mode) . indent-bars-mode))
+   indent-bars-display-on-blank-lines nil
+   indent-bars-prefer-character t
+   indent-bars-color '(highlight :face-bg t :blend 0.15)
+   indent-bars-highlight-current-depth '(:blend 0.3))
+  :hook ((prog-mode) . indent-bars-mode)
+  :catch (lambda (keyword err)
+           (message "Cannot load indent-bar, init the submodule first")))
 
 (defconst preferred-font-height 120)
-(defconst preferred-line-number-height (- preferred-font-height 10))
+(defconst preferred-line-number-height (- preferred-font-height 20))
 (set-face-attribute
  'default nil
  :height preferred-font-height)
@@ -74,9 +76,11 @@
  :weight (face-attribute 'default :weight)
  :height preferred-line-number-height)
 
-(use-package nerd-icons)
-
-
+(use-package nerd-icons
+  :init
+  (add-to-list 'nerd-icons-extension-icon-alist
+               '("sc" nerd-icons-devicon "nf-dev-scala" :face nerd-icons-red))
+  )
 
 (use-package dired-subtree
   :bind

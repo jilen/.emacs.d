@@ -5,18 +5,7 @@
 ;;
 
 
-(use-package vue-mode :load-path "~/.emacs.d/site-lisp/vue/"
-  :init
-  (setq vue-tag-relative-indent nil)
-  :config
-  (defun sgml-electric ()
-    (setq electric-pair-inhibit-predicate
-          (lambda (c)
-            (cond
-             ((char-equal c ?<) t) ;; 忽略 <> 补全
-             ((char-equal c ?{) nil) ;; 强制 {} 补全
-             (t (electric-pair-default-inhibit c))))))
-  (add-hook 'sgml-mode-hook #'sgml-electric))
+(define-derived-mode vue-mode web-mode "Vue" "Vue-SFC.")
 
 (with-eval-after-load 'nerd-icons
   (add-to-list 'nerd-icons-mode-icon-alist '(vue-mode nerd-icons-sucicon "nf-seti-vue" :face nerd-icons-lgreen)))
@@ -33,6 +22,7 @@
 
 (defun vue-lsp-bridge-hook ()
   "Add lsp-bridge hooks."
+  (corfu-mode -1)
   (add-to-list 'lsp-bridge-single-lang-server-mode-list '(vue-mode . "volar"))
   (setq lsp-bridge-enable-log nil)
   (setq lsp-bridge-multi-lang-server-mode-list nil)
@@ -50,8 +40,6 @@
 
 ;; If use lsp-bridge
 (with-eval-after-load "lsp-bridge"
-  (with-eval-after-load 'corfu
-    (setq-default corfu-exclude-modes '(vue-mode)))
   (add-hook 'vue-mode-hook #'vue-lsp-bridge-hook))
 
 
