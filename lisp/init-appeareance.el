@@ -35,7 +35,6 @@
 
 (global-display-line-numbers-mode)
 
-
 ;; Theme setup.
 (use-package ef-themes
   :config
@@ -53,14 +52,13 @@
   :load-path "~/.emacs.d/site-lisp/indent-bars/"
   :init
   (setq
-   indent-bars-treesit-support t
    indent-bars-pattern "."
    indent-bars-width-frac 0.15
    indent-bars-display-on-blank-lines nil
-   indent-bars-prefer-character t
+   indent-bars-prefer-character nil
    indent-bars-color '(highlight :face-bg t :blend 0.15)
    indent-bars-highlight-current-depth '(:blend 0.3))
-  :hook ((prog-mode) . indent-bars-mode)
+  :hook ((prog-mode yaml-mode sgml-mode web-mode) . indent-bars-mode)
   :catch (lambda (keyword err)
            (message "Cannot load indent-bar, init the submodule first")))
 

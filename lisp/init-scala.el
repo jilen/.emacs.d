@@ -27,6 +27,18 @@
    'self-insert-command
    minibuffer-local-completion-map))
 
+(setq compilation-read-command nil)
+
+(require 'ansi-color)
+(defun colorize-compilation ()
+  "Colorize from `compilation-filter-start' to `point'."
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region
+     compilation-filter-start (point))))
+
+(add-hook 'compilation-filter-hook
+          #'colorize-compilation)
+
 
 (defun sbt-compile ()
   "Compile sbt project."
@@ -35,21 +47,14 @@
 
 (use-package xterm-color)
 
-(defun mill-compile ()
-  "Compile mill project."
-  (interactive)
-  (require 'eshell)
-  (let ((current-root (project-root (project-current))))
-    (other-window 1)
-    (let ((default-directory current-root))
-      (with-current-buffer (project-eshell)
-        (eshell-return-to-prompt)
-        (insert "millw -j 4 __.compile\n")
-        (eshell-send-input))
-      )
-    )
-  (other-window 1)
-  )
+
+(require 'project)
+(defun setup-compile ()
+  "Compile project command."
+  (cond ((file-exists-p (concat (project-root (project-current t)) "build.sc"))
+         (setq-local compile-command "mill -j 4 __.compile" ))))
+
+(add-hook 'scala-mode-hook #'setup-compile)
 
 (require 'sbt-mode-project)
 
@@ -74,7 +79,7 @@
   "Compile project, sbt/mill."
   (interactive)
   (if (file-exists-p (concat (project-root (project-current)) "build.sc"))
-      (mill-compile)
+      (project-compile)
     (sbt-compile)))
 
 (global-set-key (kbd "C-c b b") 'compile-project)
