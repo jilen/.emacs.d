@@ -51,7 +51,7 @@
 (require 'init-org)
 ;; (require 'init-codeium)
 ;; (require 'init-lsp)
-;; (require 'init-lsp-bridge)
+(require 'init-lsp-bridge)
 (require 'init-eglot)
 (require 'init-kotlin)
 

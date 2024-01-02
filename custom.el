@@ -6,16 +6,15 @@
  '(package-selected-packages
    '(ace-window add-node-modules-path anzu auto-sudoedit cape
                 color-identifiers-mode company corfu dashboard diff-hl
-                dired-subtree doom-modeline ef-themes eldoc-box
-                embark-consult ethan-wspace exec-path-from-shell
-                expand-region flexoki-themes flycheck-eglot
-                kotlin-ts-mode lsp-ui magit marginalia modus-themes
-                multiple-cursors nerd-icons-completion
+                dired-subtree doom-modeline ef-themes embark-consult
+                ethan-wspace exec-path-from-shell expand-region
+                flycheck-eglot kotlin-ts-mode magit marginalia
+                markdown-mode multiple-cursors nerd-icons-completion
                 nerd-icons-dired ob-mermaid orderless org-modern
-                org-super-agenda php-mode polymode popup posframe pyim
+                org-super-agenda php-mode popup posframe pyim
                 pyim-basedict rainbow-delimiters sbt-mode scala-mode
-                spaceline vertico web-mode wgrep which-key xterm-color
-                yaml-mode yasnippet)))
+                vertico web-mode wgrep which-key xterm-color yaml-mode
+                yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

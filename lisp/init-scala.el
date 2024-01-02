@@ -45,8 +45,6 @@
   (interactive)
   (sbt-command "compile"))
 
-(use-package xterm-color)
-
 
 (require 'project)
 (defun setup-compile ()
