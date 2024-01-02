@@ -11,8 +11,6 @@
     (require 'eglot)
   (use-package eglot))
 
-(use-package eldoc-box)
-
 (defun npm-prj-root (dir)
   "Locate Vue root from DIR."
   (if (boundp 'eglot-lsp-context)
