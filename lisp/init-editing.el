@@ -100,6 +100,7 @@ point reaches the beginning or end of the buffer, stop there."
   (setq mac-command-modifier 'super)
   (setq mac-pass-command-to-system nil))
 
+(use-package vundo)
 
 (provide 'init-editing)
 
