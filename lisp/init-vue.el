@@ -55,16 +55,13 @@
   (add-hook 'vue-mode-hook #'set-project-root-for-npm)
   (setq-default eglot-events-buffer-size 0)
 
-  (defclass eglot-vls (eglot-lsp-server) ()
-    :documentation "Vue Language Server.")
-
-  (cl-defmethod eglot-initialization-options ((server eglot-vls))
+  (cl-defmethod eglot-initialization-options (server)
     "Passes through required vetur SERVER initialization options to EGLOT-VLS."
     `(:typescript
       (:tsdk ,(get-ts-sdk))))
 
   (add-to-list 'eglot-server-programs
-               '(vue-mode . (eglot-vls . ("vue-language-server" "--stdio")))))
+               '(vue-mode . ("vue-language-server" "--stdio"))))
 
 
 

@@ -51,16 +51,10 @@
 (require 'init-org)
 ;; (require 'init-codeium)
 ;; (require 'init-lsp)
-(require 'init-lsp-bridge)
 (require 'init-eglot)
 (require 'init-kotlin)
 
 
 (provide 'init)
 
-;; Local Variables:
-;; coding: utf-8
-;; no-byte-compile: t
-;; End:
 ;;; init.el ends here
-(put 'set-goal-column 'disabled nil)

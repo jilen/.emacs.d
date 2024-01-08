@@ -26,7 +26,6 @@
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map))
-
 (setq compilation-read-command nil)
 
 (require 'ansi-color)
