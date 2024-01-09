@@ -5,7 +5,8 @@
 
 ;;; Code:
 
-(use-package markdown-mode)
+(use-package markdown-mode
+  :mode "\\.mdx\\'")
 
 
 (provide 'init-markdown)

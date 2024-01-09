@@ -61,7 +61,7 @@
       (:tsdk ,(get-ts-sdk))))
 
   (add-to-list 'eglot-server-programs
-               '(vue-mode . ("vue-language-server" "--stdio"))))
+               '((vue-mode typescript-ts-mode) . ("vue-language-server" "--stdio"))))
 
 
 

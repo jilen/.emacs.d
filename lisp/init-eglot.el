@@ -80,6 +80,8 @@ be boosted."
 (defun eglot-booster-reset ()
   (put 'eglot-server-programs 'lsp-booster-p nil))
 
+(eglot-booster)
+
 (provide 'init-eglot)
 
 ;;; init-eglot.el ends here
