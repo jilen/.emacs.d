@@ -4,7 +4,7 @@
 ;; Author: J.D. Smith
 ;; Homepage: https://github.com/jdtsmith/indent-bars
 ;; Package-Requires: ((emacs "27.1") (compat "29.1.4.1"))
-;; Version: 0.2.1
+;; Version: 0.2.3
 ;; Keywords: convenience
 ;; Prefix: indent-bars
 ;; Separator: -
@@ -39,6 +39,7 @@
 ;;;; Requires
 (require 'cl-lib)
 (require 'color)
+(require 'timer)
 (require 'face-remap)
 (require 'outline)
 (require 'font-lock)
@@ -238,6 +239,7 @@ indentation level, if configured; see
 				 "Factor must be between 0 and 1")))))
   :group 'indent-bars)
 
+;;;;; Depth Highlighting 
 (defcustom indent-bars-highlight-current-depth
   '(:pattern ".")			; solid bar, no color change
   "Current indentation depth bar highlight configuration.
@@ -316,6 +318,12 @@ non-nil, any stipple appearance parameters will be ignored."
 		  (:zigzag (float :tag "Zig-Zag")))))
   :group 'indent-bars)
 
+(defcustom indent-bars-depth-update-delay 0.075
+  "Minimum delay time in seconds between depth highlight updates.
+Has effect only if `indent-bars-highlight-current-depth' is
+non-nil.  Set to 0 for instant depth updates."
+  :type 'float
+  :group 'indent-bars)
 
 ;;;;; Other
 (defcustom indent-bars-display-on-blank-lines t
@@ -658,20 +666,22 @@ displayed."
 (defun indent-bars--draw-line (nbars start end &optional invent)
   "Draw NBARS bars on the line between START and END.
 START is assumed to be on a line beginning position.  Drawing
-starts at `indent-bars-starting-column'.  Tabs at the line
-beginning are replaced with display properties, if
-`indent-tabs-mode' is enabled.  If INVENT is non-nil and the
-line's length is insufficient to display all NBARS bars, bars
-will be invented.  That is, the line's final newline, which is
-only in this case expected to be located at END, will have
-display properties set to fill out the remaining bars, if any."
+starts at a column determined by `indent-bars-starting-column'.
+Tabs at the line beginning are replaced with display properties,
+if `indent-tabs-mode' is enabled.  If INVENT is non-nil and the
+line's length is insufficient to display all NBARS bars (whether
+by replacing tabs or adding properties to existing non-tab
+whitespace), bars will be \"invented\".  That is, the line's
+final newline, which is (only in this case) expected to be
+located at END, will have its display properties set to fill out
+the remaining bars, if any are needed."
   (let* ((tabs (when (and indent-tabs-mode
 			  (save-excursion
 			    (goto-char start) (looking-at "^\t+")))
 		 (- (match-end 0) (match-beginning 0))))
 	 (vp indent-bars--offset)
 	 (bar 1) prop fun tnum bcount)
-    (when tabs
+    (when tabs ; deal with initial tabs
       (while (and (<= bar nbars) (< (setq tnum (/ vp tab-width)) tabs))
 	(setq bcount (indent-bars--tab-display (+ start tnum) (mod vp tab-width)
 					       bar (- nbars bar -1)))
@@ -768,26 +778,12 @@ ROT should be less than W."
 ;; both windows.  So showing the same buffer side by side can lead to
 ;; mis-alignment in the non-active buffer.
 ;;
-;; Solutions:
-;;
-;;  - Use window hooks to update the stipple bitmap as focus or
-;;    windows change.  So at least the focused buffer looks correct.
-;;  - Otherwise, just live with it?
-;;  - Suggest using separate frames for this?
-;;  - Hide the bars be setting the stipple pattern to 0 in unfocused
-;;    windows?  But this isn't great.  The information is useful.
-;;  - Could also hide only in non-main window showing the current
-;;    buffer, with different g values.  But it will be suprising when
-;;    they vanish only when the same buffer is shown twice.
-;;  - Provide a helper command to adjust window sizes so g is
-;;    preserved (for a given w).  But two *different* buffers, both
-;;    side-by-side, make this impossible to work at the same time (if
-;;    they have different font sizes).  Maybe that's OK though, if you
-;;    are considering the current buffer only.
-;;  - Use C-x 4 c (clone-indirect-buffer-other-window).  Probably the
-;;    best solution!  But a bug in Emacs <29 means
-;;    `face-remapping-alist' is shared between indirect and master
-;;    buffers.  Fixed in Emacs 29.
+;; Solution: use window hooks to update the stipple bitmap as focus or
+;; windows change.  So at least the focused buffer looks correct.  If
+;; this is insufficient, use C-x 4 c
+;; (clone-indirect-buffer-other-window).  A bug in Emacs <29 means
+;; `face-remapping-alist' is unintentionally shared between indirect
+;; and master buffers.  Fixed in Emacs 29.
 
 (defun indent-bars--stipple (w h rot
 			       &optional width-frac pad-frac pattern zigzag)
@@ -1018,26 +1014,43 @@ ROT are as in `indent-bars--stipple', and have similar default values."
 	(setq indent-bars--current-depth-stipple
 	      (indent-bars--stipple w h rot width pad pattern zigzag))))))
 
+(defvar-local indent-bars--highlight-timer nil)
+(defun indent-bars--update-current-depth-highlight (depth)
+  "Update highlight for the current DEPTH.
+Works by remapping the appropriate indent-bars-N face.
+DEPTH should be greater than zero."
+  (if indent-bars--remap-face		; out with the old
+      (face-remap-remove-relative indent-bars--remap-face))
+  (let ((face (indent-bars--face depth))
+	(hl-col (and indent-bars--current-depth-palette
+		     (indent-bars--get-color depth 'highlight)))
+	(hl-bg indent-bars--current-bg-color))
+    (when (or hl-col hl-bg indent-bars--current-depth-stipple)
+      (setq indent-bars--remap-face
+	    (apply #'face-remap-add-relative face
+		   `(,@(when hl-col `(:foreground ,hl-col))
+		     ,@(when hl-bg `(:background ,hl-bg))
+		     ,@(when indent-bars--current-depth-stipple
+			 `(:stipple ,indent-bars--current-depth-stipple))))))))
+
 (defun indent-bars--highlight-current-depth ()
   "Refresh current indentation depth highlight.
-Works by remapping the appropriate indent-bars-N face."
+Rate limit set by `indent-bars-depth-update-delay'."
   (let* ((depth (indent-bars--current-indentation-depth 'on-bar)))
-    (when (and depth (not (= depth indent-bars--current-depth)))
-      (if indent-bars--remap-face 	; out with the old
-	  (face-remap-remove-relative indent-bars--remap-face))
+    (when (and depth (not (= depth indent-bars--current-depth)) (> depth 0))
       (setq indent-bars--current-depth depth)
-      (when (> depth 0)
-	(let ((face (indent-bars--face depth))
-	      (hl-col (and indent-bars--current-depth-palette
-			   (indent-bars--get-color depth 'highlight)))
-	      (hl-bg indent-bars--current-bg-color))
-	  (when (or hl-col hl-bg indent-bars--current-depth-stipple)
-	    (setq indent-bars--remap-face
-		  (apply #'face-remap-add-relative face
-			 `(,@(when hl-col `(:foreground ,hl-col))
-			   ,@(when hl-bg `(:background ,hl-bg))
-			   ,@(when indent-bars--current-depth-stipple
-			       `(:stipple ,indent-bars--current-depth-stipple)))))))))))
+      (if (zerop indent-bars-depth-update-delay)
+	  (indent-bars--update-current-depth-highlight depth)
+	(if-let ((tmr indent-bars--highlight-timer))
+	    (progn
+	      (timer-set-function
+	       tmr #'indent-bars--update-current-depth-highlight (list depth))
+	      (timer-set-time
+	       tmr (time-add (current-time) indent-bars-depth-update-delay))
+	      (unless (memq tmr timer-list) (timer-activate tmr)))
+	  (setq indent-bars--highlight-timer
+		(run-at-time indent-bars-depth-update-delay nil
+			     #'indent-bars--update-current-depth-highlight depth)))))))
 
 ;;;; Text scaling and window hooks
 (defvar-local indent-bars--remap-stipple nil)
@@ -1096,14 +1109,13 @@ Adapted from `highlight-indentation-mode'."
     js-indent-level)
    ((and (derived-mode-p 'js2-mode) (boundp 'js2-basic-offset))
     js2-basic-offset)
-   ((and (fboundp 'derived-mode-class)
-	 (eq (derived-mode-class major-mode) 'sws-mode) (boundp 'sws-tab-width))
+   ((and (derived-mode-p 'sws-mode) (boundp 'sws-tab-width))
     sws-tab-width)
    ((and (derived-mode-p 'web-mode) (boundp 'web-mode-markup-indent-offset))
     web-mode-markup-indent-offset)
    ((and (derived-mode-p 'web-mode) (boundp 'web-mode-html-offset)) ; old var
     web-mode-html-offset)
-   ((and (local-variable-p 'c-basic-offset) (boundp 'c-basic-offset))
+   ((and (local-variable-p 'c-basic-offset) (numberp c-basic-offset))
     c-basic-offset)
    ((and (derived-mode-p 'yaml-mode) (boundp 'yaml-indent-offset))
     yaml-indent-offset)
@@ -1191,10 +1203,11 @@ Adapted from `highlight-indentation-mode'."
   (when indent-bars-highlight-current-depth
     (indent-bars--set-current-bg-color)
     (indent-bars--set-current-depth-stipple)
-    (add-hook 'post-command-hook #'indent-bars--highlight-current-depth nil t)
+    (add-hook 'post-command-hook
+	      #'indent-bars--highlight-current-depth nil t)
     (setq indent-bars--current-depth 0)
     (indent-bars--highlight-current-depth))
-
+  
   ;; Resize
   (add-hook 'text-scale-mode-hook #'indent-bars--resize-stipple nil t)
   (indent-bars--resize-stipple)		; just in case
