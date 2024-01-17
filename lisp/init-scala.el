@@ -48,8 +48,9 @@
 (require 'project)
 (defun setup-compile ()
   "Compile project command."
-  (cond ((file-exists-p (concat (project-root (project-current t)) "build.sc"))
-         (setq-local compile-command "mill -j 4 __.compile" ))))
+  (message (concat (project-root (project-current t)) "build.sc"))
+  (when (file-exists-p (concat (project-root (project-current t)) "build.sc"))
+    (setq-local compile-command "mill -j 4 __.compile" )))
 
 (add-hook 'scala-mode-hook #'setup-compile)
 
