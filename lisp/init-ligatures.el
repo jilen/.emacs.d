@@ -10,7 +10,7 @@
   :group 'faces
   :prefix "ligature-")
 
-(defcustom ligature-ignored-major-modes '(minibuffer-inactive-mode)
+(defcustom ligature-ignored-major-modes '(minibuffer-inactive-mode markdown-mode)
   "Major modes that will never have ligatures applied to them.
 
 Unlike `ligature-generate-ligatures' the ignored major modes are

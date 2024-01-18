@@ -6,7 +6,7 @@
 ;;
 
 ;;; Code:
-
+(setenv "LSP_USE_PLISTS" "true")
 (use-package lsp-mode
   :custom
   (lsp-enable-snippet nil)

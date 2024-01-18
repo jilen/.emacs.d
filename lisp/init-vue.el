@@ -20,28 +20,12 @@
   (file-truename(locate-dominating-file dir "package.json")))
 
 
-(defun vue-lsp-bridge-hook ()
-  "Add lsp-bridge hooks."
-  (corfu-mode -1)
-  (add-to-list 'lsp-bridge-single-lang-server-mode-list '(vue-mode . "volar"))
-  (setq lsp-bridge-enable-log nil)
-  (setq lsp-bridge-multi-lang-server-mode-list nil)
-  (setq lsp-bridge-multi-lang-server-extension-list nil)
-  (setq-local lsp-bridge-get-project-path-by-filepath 'find-prj-root)
-  (lsp-bridge-mode))
-
-
 (add-hook 'vue-mode-hook #'flycheck-mode)
 
 
 (with-eval-after-load "flycheck"
   (advice-add 'flycheck-eslint-config-exists-p :override (lambda() t))
   (flycheck-add-mode 'javascript-eslint 'vue-mode))
-
-;; If use lsp-bridge
-(with-eval-after-load "lsp-bridge"
-  (add-hook 'vue-mode-hook #'vue-lsp-bridge-hook))
-
 
 ;; If use eglot
 
@@ -67,6 +51,7 @@
 
 ;; If use lsp-mode
 (with-eval-after-load "lsp-mode"
+  (add-hook 'typescript-ts-mode-hook #'lsp-deferred)
   (add-hook 'typescript-mode-hook #'lsp-deferred)
   (add-hook 'vue-mode-hook #'lsp-deferred))
 
