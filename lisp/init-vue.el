@@ -55,13 +55,7 @@
   (add-hook 'typescript-mode-hook #'lsp-deferred)
   (add-hook 'vue-mode-hook #'lsp-deferred))
 
-
-
-
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-
-
-
 
 (provide 'init-vue)
 

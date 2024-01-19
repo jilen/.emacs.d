@@ -30,7 +30,9 @@
 (use-package eglot-booster
   :load-path "~/.emacs.d/site-lisp/eglot-booster/"
   :after eglot
-  :config (eglot-booster-mode))
+  :init
+  (add-hook 'after-init-hook #'eglot-booster-mode))
+
 
 (provide 'init-eglot)
 
