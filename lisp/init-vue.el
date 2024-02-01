@@ -4,6 +4,7 @@
 ;;; Commentary:
 ;;
 
+(use-package web-mode)
 
 (define-derived-mode vue-mode web-mode "Vue" "Vue-SFC.")
 
@@ -45,7 +46,7 @@
       (:tsdk ,(get-ts-sdk))))
 
   (add-to-list 'eglot-server-programs
-               '((vue-mode typescript-ts-mode) . ("vue-language-server" "--stdio"))))
+               '((vue-mode typescript-ts-mode) . ("vls" "--stdio"))))
 
 
 

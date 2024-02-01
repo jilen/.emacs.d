@@ -38,7 +38,7 @@
 ;; Theme setup.
 (use-package ef-themes
   :config
-  (load-theme 'ef-frost t))
+  (load-theme 'ef-light t))
 
 (use-package doom-modeline
   ;; Enable mood-line
@@ -52,27 +52,16 @@
   :load-path "~/.emacs.d/site-lisp/indent-bars/"
   :init
   (setq
-   indent-bars-pattern "."
+   indent-bars-pattern ".."
    indent-bars-width-frac 0.15
-   indent-bars-display-on-blank-lines nil
+   indent-bars-display-on-blank-lines t
+   indent-bars-treesit-support t
    indent-bars-prefer-character nil
    indent-bars-color '(highlight :face-bg t :blend 0.2)
    indent-bars-highlight-current-depth '(:blend 0.4))
-  :hook ((prog-mode yaml-mode sgml-mode web-mode) . indent-bars-mode)
+  :hook ((prog-mode yaml-mode sgml-mode) . indent-bars-mode)
   :catch (lambda (keyword err)
            (message "Cannot load indent-bar, init the submodule first")))
-
-(defconst preferred-font-height 120)
-(defconst preferred-line-number-height (- preferred-font-height 20))
-(set-face-attribute
- 'default nil
- :height preferred-font-height)
-
-(set-face-attribute 'line-number nil :height preferred-line-number-height )
-(set-face-attribute
- 'line-number-current-line nil
- :weight (face-attribute 'default :weight)
- :height preferred-line-number-height)
 
 (use-package nerd-icons
   :init
