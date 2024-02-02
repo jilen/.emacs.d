@@ -33,6 +33,10 @@
   :init
   (add-hook 'after-init-hook #'eglot-booster-mode))
 
+(use-package eldoc-box
+  :config
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-at-point-mode t))
+
 
 (provide 'init-eglot)
 
