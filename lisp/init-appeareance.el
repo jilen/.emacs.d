@@ -36,9 +36,7 @@
 (global-display-line-numbers-mode)
 
 ;; Theme setup.
-(use-package ef-themes
-  :config
-  (load-theme 'ef-light t))
+(load-theme 'modus-operandi-deuteranopia t)
 
 (use-package doom-modeline
   ;; Enable mood-line
