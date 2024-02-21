@@ -17,8 +17,6 @@ import dotty.tools.dotc.core.Types.Type
 import dotty.tools.dotc.interactive.{ Completion, Interactive, InteractiveCompiler, InteractiveDriver, SourceTree }
 import dotty.tools.dotc.interfaces.{ Diagnostic, SimpleReporter }
 import dotty.tools.dotc.reporting.Reporter
-import dotty.tools.dotc.transform.SymUtils._
-import dotty.tools.dotc.transform.TypeUtils._
 import dotty.tools.dotc.typer.ImportInfo
 import dotty.tools.dotc.util.{ SourceFile, SourcePosition, Spans }
 import dotty.tools.io.{ AbstractFile, VirtualFile }
