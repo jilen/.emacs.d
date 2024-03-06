@@ -36,7 +36,7 @@
 (global-display-line-numbers-mode)
 
 ;; Theme setup.
-(load-theme 'modus-operandi-deuteranopia t)
+(load-theme 'modus-operandi t)
 
 (use-package doom-modeline
   ;; Enable mood-line
@@ -54,7 +54,7 @@
    indent-bars-width-frac 0.15
    indent-bars-display-on-blank-lines t
    indent-bars-treesit-support t
-   indent-bars-prefer-character nil
+   indent-bars-prefer-character t
    indent-bars-color '(highlight :face-bg t :blend 0.2)
    indent-bars-highlight-current-depth '(:blend 0.4))
   :hook ((prog-mode yaml-mode sgml-mode) . indent-bars-mode)

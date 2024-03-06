@@ -3,9 +3,10 @@ organization := "com.fommil"
 licenses := List(License.GPL3_or_later)
 
 ThisBuild / crossScalaVersions := List(
-  "2.13.12",
+  "2.13.13",
   "2.12.18", // the version of scala used by sbt 1.8.2
-  "3.3.1"
+  "3.3.3",
+  "3.4.0"
 )
 ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions).value.head
 

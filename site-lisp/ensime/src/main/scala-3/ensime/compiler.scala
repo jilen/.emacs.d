@@ -13,7 +13,7 @@ import dotty.tools.dotc.core.{ MacroClassLoader, Mode, Symbols, TypeErasure }
 import dotty.tools.dotc.core.Contexts.{ Context, ContextBase, FreshContext }
 import dotty.tools.dotc.core.Flags._
 import dotty.tools.dotc.core.Symbols.Symbol
-import dotty.tools.dotc.core.Types.Type
+import dotty.tools.dotc.core.Types.{Type, ExprType}
 import dotty.tools.dotc.interactive.{ Completion, Interactive, InteractiveCompiler, InteractiveDriver, SourceTree }
 import dotty.tools.dotc.interfaces.{ Diagnostic, SimpleReporter }
 import dotty.tools.dotc.reporting.Reporter
@@ -21,7 +21,21 @@ import dotty.tools.dotc.typer.ImportInfo
 import dotty.tools.dotc.util.{ SourceFile, SourcePosition, Spans }
 import dotty.tools.io.{ AbstractFile, VirtualFile }
 
+
+
+
 class Compiler(driver: InteractiveDriver)(implicit ctx: Context) {
+
+  extension (self: Type) {
+    def isByName: Boolean =
+      self.isInstanceOf[ExprType]
+  }
+
+  extension (self: Symbol) {
+    def isDeprecated: Boolean =
+      self.hasAnnotation(Symbols.defn.DeprecatedAnnot)
+  }
+
   import Compiler._
   // many thanks to Guillaume Martres for helping to implement this class
 
@@ -91,8 +105,8 @@ class Compiler(driver: InteractiveDriver)(implicit ctx: Context) {
       "toString"
     )
     def isBanned(name: String, s: Symbol) = name.startsWith("unary_") ||
-      (s.owner.isPrimitiveValueClass && s.name.decode != s.name.encode) ||
-      (bannedOwners(s.owner) && !unbannedFields(name))
+    (s.owner.isPrimitiveValueClass && s.name.decode != s.name.encode) ||
+    (bannedOwners(s.owner) && !unbannedFields(name))
 
     completions
       .filter(c => c.symbols.length == 1 )
@@ -104,7 +118,7 @@ class Compiler(driver: InteractiveDriver)(implicit ctx: Context) {
         val sym = c.symbols.head
         // scala 3 is returning inner classes from deeper nesting
         c.label.contains("$") ||
-          sym.isConstructor || sym.is(Synthetic) || sym.isDeprecated || isBanned(c.label, sym)
+        sym.isConstructor || sym.is(Synthetic) || sym.isDeprecated || isBanned(c.label, sym)
       }
       .map { c =>
         val name = c.label.trim
