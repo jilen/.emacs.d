@@ -1125,6 +1125,14 @@ Adapted from `highlight-indentation-mode'."
     cobol-tab-width)
    ((or (derived-mode-p 'go-ts-mode) (derived-mode-p 'go-mode))
     tab-width)
+   ((derived-mode-p 'nix-mode)
+    tab-width)
+   ((and (derived-mode-p 'nix-ts-mode) (boundp 'nix-ts-mode-indent-offset))
+    nix-ts-mode-indent-offset)
+   ((and (derived-mode-p 'json-ts-mode) (boundp 'json-ts-mode-indent-offset))
+    json-ts-mode-indent-offset)
+   ((and (derived-mode-p 'json-mode) (boundp 'js-indent-level))
+    js-indent-level)
    ((and (boundp 'standard-indent) standard-indent))
    (t 4))) 				; backup
 
@@ -1165,7 +1173,7 @@ Adapted from `highlight-indentation-mode'."
   ;; Faces
   (indent-bars--create-stipple-face (frame-char-width) (frame-char-height)
 				    (indent-bars--stipple-rot (frame-char-width)))
-  (indent-bars--create-faces 9 'reset)	; N.B.: extends as needed
+  (indent-bars--create-faces 9)	; N.B.: extends as needed
 
   ;; No Stipple (e.g. terminal)
   (setq indent-bars--no-stipple
@@ -1240,16 +1248,18 @@ Adapted from `highlight-indentation-mode'."
   (remove-hook 'font-lock-extend-region-functions
 	       #'indent-bars--extend-blank-line-regions t))
 
-(defun indent-bars-reset ()
+(defun indent-bars-reset (&rest _r)
   "Reset indent-bars config."
   (interactive)
   (indent-bars-teardown)
   (indent-bars-setup))
 
-(defun indent-bars-setup-and-remove ()
-  "Setup indent bars and remove from `after-make-frame-functions'."
-  (remove-hook 'after-make-frame-functions #'indent-bars-setup-and-remove)
-  (indent-bars-setup))
+(defun indent-bars-setup-and-remove (frame)
+  "Setup indent bars for FRAME and remove from `after-make-frame-functions'."
+  (when (display-graphic-p frame)
+    (with-selected-frame frame
+      (remove-hook 'after-make-frame-functions #'indent-bars-setup-and-remove t)
+      (indent-bars-setup))))
 
 ;;;###autoload
 (define-minor-mode indent-bars-mode
@@ -1258,13 +1268,14 @@ Adapted from `highlight-indentation-mode'."
   :group 'indent-bars
   (if indent-bars-mode
       (if (and (daemonp) (not (frame-parameter nil 'client)))
-	  (let ((buf (current-buffer)))
-	    (add-hook 'after-make-frame-functions
-		      (lambda () (with-current-buffer buf
-				   (indent-bars-setup-and-remove)))
-		      nil t))
+	  (add-hook 'after-make-frame-functions #'indent-bars-setup-and-remove
+		    nil t)
 	(indent-bars-setup))
     (indent-bars-teardown)))
+
+;; Theme support
+(if (boundp 'enable-theme-functions)
+    (add-hook 'enable-theme-functions #'indent-bars-reset))
 
 (provide 'indent-bars)
 
