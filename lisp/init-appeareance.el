@@ -46,20 +46,26 @@
   :config
   (doom-modeline-mode))
 
+(defun setup-indent-bars ()
+  "Enable indentbars."
+  (unless (derived-mode-p 'web-mode)
+    (setq-local indent-bars-display-on-blank-lines t))
+  (indent-bars-mode 1))
+
+(add-hook 'prog-mode-hook #'setup-indent-bars)
+
 (use-package indent-bars
   :load-path "~/.emacs.d/site-lisp/indent-bars/"
   :init
   (setq
    indent-bars-pattern ".."
    indent-bars-width-frac 0.15
-   indent-bars-display-on-blank-lines t
+   indent-bars-display-on-blank-lines nil
    indent-bars-treesit-support t
    indent-bars-prefer-character t
    indent-bars-color '(highlight :face-bg t :blend 0.2)
    indent-bars-highlight-current-depth '(:blend 0.4))
-  :hook ((prog-mode yaml-mode sgml-mode) . indent-bars-mode)
-  :catch (lambda (keyword err)
-           (message "Cannot load indent-bar, init the submodule first")))
+  :hook ((yaml-mode sgml-mode) . indent-bars-mode))
 
 (use-package nerd-icons
   :init
