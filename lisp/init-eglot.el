@@ -7,15 +7,22 @@
 
 (require 'eglot)
 
-(defun run-with-extra-root-marker (orig-fun &rest args)
-  "Apply ARGS to ORIG-FUN with extra root dirs."
+(defvar mode-root-marker-alist
+  `((vue-mode . "package.json")
+    (js-ts-mode "package.json")
+    (scala-mode ".bsp/")
+    (typescript-ts-mode "package.json")))
+
+(defun project-find-with-marker (dir)
+  "Find project of DIR with marker files."
   (if (boundp 'eglot-lsp-context)
-      (let ((project-vc-extra-root-markers `("package.json" ".bsp" "build.sc")))
-        (apply orig-fun args))
-    (apply orig-fun args)))
+      (when-let* ((marker (alist-get major-mode mode-root-marker-alist))
+                  (root (locate-dominating-file dir marker)))
+        (list 'vc 'Git root))))
 
 (require 'project)
-(advice-add 'project-current :around #'run-with-extra-root-marker)
+
+(add-hook 'project-find-functions #'project-find-with-marker)
 
 (use-package eglot-booster
   :load-path "~/.emacs.d/site-lisp/eglot-booster/"
