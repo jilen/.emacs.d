@@ -5,27 +5,17 @@
 
 ;;; Code:
 
-;; (use-package eglot)
+(require 'eglot)
 
-(if (version<= "29" emacs-version)
-    (require 'eglot)
-  (use-package eglot))
+(defun run-with-extra-root-marker (orig-fun &rest args)
+  "Apply ARGS to ORIG-FUN with extra root dirs."
+  (if (boundp 'eglot-lsp-context)
+      (let ((project-vc-extra-root-markers `("package.json" ".bsp" "build.sc")))
+        (apply orig-fun args))
+    (apply orig-fun args)))
 
-(defun npm-prj-root (dir)
-  "Locate Vue root from DIR."
-  (if (and (boundp 'eglot-lsp-context) (symbol-value 'eglot-lsp-context))
-      (when-let ((root (locate-dominating-file dir "package.json")))
-        (list 'vc 'Git root))
-    (project-try-vc dir)))
-
-(defun set-project-root-for-npm ()
-  "Set prj root for eglot."
-  (add-hook 'project-find-functions #'npm-prj-root))
-
-(with-eval-after-load "js-mode"
-  (add-hook 'js-mode-hook #'set-project-root-for-npm))
-(with-eval-after-load "typescript-mode"
-  (add-hook 'typescript-mode #'set-project-root-for-npm))
+(require 'project)
+(advice-add 'project-current :around #'run-with-extra-root-marker)
 
 (use-package eglot-booster
   :load-path "~/.emacs.d/site-lisp/eglot-booster/"

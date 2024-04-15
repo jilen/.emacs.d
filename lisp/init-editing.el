@@ -95,12 +95,25 @@ point reaches the beginning or end of the buffer, stop there."
   :config
   (which-key-mode))
 
+(setq
+ locale-coding-system 'utf-8
+ set-terminal-coding-system 'utf-8-unix
+ set-keyboard-coding-system 'utf-8
+ set-selection-coding-system 'utf-8
+ prefer-coding-system 'utf-8)
+
 (when (boundp 'mac-carbon-version-string)
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super)
   (setq mac-pass-command-to-system nil))
 
 (use-package vundo)
+
+(use-package eterm-256color
+  :hook term-mode-hook)
+
+
+
 
 (provide 'init-editing)
 

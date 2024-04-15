@@ -3,8 +3,8 @@
 ;;; Code:
 
 (use-package project
-             :bind-keymap
-             ("C-c p" . project-prefix-map))
+  :bind-keymap
+  ("C-c p" . project-prefix-map))
 
 (eval-after-load "project"
   '(defun project-switch-project (dir)
@@ -12,7 +12,8 @@
 When called in a program, it will use the project corresponding
 to directory DIR."
      (interactive (list (project-prompt-project-dir)))
-     (let ((default-directory dir))
+     (let ((default-directory dir)
+           (after-change-major-mode-hook nil))
        (call-interactively 'project-find-file))))
 
 (provide 'init-project)

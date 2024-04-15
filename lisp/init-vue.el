@@ -37,7 +37,6 @@
 
 (with-eval-after-load 'eglot
   (require 'init-eglot)
-  (add-hook 'vue-mode-hook #'set-project-root-for-npm)
   (setq-default eglot-events-buffer-size 0)
 
   (cl-defmethod eglot-initialization-options (server)
@@ -46,9 +45,7 @@
       (:tsdk ,(get-ts-sdk))))
 
   (add-to-list 'eglot-server-programs
-               '((vue-mode typescript-ts-mode) . ("vls" "--stdio"))))
-
-
+               '(vue-mode . ("vls" "--stdio"))))
 
 ;; If use lsp-mode
 (with-eval-after-load "lsp-mode"
