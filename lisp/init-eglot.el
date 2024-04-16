@@ -10,7 +10,7 @@
 (defvar mode-root-marker-alist
   `((vue-mode . "package.json")
     (js-ts-mode "package.json")
-    (scala-mode ".bsp/")
+    (scala-mode ".bsp")
     (typescript-ts-mode "package.json")))
 
 (defun project-find-with-marker (dir)

@@ -56,15 +56,13 @@
 
 (use-package indent-bars
   :load-path "~/.emacs.d/site-lisp/indent-bars/"
-  :init
-  (setq
-   indent-bars-pattern ".."
-   indent-bars-width-frac 0.15
-   indent-bars-display-on-blank-lines nil
-   indent-bars-treesit-support t
-   indent-bars-prefer-character t
-   indent-bars-color '(highlight :face-bg t :blend 0.2)
-   indent-bars-highlight-current-depth '(:blend 0.4))
+  :config
+  (require 'indent-bars-ts)
+  :custom
+  (indent-bars-prefer-character t)
+  (indent-bars-treesit-support t)
+  (indent-bars-display-on-blank-lines nil)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
   :hook ((yaml-mode sgml-mode) . indent-bars-mode))
 
 (use-package nerd-icons
