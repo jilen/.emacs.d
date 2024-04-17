@@ -16,10 +16,6 @@
   :hook (vue-mode . add-node-modules-path))
 (require 'project)
 
-(defun find-prj-root (dir)
-  "Find the vue project root of DIR."
-  (file-truename(locate-dominating-file dir "package.json")))
-
 
 (add-hook 'vue-mode-hook #'flycheck-mode)
 
@@ -30,8 +26,9 @@
 
 ;; If use eglot
 
-
+(require 'f)
 (defun get-ts-sdk ()
+  "Get ts sdk path."
   (let ((eglot-lsp-context t))
     (f-join (project-root (project-current)) "node_modules/typescript/lib")))
 
