@@ -8,13 +8,16 @@
 (use-package org-modern
   :config
   (add-hook 'org-mode-hook #'org-modern-mode))
+(when (file-directory-p "~/Workspaces/tasks/")
+  (defconst agendar-base-dir '("~/Workspaces/tasks/")
+    "Location store agenda files.")
+  (setq org-agenda-files agendar-base-dir)
+  )
 
-(defconst agendar-base-dir '("~/Workspaces/tasks/")
-  "Location store agenda files.")
 
 
 
-(setq org-agenda-files agendar-base-dir)
+
 (require 'recentf)
 (setq recentf-exclude org-agenda-files)
 

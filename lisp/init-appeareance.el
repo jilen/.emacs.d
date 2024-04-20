@@ -13,7 +13,9 @@
   (when (fboundp mode) (funcall mode -1)))
 
 (when (font-installed-p "LXGW WenKai Mono")
-   (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
+  (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
+
+(set-face-attribute 'default nil :family "M PLUS Code Latin 50" :height 160)
 
 (use-package dashboard
   :custom
@@ -62,7 +64,7 @@
    indent-bars-width-frac 0.15
    indent-bars-display-on-blank-lines nil
    indent-bars-treesit-support t
-   indent-bars-prefer-character t
+   indent-bars-prefer-character nil
    indent-bars-color '(highlight :face-bg t :blend 0.2)
    indent-bars-highlight-current-depth '(:blend 0.4))
   :hook ((yaml-mode sgml-mode) . indent-bars-mode))
