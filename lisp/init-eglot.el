@@ -9,16 +9,18 @@
 
 (defvar mode-root-marker-alist
   `((vue-mode . "package.json")
-    (js-ts-mode "package.json")
-    (scala-mode ".bsp/")
-    (typescript-ts-mode "package.json")))
+    (js-ts-mode . "package.json")
+    (scala-mode . ".bsp")
+    (typescript-ts-mode . "package.json")))
 
 (defun project-find-with-marker (dir)
   "Find project of DIR with marker files."
-  (if (boundp 'eglot-lsp-context)
+  (if (and (boundp 'eglot-lsp-context) (symbol-value 'eglot-lsp-context))
       (when-let* ((marker (alist-get major-mode mode-root-marker-alist))
                   (root (locate-dominating-file dir marker)))
-        (list 'vc 'Git root))))
+        (list 'vc 'Git root))
+    )
+  )
 
 (require 'project)
 
