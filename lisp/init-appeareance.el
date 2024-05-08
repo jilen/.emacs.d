@@ -61,7 +61,13 @@
   :config
   (require 'indent-bars-ts)
   :custom
+  (indent-bars-color '(highlight :face-bg t :blend 0.3))
+  (indent-bars-highlight-current-depth '(:blend 0.8))
+  (indent-bars-no-stipple-char ?┋)
+  (indent-bars-no-stipple-char-font-weight 'extra-light)
   (indent-bars-prefer-character t)
+  (indent-bars-pattern "..")
+  (indent-bars-width-frac 0.1)
   (indent-bars-treesit-support t)
   (indent-bars-display-on-blank-lines nil)
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
