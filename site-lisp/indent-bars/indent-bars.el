@@ -4,7 +4,7 @@
 ;; Author: J.D. Smith
 ;; Homepage: https://github.com/jdtsmith/indent-bars
 ;; Package-Requires: ((emacs "27.1") (compat "29.1.4.5"))
-;; Version: 0.5.0
+;; Version: 0.5.2
 ;; Keywords: convenience
 ;; Prefix: indent-bars
 ;; Separator: -
@@ -1183,8 +1183,9 @@ greater than zero."
 
 (defun indent-bars--update-current-depth-highlight-in-buffer (buf depth)
   "Highlight bar at DEPTH in buffer BUF."
-  (with-current-buffer buf
-    (indent-bars--update-current-depth-highlight depth)))
+  (if (buffer-live-p buf)
+      (with-current-buffer buf
+	(indent-bars--update-current-depth-highlight depth))))
 
 (defun indent-bars--highlight-current-depth (&optional force)
   "Refresh current indentation depth highlight.
@@ -1280,7 +1281,8 @@ ROT should be less than W."
 ;; buffer in both windows.  In practice that means that all stipple
 ;; face attributes must be set via filtered face remaps, with the
 ;; filter set to match the pattern size (width and height) as well as
-;; gutter offset "rot" value in that window.
+;; gutter offset "rot" value in that window, which we combine into a
+;; single integer.
 ;;
 ;; Note: a bug in Emacs <29 means `face-remapping-alist' is
 ;; unintentionally shared between indirect and master buffers.  Fixed
@@ -1547,7 +1549,7 @@ Adapted from `highlight-indentation-mode'."
   ;; Remap/Resize
   (unless indent-bars--no-stipple
     (setq indent-bars--stipple-remaps (make-hash-table))
-    (add-hook 'text-scale-mode-hook #'indent-bars--update-all-stipples t)
+    (add-hook 'text-scale-mode-hook #'indent-bars--update-all-stipples nil t)
     (indent-bars--update-all-stipples)) ; sets all remaps for current buffer
 
   ;; Current depth Highlighting
