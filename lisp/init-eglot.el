@@ -34,7 +34,7 @@
 
 (use-package eldoc-box
   :config
-  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-at-point-mode t))
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
 
 
 (provide 'init-eglot)
