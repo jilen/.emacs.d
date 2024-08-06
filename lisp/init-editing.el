@@ -109,11 +109,9 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package vundo)
 
-(use-package eterm-256color
-  :hook term-mode-hook)
 
 
-
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
 (provide 'init-editing)
 

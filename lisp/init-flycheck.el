@@ -37,11 +37,7 @@
   :config
   (global-flycheck-mode))
 
-(use-package flycheck-eglot
-  :after (flycheck eglot)
-  :custom (flycheck-eglot-exclusive nil)
-  :config
-  (global-flycheck-eglot-mode 1))
+
 
 (provide 'init-flycheck)
 

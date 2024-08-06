@@ -36,6 +36,11 @@
   :config
   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
 
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
+  :config
+  (global-flycheck-eglot-mode 1))
 
 (provide 'init-eglot)
 
