@@ -5,11 +5,14 @@
 
 ;;; Code:
 
-(use-package scala-mode
+(use-package scala-ts-mode
+  :load-path "~/.emacs.d/site-lisp/scala-ts-mode/"
+  :custom
+  (treesit-font-lock-level 4)
   :mode "\\.sc\\'"
-  :init
-  (setq use-dialog-box nil)
-  (setq-default scala-indent:use-javadoc-style t))
+  :config
+  (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode))
+  )
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -26,6 +29,8 @@
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map))
+
+
 (setq compilation-read-command nil)
 
 (require 'ansi-color)
@@ -53,6 +58,7 @@
     (setq-local compile-command "mill -j 4 __.compile" )))
 
 (add-hook 'scala-mode-hook #'setup-compile)
+(add-hook 'scala-ts-mode-hook #'setup-compile)
 
 (require 'sbt-mode-project)
 
@@ -119,7 +125,7 @@
 (flycheck-define-checker scala3
   "A Scala syntax checker using the Scala compiler.
 See URL `https://www.scala-lang.org/'."
-  :command ("scalac3" "-Ystop-after:parser" "-color:never" source)
+  :command ("scalac3" "-Ystop-after:parser" "-source:3.5" "-color:never" source)
   :error-parser scala3-error-parser
   :modes scala-mode
   :next-checkers ((warning . scala-scalastyle)))

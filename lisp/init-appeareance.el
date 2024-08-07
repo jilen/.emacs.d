@@ -15,8 +15,6 @@
 (when (font-installed-p "LXGW WenKai Mono")
   (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
 
-(set-face-attribute 'default nil :family "M PLUS Code Latin 50" :height 160)
-
 (use-package dashboard
   :custom
   (dashboard-display-icons-p t)
@@ -37,8 +35,11 @@
 
 (global-display-line-numbers-mode)
 
+(set-face-attribute 'default nil :weight 'regular)
 ;; Theme setup.
-(load-theme 'modus-operandi t)
+(use-package modus-themes
+  :config
+  (load-theme 'modus-operandi t))
 
 (use-package doom-modeline
   ;; Enable mood-line
@@ -63,9 +64,6 @@
   :custom
   (indent-bars-color '(highlight :face-bg t :blend 0.3))
   (indent-bars-highlight-current-depth '(:blend 0.8))
-  (indent-bars-no-stipple-char ?┋)
-  (indent-bars-no-stipple-char-font-weight 'extra-light)
-  (indent-bars-prefer-character t)
   (indent-bars-pattern "..")
   (indent-bars-width-frac 0.1)
   (indent-bars-treesit-support t)
@@ -73,11 +71,34 @@
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
   :hook ((yaml-mode sgml-mode) . indent-bars-mode))
 
+(use-package lin
+  :init
+  (setq lin-mode-hooks
+        '(bongo-mode-hook
+          dired-mode-hook
+          elfeed-search-mode-hook
+          git-rebase-mode-hook
+          grep-mode-hook
+          ibuffer-mode-hook
+          ilist-mode-hook
+          ledger-report-mode-hook
+          log-view-mode-hook
+          magit-log-mode-hook
+          mu4e-headers-mode-hook
+          notmuch-search-mode-hook
+          notmuch-tree-mode-hook
+          occur-mode-hook
+          org-agenda-mode-hook
+          pdf-outline-buffer-mode-hook
+          proced-mode-hook
+          tabulated-list-mode-hook))
+  :config
+  (lin-global-mode 1))
+
 (use-package nerd-icons
   :init
   (add-to-list 'nerd-icons-extension-icon-alist
-               '("sc" nerd-icons-devicon "nf-dev-scala" :face nerd-icons-red))
-  )
+               '("sc" nerd-icons-devicon "nf-dev-scala" :face nerd-icons-red)))
 
 (use-package dired-subtree
   :bind
