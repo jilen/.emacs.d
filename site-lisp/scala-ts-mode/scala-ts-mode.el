@@ -102,7 +102,7 @@
   "Control flow for `scala-ts-mode'.")
 
 (defvar scala-ts--brackets
-  '("(" ")" "[" "]" "{" "}")
+  '("(" ")" "[" "]" "{" "}" "'{" "}")
   "Brackets for `scala-ts-mode'.")
 
 (defvar scala-ts--delimiters
