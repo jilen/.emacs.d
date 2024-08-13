@@ -109,7 +109,9 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package vundo)
 
-
+(use-package apheleia
+  :config
+  (apheleia-global-mode +1))
 
 (add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
