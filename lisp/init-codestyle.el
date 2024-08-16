@@ -11,9 +11,11 @@
 
 ;; The fact that we have to do this is also quite embarrassing.
 (setq sentence-end-double-space nil)
-(setq-default show-trailing-whitespace t)
-(setq-default whitespace-style '(face space missing-newline-at-eof empty tailing))
+
 (global-whitespace-mode)
+(setq show-trailing-whitespace t)
+(setq-default whitespace-style '(face space tailing tabs missing-newline-at-eof empty indicate-empty-lines))
+(set-face-attribute 'whitespace-missing-newline-at-eof nil :background (face-foreground 'error) :foreground "white")
 
 (setq mode-require-final-newline nil)
 (setq require-final-newline nil)
