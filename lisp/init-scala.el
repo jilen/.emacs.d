@@ -9,10 +9,10 @@
   :load-path "~/.emacs.d/site-lisp/scala-ts-mode/"
   :custom
   (treesit-font-lock-level 4)
-  :mode "\\.sc\\'"
+  :mode "\\.scala\\'"
   :config
-  (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode))
-  )
+  (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode)))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -49,6 +49,12 @@
   (interactive)
   (sbt-command "compile"))
 
+
+(with-eval-after-load "apheleia"
+  (add-to-list 'apheleia-formatters '(scalafmt . ("apheleia-from-project-root"
+                                                  ".scalafmt.conf" "scalafmt" "--non-interactive" "--stdout" "--stdin")))
+  (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
+  (add-to-list 'apheleia-mode-alist '(scala-mode . scalafmt)))
 
 (require 'project)
 (defun setup-compile ()
