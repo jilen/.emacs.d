@@ -13,7 +13,7 @@
 (setq sentence-end-double-space nil)
 (setq-default show-trailing-whitespace t)
 (setq-default whitespace-style '(face space missing-newline-at-eof empty tailing))
-(whitespace-mode +1)
+(global-whitespace-mode)
 
 (setq mode-require-final-newline nil)
 (setq require-final-newline nil)
