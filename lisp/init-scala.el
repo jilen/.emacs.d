@@ -51,8 +51,13 @@
 
 
 (with-eval-after-load "apheleia"
-  (add-to-list 'apheleia-formatters '(scalafmt . ("apheleia-from-project-root"
-                                                  ".scalafmt.conf" "scalafmt" "--non-interactive" "--stdout" "--stdin")))
+  (add-to-list 'apheleia-formatters
+               '(scalafmt . ("apheleia-from-project-root"
+                             ".scalafmt.conf" "scalafmt" "--assume-filename"
+                             (or (apheleia-formatters-local-buffer-file-name)
+                                 (apheleia-formatters-mode-extension)
+                                 ".scala")
+                             "--non-interactive" "--stdout" "--stdin")))
   (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
   (add-to-list 'apheleia-mode-alist '(scala-mode . scalafmt)))
 

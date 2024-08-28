@@ -12,14 +12,9 @@
 ;; The fact that we have to do this is also quite embarrassing.
 (setq sentence-end-double-space nil)
 
-(global-whitespace-mode)
+(global-whitespace-mode 1)
 (setq show-trailing-whitespace t)
-(setq-default whitespace-style '(face space tailing tabs missing-newline-at-eof empty indicate-empty-lines))
-(set-face-attribute 'whitespace-missing-newline-at-eof nil :background (face-foreground 'error) :foreground "white")
-
-(setq mode-require-final-newline nil)
-(setq require-final-newline nil)
-
+(setq whitespace-style '(face space tailing tabs missing-newline-at-eof empty indicate-empty-lines))
 
 ;; Set default indentation for various languages (add your own!)
 (setq-default tab-width 2)
