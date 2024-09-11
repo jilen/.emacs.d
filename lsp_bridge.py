@@ -197,16 +197,20 @@ class LspBridge:
 
     @threaded
     def init_remote_file_server(self):
-        print("* Running lsp-bridge in remote server, "
-              "use command 'lsp-bridge-open-remote-file' to open remote file, "
-              "or 'find-file' /docker: to open file in running container.")
+        print("* Running lsp-bridge on remote server. "
+              "Access files with 'lsp-bridge-open-remote-file' or 'find-file /docker:...'")
 
         # Build loop for remote files management.
         self.file_server = FileSyncServer("0.0.0.0", REMOTE_FILE_SYNC_CHANNEL)
-        # Build loop for call local Emacs function from server.
-        self.file_elisp_server = FileElispServer("0.0.0.0", REMOTE_FILE_ELISP_CHANNEL, self)
+
         # Build loop for call remote command from local Emacs.
+        # Start waiting for init_search_backends_complete_event
         self.file_command_server = FileCommandServer("0.0.0.0", REMOTE_FILE_COMMAND_CHANNEL, self)
+
+        # Build loop for call local Emacs function from server.
+        # Signal that init_search_backends_complete_event is done
+        self.file_elisp_server = FileElispServer("0.0.0.0", REMOTE_FILE_ELISP_CHANNEL, self)
+
         set_lsp_bridge_server(self)
 
     # Functions for communication between local and remote server
@@ -225,7 +229,7 @@ class LspBridge:
         if server_host not in self.host_names:
             message_emacs(f"{server_host} is not connected, try reconnect...")
             self.sync_tramp_remote_complete_event.clear()
-            eval_in_emacs('lsp-bridge-remote-reconnect', server_host)
+            eval_in_emacs('lsp-bridge-remote-reconnect', server_host, True)
             self.sync_tramp_remote_complete_event.wait()
             message_emacs(f"{server_host} connected.")
 
@@ -321,7 +325,7 @@ class LspBridge:
                     else:
                         # connection restored, try to send out the message
                         client.send_message(data["message"])
-                        eval_in_emacs('lsp-bridge-remote-reconnect', server_host)
+                        eval_in_emacs('lsp-bridge-remote-reconnect', server_host, False)
                 except Exception as e:
                     logger.exception(e)
                 finally:
@@ -432,6 +436,7 @@ class LspBridge:
                 self.remote_sync(container_name, tramp_connection_info)
                 # container_name is used for emacs buffer local variable lsp-bridge-remote-file-host
                 eval_in_emacs("lsp-bridge-update-tramp-file-info", tramp_file_name, tramp_connection_info, tramp_method, container_user, container_name, path)
+                eval_in_emacs("lsp-bridge--setup-tramp-docker-buffer", tramp_file_name)
                 self.sync_tramp_remote_complete_event.set()
             except Exception as e:
                 logger.exception(e)
@@ -505,7 +510,17 @@ class LspBridge:
                         "jump_define_pos": epc_arg_transformer(jump_define_pos)
                 })
         else:
-            message_emacs("Please input valid path match rule: 'ip:/path/file'.")
+            message_emacs(f"Unsupported remote path {path}")
+
+    @threaded
+    def update_remote_file(self, remote_file_host, remote_file_path, content):
+        self.send_remote_message(
+            remote_file_host, self.remote_file_sender_queue, {
+            "command": "update_file",
+            "server": remote_file_host,
+            "path": remote_file_path,
+            "content": content
+        })
 
     @threaded
     def save_remote_file(self, remote_file_host, remote_file_path):
@@ -599,7 +614,8 @@ class LspBridge:
             logger.error("Unsupported command %s", message["command"])
             result = None
 
-        self.send_remote_message(host, self.remote_file_elisp_sender_queue, result)
+        message["result"] = result
+        self.send_remote_message(host, self.remote_file_elisp_sender_queue, message)
 
     # Functions for local handling
     def event_dispatcher(self):
@@ -979,7 +995,7 @@ def read_lang_server_info(lang_server_path):
 
 def load_single_server_info(lang_server):
     lang_server_info_path = ""
-    if os.path.exists(lang_server) and os.path.dirname(lang_server) != "":
+    if isinstance(lang_server, str) and os.path.exists(lang_server) and os.path.dirname(lang_server) != "":
         # If lang_server is real file path, we load the LSP server configuration from the user specified file.
         lang_server_info_path = lang_server
     else:

@@ -1,7 +1,6 @@
 from core.handler import Handler
 from core.utils import *
 
-
 class DocumentSymbol(Handler):
     name = "document_symbol"
     method = "textDocument/documentSymbol"
@@ -27,8 +26,8 @@ class DocumentSymbol(Handler):
                        (range['end']['line'] == self.position['line'] and range['end']['character'] >= self.position['character']):
                         if len(current_defun):
                             current_defun += '.'
-                        current_defun += symbol['name']
-                        symbols.append(symbol)
+                            current_defun += symbol['name']
+                            symbols.append(symbol)
                 eval_in_emacs("lsp-bridge-symbols--record-current-defun", current_defun)
             except:
                 import traceback

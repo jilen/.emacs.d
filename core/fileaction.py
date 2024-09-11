@@ -167,8 +167,10 @@ class FileAction:
 
     def send_request(self, method_server, method, handler, *args, **kwargs):
         if hasattr(handler, "provider"):
-            if getattr(method_server, getattr(handler, "provider")):
-                self.send_server_request(method_server, method, *args, **kwargs)
+            method_provider = getattr(method_server, getattr(handler, "provider"), None)
+            if method_provider is not None:
+                if method_provider is not False:
+                    self.send_server_request(method_server, method, *args, **kwargs)
             elif hasattr(handler, "provider_message"):
                 message_emacs(getattr(handler, "provider_message"))
         else:
@@ -362,22 +364,11 @@ class FileAction:
 
             code_actions = self.get_code_actions()
             if len(code_actions) > 0:
-                if self.code_action_has_valid_edits(code_actions):
-                    eval_in_emacs("lsp-bridge-code-action--fix", code_actions, action_kind)
-                else:
-                    message_emacs("Fantastic, your code looks great! No further actions needed!")
+                eval_in_emacs("lsp-bridge-code-action--fix", code_actions, action_kind)
             elif self.get_diagnostics_count() > 0:
                 message_emacs("Please move cursor to error or warning, then execute 'lsp-bridge-code-action' again.")
             else:
                 message_emacs("Fantastic, your code looks great! No further actions needed!")
-
-    def code_action_has_valid_edits(self, data):
-        for item in data:
-            if 'edit' in item:
-                for change in item['edit']['documentChanges']:
-                    if change['edits']:
-                        return True
-        return False
 
     def get_code_actions(self):
         code_actions = []

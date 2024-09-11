@@ -107,6 +107,7 @@
 (require 'acm-backend-copilot)
 (require 'acm-backend-org-roam)
 (require 'acm-backend-jupyter)
+(require 'acm-backend-capf)
 (require 'acm-quick-access)
 
 ;;; Code:
@@ -195,6 +196,7 @@
 
 (defcustom acm-completion-mode-candidates-merge-order '("elisp-candidates"
                                                         "lsp-candidates"
+                                                        "capf-candidates"
                                                         "jupyter-candidates"
                                                         "ctags-candidates"
                                                         "citre-candidates"
@@ -465,6 +467,7 @@ Only calculate template candidate when type last character."
          (mode-candidates-min-index 2)
          (template-candidates-min-index 2)
          lsp-candidates
+         capf-candidates
          path-candidates
          yas-candidates
          tabnine-candidates
@@ -497,6 +500,9 @@ Only calculate template candidate when type last character."
     (when acm-enable-jupyter
       (setq jupyter-candidates (acm-backend-jupyter-candidates keyword)))
 
+    (when acm-enable-capf
+      (setq capf-candidates (acm-backend-capf-candiates keyword)))
+
     (if acm-enable-search-sdcv-words
         ;; Completion SDCV if option `acm-enable-search-sdcv-words' is enable.
         (setq candidates (acm-backend-search-sdcv-words-candidates keyword))
@@ -517,6 +523,7 @@ Only calculate template candidate when type last character."
                                         (pcase mode-candidate-name
                                           ("elisp-candidates" (unless (acm-in-comment-p) (acm-backend-elisp-candidates keyword)))
                                           ("lsp-candidates" lsp-candidates)
+                                          ("capf-candidates" capf-candidates)
                                           ("jupyter-candidates" jupyter-candidates)
                                           ("ctags-candidates" ctags-candidates)
                                           ("citre-candidates" citre-candidates)
@@ -608,7 +615,7 @@ The key of candidate will change between two LSP results."
   (acm-quick-access-init)
 
   ;; Adjust `gc-cons-threshold' to maximize temporary,
-  ;; make sure Emacs not do GC when filter/sort candidates.
+  ;; make sure Emacs not do GC
   (let* ((gc-cons-threshold most-positive-fixnum)
          (keyword (acm-get-input-prefix))
          (previous-select-candidate-index (+ acm-menu-offset acm-menu-index))
@@ -925,13 +932,15 @@ The key of candidate will change between two LSP results."
     (acm-frame-set-frame-position acm-menu-frame acm-frame-x acm-frame-y)))
 
 (defun acm-doc-try-show (&optional update-completion-item)
-  (when acm-enable-doc
-    (let* ((candidate (acm-menu-current-candidate))
-           (backend (plist-get candidate :backend))
-           (candidate-doc-func (intern-soft (format "acm-backend-%s-candidate-doc" backend)))
-           (candidate-doc
-            (when (fboundp candidate-doc-func)
-              (funcall candidate-doc-func candidate))))
+  ;; We need call `acm-backend-*-candidate-doc' function even option `acm-enable-doc' is nil,
+  ;; because `completion_item_resolve' will fetch `additionalTextEdits', otherwise, auto import feature is miss.
+  (let* ((candidate (acm-menu-current-candidate))
+         (backend (plist-get candidate :backend))
+         (candidate-doc-func (intern-soft (format "acm-backend-%s-candidate-doc" backend)))
+         (candidate-doc
+          (when (fboundp candidate-doc-func)
+            (funcall candidate-doc-func candidate))))
+    (when acm-enable-doc
       (if (or (consp candidate-doc) ; If the type fo snippet is set to command, then the "doc" will be a list.
               (and (stringp candidate-doc) (not (string-empty-p candidate-doc))))
           (let ((doc (if (stringp candidate-doc)
