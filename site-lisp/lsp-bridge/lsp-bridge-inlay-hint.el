@@ -84,22 +84,41 @@
 
 ;;; Code:
 
+(defcustom lsp-bridge-enable-inlay-hint nil
+  "Whether to enable inlay hint."
+  :type 'boolean
+  :safe #'booleanp
+  :group 'lsp-bridge)
+
 (defface lsp-bridge-inlay-hint-face
   `((t :foreground "#aaaaaa"))
   "Face for inlay hint."
   :group 'lsp-bridge-inlay-hint)
 
-(defun lsp-bridge-inlay-hint ()
-  (redisplay t) ; NOTE: we need call `redisplay' to force `window-start' return RIGHT line number.
-  (lsp-bridge-call-file-api "inlay_hint"
-                            (lsp-bridge--point-position (window-start))
-                            ;; We need pass UPDATE argument to `window-end', to make sure it's value is update, not cache.
-                            (lsp-bridge--point-position (window-end nil t))))
-
-(defvar-local lsp-bridge-inlay-hint-overlays '())
-
+(defvar-local lsp-bridge-inlay-hint-last-update-pos nil)
 (defvar-local lsp-bridge-inlay-hint-cache nil
   "We use `lsp-bridge-inlay-hint-cache' avoid screen flicker if two respond result is same.")
+(defvar-local lsp-bridge-inlay-hint-overlays '())
+
+(defun lsp-bridge-inlay-hint-monitor-window-scroll ()
+  (when lsp-bridge-enable-inlay-hint
+    (let ((window-pos (window-end nil t)))
+      (when (not (equal lsp-bridge-inlay-hint-last-update-pos window-pos))
+        (lsp-bridge-inlay-hint-try-send-request)
+        (setq-local lsp-bridge-inlay-hint-last-update-pos window-pos)))))
+
+(defun lsp-bridge-inlay-hint-try-send-request ()
+  (when lsp-bridge-enable-inlay-hint
+    (lsp-bridge-inlay-hint)))
+
+(defun lsp-bridge-inlay-hint ()
+  ;; `window-start' won't return valid value of window start position if we not call `redisplay' before 'window-start',
+  ;; but call `redisplay' will cause current line scroll to window start postion, like issue https://github.com/manateelazycat/lsp-bridge/issues/1029
+  ;;
+  ;; So we use `window-end' to test window is scroll or not, and always pass `point-min' and `point-max' to LSP server.
+  (lsp-bridge-call-file-api "inlay_hint"
+                            (lsp-bridge--point-position (point-min))
+                            (lsp-bridge--point-position (point-max))))
 
 (defun lsp-bridge-inlay-hint-hide-overlays ()
   (when lsp-bridge-inlay-hint-overlays
@@ -168,10 +187,7 @@
                   (push overlay lsp-bridge-inlay-hint-overlays)
 
                   (setq hint-index (1+ hint-index))
-                  )))))
-        )
-
-      ))
+                  ))))))))
 
 (defun lsp-bridge-inlay-hint-retry (filepath)
   "InlayHint will got error 'content modified' error if it followed immediately by a didChange request.
@@ -180,7 +196,7 @@ If lsp-bridge detect this error, lsp-bridge will call `lsp-bridge-inlay-hint-ret
   (when (string-prefix-p "file://" filepath)
     (setq filepath (string-remove-prefix "file://" filepath)))
   (when (string-equal filepath (buffer-file-name))
-    (lsp-bridge-try-send-inlay-hint-request)))
+    (lsp-bridge-inlay-hint-try-send-request)))
 
 (provide 'lsp-bridge-inlay-hint)
 
