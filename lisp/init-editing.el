@@ -29,13 +29,13 @@
 (delete-selection-mode t)
 
 (setq
-   backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.cache/emacs/backup/"))    ; don't litter my fs tree
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)       ; use versioned backups
+ backup-by-copying t      ; don't clobber symlinks
+ backup-directory-alist
+ '(("." . "~/.cache/emacs/backup/"))    ; don't litter my fs tree
+ delete-old-versions t
+ kept-new-versions 6
+ kept-old-versions 2
+ version-control t)       ; use versioned backups
 
 (setq auto-save-file-name-transforms
       `((".*" "~/.cache/emacs/autosave" t)))
@@ -91,9 +91,10 @@ point reaches the beginning or end of the buffer, stop there."
   ("C-x o" . ace-window)
   ("C-x C-o" . ace-swap-window))
 
-(use-package which-key
-  :config
-  (which-key-mode))
+(if (featurep 'which-key)
+    (which-key-mode +1)
+  (use-package which-key :config (which-key-mode)))
+
 
 (setq
  locale-coding-system 'utf-8

@@ -42,7 +42,18 @@
       (:tsdk ,(get-ts-sdk))))
 
   (add-to-list 'eglot-server-programs
-               '(vue-mode . ("vls" "--stdio"))))
+               '(vue-mode . ("vue-language-server" "--stdio"))))
+
+(defun vue-lsp-bridge-hook ()
+  "Add lsp-bridge hooks."
+  (corfu-mode -1)
+  (add-to-list 'lsp-bridge-single-lang-server-mode-list '(vue-mode . "volar"))
+  (setq lsp-bridge-enable-log nil)
+  (lsp-bridge-mode))
+
+;; If use lsp-bridge
+(with-eval-after-load "lsp-bridge"
+  (add-hook 'vue-mode-hook #'vue-lsp-bridge-hook))
 
 ;; If use lsp-mode
 (with-eval-after-load "lsp-mode"
@@ -51,6 +62,9 @@
   (add-hook 'vue-mode-hook #'lsp-deferred))
 
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+
+(with-eval-after-load "vue"
+  (add-to-list 'apheleia-mode-alist '(vue-mode . prettier)))
 
 (provide 'init-vue)
 
