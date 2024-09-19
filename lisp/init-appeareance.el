@@ -12,8 +12,8 @@
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
-(when (font-installed-p "LXGW WenKai Mono")
-  (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
+;; (when (font-installed-p "LXGW WenKai Mono")
+;;   (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
 
 (use-package dashboard
   :custom
@@ -33,13 +33,16 @@
   :config
   (dashboard-setup-startup-hook))
 
+(when (font-installed-p "LXGW WenKai Mono")
+  (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
+
 (global-display-line-numbers-mode)
 
-(set-face-attribute 'default nil :weight 'regular)
+(set-face-attribute 'default nil :weight 'semi-light)
 ;; Theme setup.
-(use-package modus-themes
+(use-package ef-themes
   :config
-  (load-theme 'modus-operandi t))
+  (load-theme 'ef-maris-light t))
 
 (use-package doom-modeline
   ;; Enable mood-line
@@ -58,17 +61,15 @@
 (add-hook 'prog-mode-hook #'setup-indent-bars)
 
 (use-package indent-bars
-  :load-path "~/.emacs.d/site-lisp/indent-bars/"
   :config
   (require 'indent-bars-ts)
   :custom
   (indent-bars-color '(highlight :face-bg t :blend 0.3))
   (indent-bars-highlight-current-depth '(:blend 0.8))
-  (indent-bars-pattern "..")
+  (indent-bars-pattern ".. .. ")
   (indent-bars-width-frac 0.1)
   (indent-bars-treesit-support t)
   (indent-bars-display-on-blank-lines nil)
-  (indent-bars-treesit-ignore-blank-lines-types '("module"))
   :hook ((yaml-mode sgml-mode) . indent-bars-mode))
 
 (use-package lin

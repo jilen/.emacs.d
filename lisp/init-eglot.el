@@ -26,12 +26,6 @@
 
 (add-hook 'project-find-functions #'project-find-with-marker)
 
-(use-package eglot-booster
-  :load-path "~/.emacs.d/site-lisp/eglot-booster/"
-  :after eglot
-  :init
-  (add-hook 'after-init-hook #'eglot-booster-mode))
-
 (use-package eldoc-box
   :config
   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))

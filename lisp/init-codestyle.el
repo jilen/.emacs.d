@@ -13,8 +13,11 @@
 (setq sentence-end-double-space nil)
 
 (global-whitespace-mode 1)
-(setq show-trailing-whitespace t)
-(setq whitespace-style '(face space tailing tabs missing-newline-at-eof empty indicate-empty-lines))
+(setq whitespace-style '(face
+                         tabs spaces trailing lines space-before-tab newline
+                         empty space-after-tab
+                         tab-mark
+                         missing-newline-at-eof))
 
 ;; Set default indentation for various languages (add your own!)
 (setq-default tab-width 2)
