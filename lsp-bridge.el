@@ -485,7 +485,7 @@ Possible choices are basedpyright_ruff, pyright_ruff, pyright-background-analysi
   :type 'string)
 
 (defcustom lsp-bridge-tex-lsp-server "texlab"
-  "Default LSP server for (la)tex, you can choose `texlab' or `digestif'."
+  "Default LSP server for (la)tex, you can choose `texlab', `digestif' or `ltex-ls'."
   :type 'string)
 
 (defcustom lsp-bridge-csharp-lsp-server "omnisharp-dotnet"
@@ -502,6 +502,14 @@ Possible choices are basedpyright_ruff, pyright_ruff, pyright-background-analysi
 
 (defcustom lsp-bridge-lua-lsp-server "sumneko"
   "Default LSP server for Lua, you can choose `sumneko' or `lua-lsp'"
+  :type 'string)
+
+(defcustom lsp-bridge-verilog-lsp-server "verible"
+  "Default LSP server for Verilog, you can choose `verible', `svls'"
+  :type 'string)
+
+(defcustom lsp-bridge-xml-lsp-server "lemminx"
+  "Default LSP server for XML, you can choose `lemminx', `camells'"
   :type 'string)
 
 (defcustom lsp-bridge-use-wenls-in-org-mode nil
@@ -569,7 +577,7 @@ Possible choices are basedpyright_ruff, pyright_ruff, pyright-background-analysi
     (swift-mode .                                                                "swift-sourcekit")
     ((csharp-mode csharp-ts-mode) .                                              lsp-bridge-csharp-lsp-server)
     (kotlin-mode .                                                               "kotlin-language-server")
-    (verilog-mode .                                                              "verible")
+    (verilog-mode .                                                              lsp-bridge-verilog-lsp-server)
     (vhdl-mode .                                                                 "vhdl-tool")
     (svelte-mode .                                                               "svelteserver")
     (fsharp-mode .                                                               "fsautocomplete")
@@ -579,6 +587,21 @@ Possible choices are basedpyright_ruff, pyright_ruff, pyright-background-analysi
     (solidity-mode .                                                             "solidity")
     (gleam-ts-mode .                                                             "gleam")
     (ada-mode .                                                                  "ada-language-server")
+    (sml-mode .                                                                  "millet")
+    (fuzion-mode .                                                               "fuzion-language-server")
+    (fennel-mode .                                                               "fennel-ls")
+    (ttcn3-mode .                                                                "ntt")
+    (v-mode .                                                                    "v-analyzer")
+    (cwl-mode .                                                                  "benten")
+    (odin-mode .                                                                 "ols")
+    (ballerina-mode .                                                            "ballerina-lang-server")
+    (bibtex-mode .                                                               "citation-langserver")
+    (feature-mode .                                                              "cucumber-language-server")
+    (rego-mode .                                                                 "regal")
+    (puppet-mode .                                                               "puppet-languageserver")
+    (nxml-mode .                                                                 lsp-bridge-xml-lsp-server)
+    (robot-mode .                                                                "vscode-rf-language-server")
+    (vimrc-mode .                                                                "vim-language-server")
     (terraform-mode .                                                            "terraform-ls")
     (jsonnet-mode .                                                              "jsonnet-language-server")
     (glsl-mode .                                                                 "glsl-language-server")
@@ -692,6 +715,21 @@ Possible choices are basedpyright_ruff, pyright_ruff, pyright-background-analysi
     solidity-mode-hook
     gleam-ts-mode-hook
     ada-mode-hook
+    sml-mode-hook
+    fuzion-mode-hook
+    fennel-mode-hook
+    ttcn3-mode-hook
+    v-mode-hook
+    cwl-mode-hook
+    odin-mode-hook
+    ballerina-mode-hook
+    bibtex-mode-hook
+    feature-mode-hook
+    rego-mode-hook
+    puppet-mode-hook
+    nxml-mode-hook
+    robot-mode-hook
+    vimrc-mode-hook
     terraform-mode-hook
     jsonnet-mode-hook
     glsl-mode-hook
@@ -756,9 +794,24 @@ you can customize `lsp-bridge-get-workspace-folder' to return workspace folder p
     (php-ts-mode                . php-ts-mode-indent-offset) ; PHP
     (perl-mode                  . perl-indent-level)         ; Perl
     (cperl-mode                 . cperl-indent-level)        ; Perl
-    (raku-mode                  . raku-indent-offset)     ; Perl6/Raku
-    (erlang-mode                . erlang-indent-level)    ; Erlang
-    (ada-mode                   . ada-indent)             ; Ada
+    (raku-mode                  . raku-indent-offset)  ; Perl6/Raku
+    (erlang-mode                . erlang-indent-level) ; Erlang
+    (ada-mode                   . ada-indent)          ; Ada
+    (sml-mode                   . sml-indent-level)    ; Standard ML
+    (fuzion-mode                . lsp-bridge-indent-two-level) ; Fuzion
+    (fennel-mode                . lsp-bridge-indent-two-level) ; Fennel
+    (ttcn3-mode                 . lsp-bridge-indent-four-level) ; TTCN3
+    (v-mode                     . lsp-bridge-indent-four-level) ; V
+    (cwl-mode                   . lsp-bridge-indent-four-level) ; Common Workflow
+    (odin-mode                  . lsp-bridge-indent-eight-level) ; Odin
+    (ballerina-mode             . ballerina-indent-offset) ; Ballerina
+    (bibtex-mode                . lsp-bridge-indent-two-level) ; BibTex
+    (feature-mode               . feature-indent-level) ; Cucumber
+    (rego-mode                  . lsp-bridge-indent-two-level) ; Rego
+    (puppet-mode                . puppet-indent-level) ; Puppet
+    (nxml-mode                  . lsp-bridge-indent-two-level) ; XML
+    (robot-mode                 . robot-mode-basic-offset)     ; Robot
+    (vimrc-mode                 . lsp-bridge-indent-four-level) ; Vim
     (terraform-mode             . terraform-indent-level) ; Terraform
     (jsonnet-mode               . jsonnet-indent-level)   ; Jsonnet
     (glsl-mode                  . lsp-bridge-indent-two-level)  ; GLSL
@@ -928,7 +981,9 @@ So we build this macro to restore postion after code format."
       ;; Fetch project root path by `lsp-bridge-get-project-path-by-filepath' if it set by user.
       (funcall lsp-bridge-get-project-path-by-filepath filename)
     ;; Otherwise try to search up `.dir-locals.el' file
-    (car (dir-locals-find-file filename))))
+    (let* ((result (dir-locals-find-file filename))
+           (dir (if (consp result) (car result) result)))
+      (when dir (directory-file-name dir)))))
 
 (defun lsp-bridge--get-language-id-func (project-path file-path server-name extension-name)
   (if lsp-bridge-get-language-id
@@ -1372,6 +1427,28 @@ So we build this macro to restore postion after code format."
                                     (setq-local acm-backend-lsp-items lsp-items))
                                   (lsp-bridge-try-completion))))
 
+(defun lsp-bridge-completion-workspace-symbol--record-items (filename
+                                                             filehost
+                                                             candidates
+                                                             server-name
+                                                             server-names)
+  ;; Adjust `gc-cons-threshold' to maximize temporary,
+  ;; make sure Emacs not do GC
+  (let ((gc-cons-threshold most-positive-fixnum))
+    (lsp-bridge--with-file-buffer filename filehost
+                                  ;; Save completion items.
+                                  (setq-local acm-backend-lsp-workspace-symbol-cache-candidates nil)
+                                  (setq-local acm-backend-lsp-workspace-symbol-server-names server-names)
+
+                                  (let* ((lsp-items acm-backend-lsp-workspace-symbol-items)
+                                         (completion-table (make-hash-table :test 'equal)))
+                                    (dolist (item candidates)
+                                      (plist-put item :annotation (capitalize (plist-get item :icon)))
+                                      (puthash (plist-get item :key) item completion-table))
+                                    (puthash server-name completion-table lsp-items)
+                                    (setq-local acm-backend-lsp-workspace-symbol-items lsp-items))
+                                  (lsp-bridge-try-completion))))
+
 (defun lsp-bridge-check-predicate (pred current-function)
   (if (functionp pred)
       (let ((result (funcall pred)))
@@ -1813,25 +1890,26 @@ So we build this macro to restore postion after code format."
 
 (defun lsp-bridge-search-words-index-files ()
   "Index files when lsp-bridge python process finish."
-  (if (lsp-bridge-is-remote-file)
-      (let* ((host lsp-bridge-remote-file-host)
-             (buffers (cl-remove-if-not (lambda (buf)
-                                          (with-current-buffer buf
-                                            (and (lsp-bridge-is-remote-file)
-                                                 (string-equal lsp-bridge-remote-file-host host))))
-                                        (buffer-list)))
-             (files (mapcar (lambda (buf)
-                              (with-current-buffer buf
-                                lsp-bridge-remote-file-path))
-                            buffers)))
-        (lsp-bridge-remote-send-func-request "search_file_words_index_files" (list files)))
-    (let ((files (cl-remove-if (lambda (elt)
-                                 (or (null elt)
-                                     (file-remote-p elt)
-                                     (member (file-name-extension elt)
-                                             lsp-bridge-search-words-prohibit-file-extensions)))
-                               (mapcar (lambda (b) (lsp-bridge-buffer-file-name (buffer-file-name b))) (buffer-list)))))
-      (lsp-bridge-call-async "search_file_words_index_files" files))))
+  (when lsp-bridge-enable-search-words
+    (if (lsp-bridge-is-remote-file)
+        (let* ((host lsp-bridge-remote-file-host)
+               (buffers (cl-remove-if-not (lambda (buf)
+                                            (with-current-buffer buf
+                                              (and (lsp-bridge-is-remote-file)
+                                                   (string-equal lsp-bridge-remote-file-host host))))
+                                          (buffer-list)))
+               (files (mapcar (lambda (buf)
+                                (with-current-buffer buf
+                                  lsp-bridge-remote-file-path))
+                              buffers)))
+          (lsp-bridge-remote-send-func-request "search_file_words_index_files" (list files)))
+      (let ((files (cl-remove-if (lambda (elt)
+                                   (or (null elt)
+                                       (file-remote-p elt)
+                                       (member (file-name-extension elt)
+                                               lsp-bridge-search-words-prohibit-file-extensions)))
+                                 (mapcar (lambda (b) (lsp-bridge-buffer-file-name (buffer-file-name b))) (buffer-list)))))
+        (lsp-bridge-call-async "search_file_words_index_files" files)))))
 
 (defun lsp-bridge-search-words-update (begin-pos end-pos change-text)
   (if (lsp-bridge-is-remote-file)
@@ -2314,6 +2392,12 @@ Default is `bottom-right', you can choose other value: `top-left', `top-right', 
       (setq-local acm-backend-lsp-filepath (lsp-bridge-get-buffer-truename))
       (setq-local acm-backend-lsp-items (make-hash-table :test 'equal))
 
+      (setq-local acm-backend-lsp-workspace-symbol-cache-candidates nil)
+      (setq-local acm-backend-lsp-workspace-symbol-completion-position nil)
+      (setq-local acm-backend-lsp-workspace-symbol-completion-trigger-characters nil)
+      (setq-local acm-backend-lsp-workspace-symbol-server-names nil)
+      (setq-local acm-backend-lsp-workspace-symbol-items (make-hash-table :test 'equal))
+
       (when lsp-bridge-enable-signature-help
         (acm-run-idle-func lsp-bridge-signature-help-timer lsp-bridge-signature-help-fetch-idle 'lsp-bridge-signature-help-fetch))
       (when lsp-bridge-enable-auto-format-code
@@ -2616,7 +2700,10 @@ We need exclude `markdown-code-fontification:*' buffer in `lsp-bridge-monitor-be
 (with-eval-after-load 'evil
   (evil-add-command-properties #'lsp-bridge-find-def :jump t)
   (evil-add-command-properties #'lsp-bridge-find-references :jump t)
-  (evil-add-command-properties #'lsp-bridge-find-impl :jump t))
+  (evil-add-command-properties #'lsp-bridge-find-impl :jump t)
+
+  ;; Fix issue #516
+  (add-hook 'acm-mode-hook #'evil-normalize-keymaps))
 
 (defun lsp-bridge--rename-file-advisor (orig-fun &optional arg &rest args)
   (let* ((current-file-name (buffer-file-name))
