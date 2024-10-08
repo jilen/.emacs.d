@@ -13,6 +13,7 @@
 (setq sentence-end-double-space nil)
 
 (global-whitespace-mode 1)
+(setq whitespace-line-column 120)
 (setq whitespace-style '(face
                          tabs spaces trailing lines space-before-tab newline
                          empty space-after-tab

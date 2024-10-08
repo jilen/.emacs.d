@@ -26,9 +26,10 @@
 
 (add-hook 'project-find-functions #'project-find-with-marker)
 
+
 (use-package eldoc-box
   :config
-  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-at-point-mode t))
 
 (use-package flycheck-eglot
   :ensure t

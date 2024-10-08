@@ -116,6 +116,10 @@ point reaches the beginning or end of the buffer, stop there."
 
 (add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
+
+(add-hook 'before-save-hook
+          'delete-trailing-whitespace)
+
 (provide 'init-editing)
 
 ;;; init-editing.el ends here

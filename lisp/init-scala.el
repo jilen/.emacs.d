@@ -10,7 +10,7 @@
   :custom
   (treesit-font-lock-level 4)
   :mode "\\.scala\\'"
-  :config
+  :init
   (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-ts-mode))
   (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode)))
 
@@ -30,6 +30,9 @@
    'self-insert-command
    minibuffer-local-completion-map))
 
+(with-eval-after-load "eglot"
+  (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals")))
+  )
 
 (setq compilation-read-command nil)
 
