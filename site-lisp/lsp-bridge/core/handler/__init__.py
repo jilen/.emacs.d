@@ -62,6 +62,7 @@ from core.handler.formatting import Formatting  # noqa: F401
 from core.handler.range_formatting import RangeFormatting  # noqa: F401
 from core.handler.execute_command import ExecuteCommand  # noqa: F401
 from core.handler.workspace_symbol import WorkspaceSymbol  # noqa: F401
+from core.handler.completion_workspace_symbol import CompletionWorkspaceSymbol  # noqa: F401
 from core.handler.call_hierarchy import PrepareCallHierarchyIncomingCalls, PrepareCallHierarchyOutgoingCalls, CallHierarchyIncomingCalls, CallHierarchyOutgoingCalls  # noqa: F401
 from core.handler.document_symbol import DocumentSymbol  # noqa: F401
 from core.handler.imenu import IMenu  # noqa: F401
@@ -70,4 +71,5 @@ from core.handler.jdtls.jdtls_add_overridable_methods import JdtlsAddOverridable
 from core.handler.inlay_hint import InlayHint  # noqa: F401
 from core.handler.semantic_tokens import SemanticTokens # noqa: F401
 from core.handler.rust_expand_macro import RustExpandMacro # noqa: F401
+from core.handler.rust_reload_workspace import RustReloadWorkspace # noqa: F401
 from core.handler.workspace_diagnostics import WorkspaceDiagnostics  # noqa: F401
