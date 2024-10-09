@@ -1,12 +1,12 @@
-;;; scala-ts-mode.el --- Scala Tree-Sitter Mode      -*- lexical-binding: t; -*-
+;;; scala-ts-mode.el --- An tree-sitter based major-mode for Scala -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023  Karan Ahlawat
+;; Copyright (C) 2024  Karan Ahlawat
 
 ;; Author: Karan Ahlawat <ahlawatkaran12@gmail.com>
 ;; Version: 1.0.0
 ;; Filename: scala-ts-mode.el
 ;; Package-Requires: ((emacs "29.1"))
-;; Keywords: scala, languages, tree-sitter
+;; Keywords: emacs, scala, languages, tree-sitter, scala-ts-mode
 ;; URL: https://github.com/KaranAhlawat/scala-ts-mode
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -68,10 +68,10 @@
     (modify-syntax-entry ?\\ "\\" table) ; Escape seq start
     (modify-syntax-entry ?\" "\"" table) ; String start
     (modify-syntax-entry ?'  "/" table)  ; Char start
-    (modify-syntax-entry ?/ "< 12" table) ; Comment seq a, first two char are /
-    (modify-syntax-entry ?\n ">" table) ; Comment seq a, ends with a newline
-    (modify-syntax-entry ?/ ". 14b" table) ; Comment seq b, starts and ends with /
-    (modify-syntax-entry ?* ". 23b" table) ; Comment seq b, second start and first end char is *
+    (modify-syntax-entry ?/ ". 124b" table) ; Line/block comment // or /* */
+    (modify-syntax-entry ?* ". 23n" table) ; Block comment /* */
+    (modify-syntax-entry ?\n "> b" table) ; Comment ends with newline
+    (modify-syntax-entry ?\r "> b" table) ; Comment ends with carriage return
     table)
   "Syntax table for `scala-ts-mode'.")
 
@@ -118,10 +118,7 @@
 
 ;; TODO: wip
 (defvar scala-ts--treesit-range-settings
-  (treesit-range-rules
-   :embed 'scala
-   :host 'scala
-   '((interpolation [(block) (identifier)] @capture)))
+  (treesit-range-rules)
   "Treesitter range settings for `scala-ts-mode'.")
 
 (defvar scala-ts--treesit-font-lock-settings
@@ -147,7 +144,7 @@
    :feature 'extra
    `([,@scala-ts--brackets] @font-lock-bracket-face
      [,@scala-ts--delimiters] @font-lock-delimiter-face)
-   
+
    :language 'scala
    :feature 'comment
    '((comment) @font-lock-comment-face
@@ -155,7 +152,7 @@
 
    :language 'scala
    :feature 'doc-comment
-   :override t
+   :override 'prepend
    `((((block_comment) @font-lock-doc-face)
       (:match ,(rx-to-string '( : bol "/**"
                                 (* (| (not "*")
@@ -200,7 +197,7 @@
       (:match "^[A-Z]" @font-lock-function-call-face))
      (generic_function
       function: (identifier) @font-lock-function-call-face)
-     
+
 
      ;; function definitions
      (function_definition
@@ -234,6 +231,9 @@
    :language 'scala
    :feature 'type
    '((type_identifier) @font-lock-type-face
+     ("_end_ident" @font-lock-type-face
+      (:match "^[A-Z]" @font-lock-type-face))
+     "_end_ident" @font-lock-keyword-face
      ;; expressions
      ((field_expression
        value: (identifier) @font-lock-type-face)
@@ -281,7 +281,7 @@
 
    :language 'scala
    :feature 'interpolation
-   :override t
+   :override 'prepend
    '((interpolation [(block) (identifier)] @font-lock-variable-use-face)
      (interpolation (block ["{" "}"] @font-lock-bracket-face))
      (interpolated_string_expression
@@ -290,7 +290,8 @@
      "$" @font-lock-punctuation-face))
   "Treesitter font-lock settings for `scala-ts-mode'.")
 
-(defun scala-ts--indent-end (node _parent _bol)
+;; BEGIN: Helper functions for indentation
+(defun scala-ts--indent-end (node &rest _)
   "Return anchor position for end clause NODE."
   (let ((label (treesit-node-text (treesit-node-next-sibling node) t)))
     (cond
@@ -328,57 +329,43 @@
         (back-to-indentation)
         (point))))))
 
+(defun scala-ts--indent-if-anchor (node parent &rest _)
+  "Return anchor position for NODE when PARENT is if_expression."
+  (cond
+   ((and (string= (treesit-node-type node)
+                  "else")
+         (string= (treesit-node-type (treesit-node-next-sibling node))
+                  "if_expression"))
+    (treesit-node-start parent))
 
-(defun scala-ts--indent-if (node parent _bol)
+   (t
+    (treesit-node-start (treesit-parent-while
+                         parent
+                         (lambda (cur-node)
+                           (string= (treesit-node-type cur-node)
+                                    "if_expression")))))))
+
+(defun scala-ts--indent-if-offset (node &rest _)
   "Return anchor position for NODE when PARENT is if_expression."
   (let ((offset scala-ts-indent-offset))
     (cond
-     ((and (string= (treesit-node-type node)
-                    "else")
-           (string= (treesit-node-type (treesit-node-next-sibling node))
-                    "if_expression"))
-      (treesit-node-start parent))
-     ;; else
-     ((string= (treesit-node-type node)
-               "else")
-      (treesit-node-start (treesit-parent-while
-                           parent
-                           (lambda (cur-node)
-                             (string= (treesit-node-type cur-node)
-                                      "if_expression")))))
-     ;; then
-     ((string= (treesit-node-type node)
-               "then")
-      (treesit-node-start (treesit-parent-while
-                           parent
-                           (lambda (cur-node)
-                             (string= (treesit-node-type cur-node)
-                                      "if_expression")))))
-     ;; indented and non
-     ((string= (treesit-node-type node)
-               "indented_block")
-      (+ offset (treesit-node-start (treesit-parent-while
-                                     parent
-                                     (lambda (cur-node)
-                                       (string= (treesit-node-type cur-node)
-                                                "if_expression"))))))
-     (t
-      (+ offset (treesit-node-start (treesit-parent-while
-                                     parent
-                                     (lambda (cur-node)
-                                       (string= (treesit-node-type cur-node)
-                                                "if_expression")))))))))
+     ((or (and (string= (treesit-node-type node)
+                        "else")
+               (string= (treesit-node-type (treesit-node-next-sibling node))
+                        "if_expression"))
+          (string= (treesit-node-type node)
+                   "else")
+          (string= (treesit-node-type node)
+                   "then"))
+      0)
 
-(defun scala-ts--indent-error (node parent _bol)
-  "Return anchor position for NODE where PARENT is ERROR."
+     ;; indented and non
+     (t offset))))
+
+(defun scala-ts--indent-error-anchor (node _parent bol)
+  "Return anchor position for NODE at BOL where PARENT is ERROR."
   (save-excursion
-    (let* ((offset scala-ts-indent-offset)
-           (pos (re-search-backward (rx (not (in control
-                                                 blank
-                                                 space)))
-                                    (treesit-node-start parent)
-                                    t))
-           (node (or node (treesit-node-at pos))))
+    (let* ((node (or node (treesit-node-at bol))))
       (pcase (treesit-node-type node)
         ("."
          (forward-line -1)
@@ -386,20 +373,66 @@
          (let ((prev (treesit-node-at (point))))
            (if (string= (treesit-node-type prev)
                         "identifier")
-               (+ offset (treesit-node-start prev))
+               (treesit-node-start prev)
              (treesit-node-start prev))))
-        
-        ((rx (| scala-ts--indent-keywords scala-ts--indent) eol)
-         (goto-char (treesit-node-start node))
-         (back-to-indentation)
-         (+ offset (point)))
 
         (_
          (goto-char (treesit-node-start node))
          (back-to-indentation)
          (point))))))
 
-(defun scala-ts--indent-no-node (_node _parent bol)
+(defun scala-ts--indent-error-offset (node _parent bol)
+  "Return anchor position for NODE at BOL where PARENT is ERROR."
+  (save-excursion
+    (let* ((offset scala-ts-indent-offset)
+           (node (or node (treesit-node-at bol))))
+      (pcase (treesit-node-type node)
+        ("."
+         (forward-line -1)
+         (back-to-indentation)
+         (let ((prev (treesit-node-at (point))))
+           (if (string= (treesit-node-type prev)
+                        "identifier")
+               offset
+             0)))
+
+        ((rx (| scala-ts--indent-keywords scala-ts--indent) eol)
+         offset)
+
+        (_ 0)))))
+
+(defun scala-ts--indent-no-node-anchor (_node _parent _bol)
+  "Return anchor position when node is nil with BOL."
+  (save-excursion
+    (let* ((pos (re-search-backward (rx (not (in control
+                                                 space
+                                                 blank)))))
+           (last-node (treesit-node-at pos)))
+      (pcase (treesit-node-type last-node)
+        ("ERROR"
+         (scala-ts--indent-error-anchor nil last-node pos))
+
+        ((rx scala-ts--indent-keywords eol)
+         (goto-char (treesit-node-start last-node))
+         (back-to-indentation)
+         (if (looking-at-p "end")
+             (point)
+           (goto-char (treesit-node-start last-node))
+           (when (member (treesit-node-type last-node)
+                         '("match" "yield" "then"))
+             (back-to-indentation))
+           (point)))
+
+        ((rx bol (| "template_body" "indented_block") eol)
+         (goto-char (treesit-node-start (treesit-node-parent last-node)))
+         (point))
+
+        (_
+         (goto-char (treesit-node-start last-node))
+         (back-to-indentation)
+         (point))))))
+
+(defun scala-ts--indent-no-node-offset (_node _parent _bol)
   "Return anchor position when node is nil with BOL."
   (save-excursion
     (let* ((offset scala-ts-indent-offset)
@@ -409,39 +442,27 @@
            (last-node (treesit-node-at pos)))
       (pcase (treesit-node-type last-node)
         ("ERROR"
-         (scala-ts--indent-error nil last-node bol))
-        
+         (scala-ts--indent-error-offset nil last-node pos))
+
         ((rx scala-ts--indent-keywords eol)
          (goto-char (treesit-node-start last-node))
          (back-to-indentation)
          (if (looking-at-p "end")
-             (point)
-           (goto-char (treesit-node-start last-node))
-           (when (string= (treesit-node-type last-node)
-                          "match")
-             (back-to-indentation))
-           (+ offset (point))))
+             0
+           offset))
 
         ((rx scala-ts--indent eol)
-         (goto-char (treesit-node-start last-node))
-         (back-to-indentation)
-         (+ offset (point)))
+         offset)
 
         ("identifier"
-         (goto-char (treesit-node-start last-node))
-         (back-to-indentation)
          (if (string-empty-p (treesit-node-text last-node))
-             (+ offset (point))
-           (point)))
+             offset
+           0))
 
         ((rx bol (| "template_body" "indented_block") eol)
-         (goto-char (treesit-node-start (treesit-node-parent last-node)))
-         (+ offset (point)))
+         offset)
 
-        (_
-         (goto-char (treesit-node-start last-node))
-         (back-to-indentation)
-         (point))))))
+        (_ 0)))))
 
 (defun scala-ts--move-out-of-indented-block (&rest _)
   "Correction when jumping at the beginning of a defun.
@@ -456,32 +477,45 @@ or node matching `treesit-defun-type-regexp' is found."
          (node (treesit-parent-until (treesit-node-at (point)) pred t)))
     (when (string= "indented_block" (treesit-node-type node))
       (goto-char (treesit-node-start node)))))
+;; END
 
 (defvar scala-ts--indent-rules
   (let ((offset scala-ts-indent-offset))
     `((scala
        ((node-is "^comment$") no-indent 0)
-       
+
        ((node-is "^}$") parent-bol 0)
        ((node-is "^)$") parent-bol 0)
-       
-       ((parent-is "^if_expression$") scala-ts--indent-if 0)
-       
+
+       ((parent-is "^if_expression$")
+        scala-ts--indent-if-anchor
+        scala-ts--indent-if-offset)
+       ;; Handle else-if
+       ((n-p-gp "^postfix_expression$" "^indented_block$" "^if_expression$") grand-parent 0)
+
        ((n-p-gp "^enumerators$" "^for_expression$" nil) parent-bol ,offset)
        ((n-p-gp "^enumerator$" "^enumerators$" nil) parent 0)
        ((n-p-gp "^ERROR$" "^enumerators$" nil) prev-line ,(- offset))
        ((n-p-gp "^yield$" "^for_expression$" nil) parent-bol 0)
-       
+
        ((n-p-gp "^catch_clause$" "^try_expression$" nil) parent 0)
+       ((n-p-gp "^finally_clause$" "^try_expression$" nil) parent 0)
 
        ((n-p-gp "^indented_cases$" "^match_expression" nil) parent-bol ,offset)
        ((n-p-gp "^case_clause$" "^indented_cases$" nil) parent 0)
        ((n-p-gp "^case_clause$" "^case_block$" nil) parent-bol ,offset)
        ((n-p-gp "[.]" "^field_expression$" "^case_clause$") prev-sibling 0)
-       ((parent-is "^case_clause$") parent ,offset)
+       ((n-p-gp "^identifier$" "^case_clause$" nil)
+        parent
+        (lambda (node _parent _bol)
+          (if (string= (treesit-node-text node)
+                       "finally")
+              (- ,offset)
+            ,offset)))
+       ((parent-is "^case_clause$") parent-bol ,offset)
        
        ((node-is "^end$") scala-ts--indent-end 0)
-       
+
        ;; Handle function annotations
        ((n-p-gp "^def$" "^function_definition$" nil) parent 0)
 
@@ -491,20 +525,25 @@ or node matching `treesit-defun-type-regexp' is found."
                 nil)
         no-indent
         0)
-       ((parent-is "^ERROR$") scala-ts--indent-error 0)
-       (no-node scala-ts--indent-no-node 0)
+       ((parent-is "^ERROR$")
+        scala-ts--indent-error-anchor
+        scala-ts--indent-error-offset)
+       (no-node scala-ts--indent-no-node-anchor
+                scala-ts--indent-no-node-offset)
 
        ;; Normal definitions
        ((parent-is "^compilation_unit$") column-0 0)
-       ((parent-is "definition") parent-bol ,offset)
+       ((parent-is "definition$") parent-bol ,offset)
+       ((parent-is "^lambda_expression$") parent-bol ,offset)
        ((parent-is "^enum_body$") parent-bol ,offset)
+       ((n-p-gp nil "^template_body$" "definition$") grand-parent ,offset)
        ((parent-is "^template_body$") parent-bol ,offset)
        ((parent-is "^with_template_body$") parent-bol ,offset)
        ((parent-is "^field_expression$") parent-bol ,offset)
        ((parent-is "^class_parameters$") parent-bol ,offset)
        ((parent-is "^parameters$") parent-bol ,offset)
        ((parent-is "^arguments$") parent-bol ,offset)
-       ((parent-is "^tuple_expression$") parent ,offset)
+       ((parent-is "^tuple_expression$") parent-bol ,offset)
        
        ((node-is "definition") prev-sibling 0)
        ((node-is "declaration") prev-sibling 0)
@@ -512,18 +551,19 @@ or node matching `treesit-defun-type-regexp' is found."
        ((node-is "^template_body$") prev-sibling 0)
 
        ((n-p-gp "^identifier$" "^indented_block$" nil)
+        parent
         (lambda (node parent _bol)
           (if (member (treesit-node-text node)
                       '("then"
                         "catch"
                         "else"
                         "finally"))
-              (- (treesit-node-start parent) ,offset)
-            (treesit-node-start parent)))
-        0)
-       
+              (- ,offset)
+            0)))
+
        ((n-p-gp "^call_expression$" "^indented_block$" nil)
         (lambda (node parent _bol)
+          parent
           (if-let ((func-node (treesit-node-child-by-field-name
                                node
                                "function"))
@@ -536,16 +576,14 @@ or node matching `treesit-defun-type-regexp' is found."
                                        (treesit-node-next-sibling
                                         func-node))
                                       "block")))
-              (- (treesit-node-start parent) ,offset)
-            (treesit-node-start parent)))
-        0)
-       
+              (- ,offset)
+            0)))
+
        ((n-p-gp "^indented_block$" "^ERROR$" nil) no-indent 0)
        ((parent-is "^indented_block$") parent 0)
        ((parent-is "^block$") parent-bol ,offset)
        ((node-is "^indented_block$") parent-bol ,offset)
-       ((node-is "^block$") parent ,offset)
-       )))
+       ((node-is "^block$") parent ,offset))))
   "Tree-sitter indent rules for `scala-ts-mode'.")
 
 (defun scala-ts--defun-name (node)
