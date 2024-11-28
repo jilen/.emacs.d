@@ -66,8 +66,8 @@
     (modify-syntax-entry ?/ "." table)
     ;; Just reinforcing some defaults
     (modify-syntax-entry ?\\ "\\" table) ; Escape seq start
-    (modify-syntax-entry ?\" "\"" table) ; String start
-    (modify-syntax-entry ?'  "/" table)  ; Char start
+    ;; (modify-syntax-entry ?\" "\"" table) ; String start
+    (modify-syntax-entry ?' "'" table) ; Quoted expression prefix
     (modify-syntax-entry ?/ ". 124b" table) ; Line/block comment // or /* */
     (modify-syntax-entry ?* ". 23n" table) ; Block comment /* */
     (modify-syntax-entry ?\n "> b" table) ; Comment ends with newline
@@ -513,7 +513,7 @@ or node matching `treesit-defun-type-regexp' is found."
               (- ,offset)
             ,offset)))
        ((parent-is "^case_clause$") parent-bol ,offset)
-       
+
        ((node-is "^end$") scala-ts--indent-end 0)
 
        ;; Handle function annotations
@@ -544,7 +544,7 @@ or node matching `treesit-defun-type-regexp' is found."
        ((parent-is "^parameters$") parent-bol ,offset)
        ((parent-is "^arguments$") parent-bol ,offset)
        ((parent-is "^tuple_expression$") parent-bol ,offset)
-       
+
        ((node-is "definition") prev-sibling 0)
        ((node-is "declaration") prev-sibling 0)
        ((node-is "^enum_body$") prev-sibling 0)
