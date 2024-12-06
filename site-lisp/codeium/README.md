@@ -7,6 +7,8 @@
 [![Discord](https://img.shields.io/discord/1027685395649015980?label=community&color=5865F2&logo=discord&logoColor=FFFFFF)](https://discord.gg/3XFf78nAx5)
 [![Twitter Follow](https://img.shields.io/badge/style--blue?style=social&logo=twitter&label=Follow%20%40codeiumdev)](https://twitter.com/intent/follow?screen_name=codeiumdev)
 ![License](https://img.shields.io/github/license/Exafunction/codeium.vim)
+[![Docs](https://img.shields.io/badge/Codeium%20Docs-09B6A2)](https://docs.codeium.com)
+[![Canny Board](https://img.shields.io/badge/Feature%20Requests-6b69ff)](https://codeium.canny.io/feature-requests/)
 [![built with Codeium](https://codeium.com/badges/main)](https://codeium.com?repo_name=exafunction%2Fcodeium.el)
 
 [![Visual Studio](https://img.shields.io/visual-studio-marketplace/i/Codeium.codeium?label=Visual%20Studio&logo=visualstudio)](https://marketplace.visualstudio.com/items?itemName=Codeium.codeium)
@@ -34,7 +36,7 @@ Contributions are welcome! Feel free to submit pull requests and issues related 
 
 ## 🚀 Getting started
 
-1. Install [Emacs](https://www.gnu.org/software/emacs/)
+1. Install [Emacs](https://www.gnu.org/software/emacs/), ensuring the version of Emacs you are running is compiled with [libxml2](https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-HTML_002fXML.html). You can check this by using the `(libxml-available-p)` function within Emacs Lisp. This function returns t (true) if libxml2 is available in your current Emacs session.
 
 2. Install a text-completion frontend of your choice. (We recommend [company-mode](https://company-mode.github.io/) or [corfu](https://github.com/minad/corfu)).
 
@@ -72,7 +74,7 @@ Here is an example configuration:
     ;; (add-hook 'python-mode-hook
     ;;     (lambda ()
     ;;         (setq-local completion-at-point-functions
-    ;;             (list (cape-super-capf #'codeium-completion-at-point #'lsp-completion-at-point)))))
+    ;;             (list (cape-capf-super #'codeium-completion-at-point #'lsp-completion-at-point)))))
     ;; an async company-backend is coming soon!
 
     ;; codeium-completion-at-point is autoloaded, but you can
@@ -157,6 +159,14 @@ the full response of a `GetCompletions` request:
 ```
 Note that, among other things, you get probabilities for each token!
 We would love to see a PR or your own package that uses those!
+
+### 🔓 Authentication
+If you want to authenticate automatically, add your codeium api key to one of `auth-sources`. For example
+
+~/.authinfo.gpg:
+``` text
+machine codeium.com login apikey secret <insert_api_key_here>
+```
 
 ## 💾 Installation Options
 
