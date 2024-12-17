@@ -33,7 +33,7 @@ class CompletionWorkspaceSymbol(Handler):
 
             for item in response:
                 symbol_name = item["name"]
-                symbol_kind = KIND_MAP[item.get("kind", 0)].lower()
+                symbol_kind = SYMBOL_MAP[item.get("kind", 0)].lower()
                 symbol_display_name = "{} [{}]".format(symbol_name, symbol_kind)
                 symbol = {
                     "key": symbol_name,
@@ -47,6 +47,9 @@ class CompletionWorkspaceSymbol(Handler):
                 completion_symbols.append(symbol)
 
             completion_symbols = sorted(completion_symbols, key=cmp_to_key(self.compare_candidates))
+
+            # Avoid returning too many items to cause Emacs to do GC operation.
+            completion_symbols = completion_symbols[:min(len(completion_symbols), self.file_action.completion_workspace_symbol_items_limit)]
 
             if len(completion_symbols) > 0:
                 eval_in_emacs("lsp-bridge-completion-workspace-symbol--record-items",
