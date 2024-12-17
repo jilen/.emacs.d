@@ -112,18 +112,21 @@ class LspServerSender(MessageSender):
         ), **kwargs)
 
     def send_message(self, message: dict):
-        json_content = json.dumps(message)
+        # message_type is not valid key of JSONRPC, we need remove message_type before send LSP server.
+        message_type = message.get("message_type")
+        message.pop("message_type")
 
+        # Parse json content.
+        json_content = json.dumps(message)
         message_str = "Content-Length: {}\r\n\r\n{}".format(len(json_content), json_content)
 
+        # Send to LSP server.
         self.process.stdin.write(message_str.encode("utf-8"))    # type: ignore
         self.process.stdin.flush()    # type: ignore
 
         # InlayHint will got error 'content modified' error if it followed immediately by a didChange request.
         # So we need INLAY_HINT_REQUEST_ID_DICT to contain documentation path to send retry request.
         record_inlay_hint_request(message)
-
-        message_type = message.get("message_type")
 
         if message_type == "request" and \
            not message.get('method', 'response') == 'textDocument/documentSymbol':
@@ -282,6 +285,17 @@ class LspServer:
         self.inlay_hint_provider = False
         self.semantic_tokens_provider = False
 
+        # It's confused about LSP server's textDocumentSync capability.
+        # Python LSP server only have `willSave` field
+        # Rust LSP server only have `save` field
+        # nil LSP server no `willSave` or `save` field.
+        #
+        # So we include `sendSaveNotification` field for nil LSP server
+        # because most of LSP server support send save notification.
+        self.save_file_provider = True
+        if "sendSaveNotification" in server_info:
+            self.save_file_provider = server_info["sendSaveNotification"]
+
         self.work_done_progress_title = ""
 
         self.workspace_file_watcher = None
@@ -299,11 +313,15 @@ class LspServer:
         self.save_include_text = False
 
         # Start LSP server.
+        cwd = self.project_path
+        if os.path.isfile(self.project_path): # single file
+            cwd = os.path.dirname(self.project_path)
         self.lsp_subprocess = subprocess.Popen(self.server_info["command"],
                                                bufsize=DEFAULT_BUFFER_SIZE,
                                                stdin=PIPE,
                                                stdout=PIPE,
-                                               stderr=stderr)
+                                               stderr=stderr,
+                                               cwd=cwd)
 
         # Two separate thread (read/write) to communicate with LSP server.
         self.receiver = LspServerReceiver(self.lsp_subprocess, self.server_info["name"])
@@ -418,7 +436,16 @@ class LspServer:
                         "plaintext"
                     ],
                     "dynamicRegistration": True
-                }
+                },
+                "formatting": {
+                    "dynamicRegistration": True
+                },
+                "rangeFormatting": {
+                    "dynamicRegistration": True
+                },
+                "onTypeFormatting": {
+                    "dynamicRegistration": True
+                },
             },
             "window": {
                 "workDoneProgress": True
@@ -525,21 +552,22 @@ class LspServer:
         })
 
     def send_did_save_notification(self, filepath, buffer_name):
-        args = {
-            "textDocument": {
-                "uri": path_to_uri(filepath)
-            }
-        }
-
-        # Fetch buffer whole content to LSP server if server capability 'includeText' is True.
-        if self.save_include_text:
-            args = merge(args, {
+        if self.save_file_provider:
+            args = {
                 "textDocument": {
-                    "text": get_buffer_content(filepath, buffer_name)
+                    "uri": path_to_uri(filepath)
                 }
-            })
+            }
 
-        self.sender.send_notification("textDocument/didSave", args)
+            # Fetch buffer whole content to LSP server if server capability 'includeText' is True.
+            if self.save_include_text:
+                args = merge(args, {
+                    "textDocument": {
+                        "text": get_buffer_content(filepath, buffer_name)
+                    }
+                })
+
+            self.sender.send_notification("textDocument/didSave", args)
 
     def send_workspace_did_change_watched_files(self, filepath, change_type):
         self.sender.send_notification("workspace/didChangeWatchedFiles", {
@@ -819,22 +847,22 @@ class LspServer:
                     self.work_done_progress_title = ""
 
             if title_attr is not None:
-                progress_message += title_attr
+                progress_message += str(title_attr)
             else:
                 if kind_attr == "report":
                     if self.work_done_progress_title != "":
-                        progress_message += self.work_done_progress_title
+                        progress_message += str(self.work_done_progress_title)
                     else:
-                        progress_message += token_attr
+                        progress_message += str(token_attr)
 
             if percentage_attr is not None and percentage_attr > 0:
                 progress_message += " (" + str(percentage_attr) + "%%)"
 
             if message_attr is not None:
                 if progress_message != "":
-                    progress_message += " " + message_attr
+                    progress_message += " " + str(message_attr)
                 else:
-                    progress_message += message_attr
+                    progress_message += str(message_attr)
 
             if progress_message != "":
                 eval_in_emacs("lsp-bridge--record-work-done-progress", "[LSP-Bridge] " + progress_message)

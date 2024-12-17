@@ -15,7 +15,7 @@ lsp-bridge 的目标是使用多线程技术实现 Emacs 生态中速度最快�
 lsp-bridge 的优势：
 1. 速度超快： 把 LSP 的请求等待和数据分析都隔离到外部进程， 不会因为 LSP Server 返回延迟或大量数据触发 GC 而卡住 Emacs
 2. 远程补全： 内置远程服务器代码补全， 支持密码、 公钥等多种登录方式， 支持 tramp 协议， 支持 SSH 多级堡垒机跳转, 支持 Docker
-3. 开箱即用： 安装后立即可以使用， 不需要额外的配置， 不需要自己折腾补全前端、 补全后端以及多后端融合等配置
+3. 开箱即用： 安装后立即可以使用， 不需要额外的配置， 不需要自己折腾补全前端、 补全后端以及多后端融合等配置, org-mode 的 src-block 也能补全
 4. 多服务器融合： 只需要一个简单的 JSON 即可混合多个 LSP Server 为同一个文件提供服务， 例如 Python， Pyright 提供代码补全， Ruff 提供诊断和格式化
 5. 灵活的自定义： 自定义 LSP Server 选项只需要一个 JSON 文件即可， 简单的几行规则就可以让不同的项目使用不同 JSON 配置
 
@@ -45,7 +45,7 @@ lsp-bridge 的优势：
 (global-lsp-bridge-mode)
 ```
 
-备注： 在终端下补全请安装 [acm-terminal](https://github.com/twlz0ne/acm-terminal)
+备注： 在终端下补全请安装编译 Emacs 的 tty-child-frames 分支
 
 * 如果你使用 straight 来安装， 应该用下面的配置来安装：
 
@@ -90,7 +90,7 @@ lsp-bridge 的优势：
 请注意:
 
 1. 使用 lsp-bridge 时， 请先关闭其他补全插件， 比如 lsp-mode, eglot, company, corfu 等等， lsp-bridge 提供从补全后端、 补全前端到多后端融合的全套解决方案。
-2. lsp-bridge 除了提供 LSP 补全以外， 也提供了很多非 LSP 的补全后端， 包括 capf、 文件单词、 路径、 Yas/Tempel、 TabNine、 Codeium、 Copilot、 Citre、 Ctags, Org roam 等补全后端， 如果你期望在某个模式提供这些补全， 请把对应的模式添加到 `lsp-bridge-default-mode-hooks`
+2. lsp-bridge 除了提供 LSP 补全以外， 也提供了很多非 LSP 的补全后端， 包括 capf、 文件单词、 路径、 Yas/Tempel、 TabNine、 Codeium、 Copilot、 Tabby, Citre、 Ctags, Org roam 等补全后端， 如果你期望在某个模式提供这些补全， 请把对应的模式添加到 `lsp-bridge-default-mode-hooks`, 定义补全顺序请查看 `acm-backend-order`
 3. 请不要对 lsp-bridge 执行 ```byte compile``` 或者 ```native comp```， 会导致升级后， compile 后的版本 API 和最新版不一样， lsp-bridge 多线程设计， 不需要 compile 来加速
 
 ## 本地使用
@@ -308,6 +308,7 @@ lsp-bridge 针对许多语言都提供 2 个以上的语言服务器支持， �
 - `lsp-bridge-peek-list-height`: 选择下一个定义和引用的备选项
 - `lsp-bridge-peek-ace-keys`: 进行 `lsp-bridge-peek-through` 时待按的按键
 - `lsp-bridge-peek-ace-cancel-keys`: 退出 `lsp-bridge-peek-through` 的按键
+- `acm-backend-order`: 补全后端的显示顺序
 - `acm-frame-background-dark-color`: 暗色主题下的菜单背景颜色
 - `acm-frame-background-light-color`: 亮色主题下的菜单背景颜色
 - `acm-enable-capf`: 针对非 LSP 后端提供 capf 补全支持， 默认是关闭的
@@ -323,9 +324,9 @@ lsp-bridge 针对许多语言都提供 2 个以上的语言服务器支持， �
 - `acm-quick-access-use-number-select`: 是否用数字键快速选择候选词， 默认关闭， 打开这个选项会导致有时候干扰数字输入或误选候选词
 - `acm-enable-yas`: yasnippet 补全， 默认打开
 - `acm-enable-citre`: [citre(ctags)](https://github.com/universal-ctags/citre) 补全， 默认关闭
+- `acm-enable-lsp-workspace-symbol`: LSP 符号补全， 默认关闭
 - `acm-doc-frame-max-lines`: 帮助窗口的最大行数， 默认是 20
 - `acm-candidate-match-function`: lsp-bridge 前端对补全候选词的过滤算法， 选项有 `'regexp-quote`, `'orderless-flex`, `'orderless-literal`, `'orderless-prefixes`, `'orderless-regexp`, `'orderless-initialism`, 默认为 `regexp-quote`， orderless-\* 开头的算法需要额外安装 [orderless](https://github.com/oantolin/orderless)
-- `acm-completion-backend-merge-order`: 补全后端的显示顺序， 默认是按照模式补全前半部分、 模板补全前半部分、 TabNine/Copilot/Codeium、 模板补全后半部分、 模式补全后半部分的顺序显示， 你可以根据你的需求调整补全后端的显示顺序， 如果要自定义模式补全的顺序， 请自定义 `acm-completion-mode-candidates-merge-order`
 - `acm-completion-mode-candidates-merge-order`: 模式补全的显示顺序， 默认是按照 Elisp、 LSP、 Jupyter、 Ctags、 Citre、 ROAM、 单词、 Telegra 的顺序显示， 你可以根据你的需求调整模式补全的显示顺序
 - `acm-backend-lsp-candidate-min-length`: LSP 补全最小的触发字符数, 默认是 0
 - `acm-backend-lsp-block-kind-list`: 过滤某些类型的 LSP 候选词， 默认是列表， 当值为 `'("Snippet" "Enum")` 的时候， 意味着 Snippet Enum 这两种类型的补全不会显示
@@ -420,6 +421,7 @@ lsp-bridge 针对许多语言都提供 2 个以上的语言服务器支持， �
 |             | [ccls](https://github.com/MaskRay/ccls)                                                            | `lsp-bridge-c-lsp-server` 设置成 `ccls`, 需要在项目根目录配置好 compile_commands.json                                                                                                                                         |
 | Odin       | [ols](https://github.com/DanielGavin/ols)                                                     |                                                                                                                                                                                                                               |
 | Ocaml       | [ocamllsp](https://github.com/ocaml/ocaml-lsp)                                                     |                                                                                                                                                                                                                               |
+| OpenSCAD   | [openscad-lsp](https://github.com/Leathong/openscad-LSP?tab=readme-ov-file)                                               | `cargo install openscad-lsp`                                                              |
 | Org-mode    | [ds-pinyin](https://github.com/iamcco/ds-pinyin-lsp)                                               | `cargo install ds-pinyin-lsp`, 下载 ds-pinyin 的 dict.db3 文件， 并保存到目录 ~/.emacs.d/ds-pinyin/ , 最后开启选项 `lsp-bridge-use-ds-pinyin-in-org-mode`                                                                     |
 |             | [Wen](https://github.com/metaescape/Wen)                                                           | `pip install pygls pypinyin`, 开启选项 `lsp-bridge-use-wenls-in-org-mode`                                                                                                                                                     |
 | Perl        | [perl-language-server](https://github.com/richterger/Perl-LanguageServer)                          |                                                                                                                                                                                                       |
@@ -453,6 +455,7 @@ lsp-bridge 针对许多语言都提供 2 个以上的语言服务器支持， �
 | TTCN-3  | [ntt](https://github.com/nokia/ntt)             |                                                                                                                                                                                                                               |
 | Typescript  | [typescript](https://github.com/typescript-language-server/typescript-language-server)             |                                                                                                                                                                                                                               |
 | Typst       | [typst-lsp](https://github.com/nvarner/typst-lsp)                                                  |                                                                                                                                                                                                                               |
+|        | [tinymist](https://github.com/Myriad-Dreamin/tinymist)                                                  |                                                                                                                                                                                                                               |
 | V     | [v-analyzer](https://github.com/vlang/vscode-vlang)                                                |                                                                                                                                                                                                                               |
 | Verilog     | [verible](https://github.com/chipsalliance/verible)                                                | `lsp-bridge-verilog-lsp-server` 设置为 `verible`                                                                                                                                                                                                                              |
 |      | [svls](https://github.com/dalance/svls)                                                | `lsp-bridge-verilog-lsp-server` 设置为 `svls`                                                                                                                                                                                                                              |

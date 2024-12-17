@@ -1,6 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# /// script
+# dependencies = [
+#   "epc",
+#   "orjson",
+#   "sexpdata",
+#   "six",
+#   "setuptools",
+#   "paramiko",
+#   "rapidfuzz",
+#   "watchdog",
+# ]
+# ///
+
 # Copyright (C) 2022 Andy Stewart
 #
 # Author:     Andy Stewart <lazycat.manatee@gmail.com>
@@ -759,10 +772,10 @@ class LspBridge:
             ("support-single-file" in lang_server_info and
              lang_server_info["support-single-file"] is False)):
 
-            if "project-files" in lang_server_info:
+            if "projectFiles" in lang_server_info:
                 # If support-support-single-file is False,
-                # we will search project-files up 20 level directories to find project root.
-                project_root = self.find_project_root(filepath, lang_server_info["project-files"])
+                # we will search projectFiles up 20 level directories to find project root.
+                project_root = self.find_project_root(filepath, lang_server_info["projectFiles"])
                 if project_root is None:
                     self.turn_off_by_single_file(filepath, single_lang_server)
 
@@ -955,8 +968,8 @@ class LspBridge:
         self.copilot.complete(position, editor_mode, file_path, relative_path, tab_size, text, insert_spaces)
 
     @threaded
-    def codeium_complete(self, cursor_offset, editor_language, tab_size, text, insert_spaces, prefix, language):
-        self.codeium.complete(cursor_offset, editor_language, tab_size, text, insert_spaces, prefix, language)
+    def codeium_complete(self, cursor_offset, editor_language, tab_size, text, insert_spaces, prefix, language, file_path):
+        self.codeium.complete(cursor_offset, editor_language, tab_size, text, insert_spaces, prefix, language, file_path)
 
     def codeium_completion_accept(self, id):
         self.codeium.accept(id)
@@ -1011,18 +1024,11 @@ def read_lang_server_info(lang_server_path):
     lang_server_info = json.load(lang_server_path)
 
     # Replace template in command options.
-    command_args = lang_server_info["command"]
-    for i, arg in enumerate(command_args):
-        command_args[i] = replace_template(arg)
-    lang_server_info["command"] = command_args
+    lang_server_info["command"] = eval(replace_template(str(lang_server_info["command"])))
 
     # Replace template in initializationOptions.
     if "initializationOptions" in lang_server_info:
-        initialization_options_args = lang_server_info["initializationOptions"]
-        for i, arg in enumerate(initialization_options_args):
-            if isinstance(initialization_options_args[arg], str):
-                initialization_options_args[arg] = replace_template(initialization_options_args[arg])
-        lang_server_info["initializationOptions"] = initialization_options_args
+        lang_server_info["initializationOptions"] = eval(replace_template(str(lang_server_info["initializationOptions"])))
 
     return lang_server_info
 

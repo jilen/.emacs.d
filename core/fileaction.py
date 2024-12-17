@@ -94,6 +94,7 @@ class FileAction:
         (self.enable_auto_import,
          self.completion_items_limit,
          self.completion_match_mode,
+         self.completion_workspace_symbol_items_limit,
          self.insert_spaces,
          self.enable_push_diagnostics,
          self.push_diagnostic_idle,
@@ -102,6 +103,7 @@ class FileAction:
              "acm-backend-lsp-enable-auto-import",
              "acm-backend-lsp-candidates-max-number",
              "acm-backend-lsp-match-mode",
+             "acm-backend-lsp-workspace-symbol-candidates-max-number",
              "indent-tabs-mode",
              "lsp-bridge-enable-diagnostics",
              "lsp-bridge-diagnostic-fetch-idle",
@@ -213,9 +215,15 @@ class FileAction:
             if isinstance(self.completion_block_kind_list, list):
                 self.completion_block_kind_list = list(map(lambda x: x.lower(), self.completion_block_kind_list))
 
-        delay = 0 if is_running_in_server() else 0.1
-        self.try_completion_timer = threading.Timer(delay, lambda : self.try_completion(position, before_char, prefix, self.version))
-        self.try_completion_timer.start()
+        if position['line'] < 0:
+            # TODO fix this from elisp happened in org source code completion
+            # We can temporary fix this by ignore this case,
+            # which will not influence the completion result.
+            logger.error("Invalid position change file", start, end, range_length, change_text, position, before_char, buffer_name, prefix, self.org_line_bias)
+        else:
+            delay = 0 if is_running_in_server() else 0.1
+            self.try_completion_timer = threading.Timer(delay, lambda : self.try_completion(position, before_char, prefix, self.version))
+            self.try_completion_timer.start()
 
     def update_file(self, buffer_name, org_line_bias=None):
         self.org_line_bias = org_line_bias
@@ -244,13 +252,15 @@ class FileAction:
                     self.send_server_request(lsp_server, "completion", lsp_server, position, before_char, prefix, version)
 
                     # Send workspace symbol completion request.
-                    self.send_server_request(lsp_server, "completion_workspace_symbol", lsp_server, prefix)
+                    if lsp_server.workspace_symbol_provider:
+                        self.send_server_request(lsp_server, "completion_workspace_symbol", lsp_server, prefix)
         else:
             # Send code completion request.
             self.send_server_request(self.single_server, "completion", self.single_server, position, before_char, prefix, version)
 
             # Send workspace symbol completion request.
-            self.send_server_request(self.single_server, "completion_workspace_symbol", self.single_server, prefix)
+            if self.single_server.workspace_symbol_provider:
+                self.send_server_request(self.single_server, "completion_workspace_symbol", self.single_server, prefix)
 
     def try_formatting(self, start, end, *args, **kwargs):
         if self.multi_servers:

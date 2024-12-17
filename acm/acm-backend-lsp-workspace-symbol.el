@@ -88,8 +88,18 @@
   "LSP backend for acm."
   :group 'acm)
 
+(defcustom acm-enable-lsp-workspace-symbol nil
+  "Popup LSP workspace symbol completions when this option is turn on."
+  :type 'boolean
+  :group 'acm-backend-lsp-workspace-symbol)
+
 (defcustom acm-backend-lsp-workspace-symbol-candidate-min-length 0
   "Minimal length of candidate."
+  :type 'integer
+  :group 'acm-backend-lsp-workspace-symbol)
+
+(defcustom acm-backend-lsp-workspace-symbol-candidates-max-number 100
+  "Maximal number of candidate of menu."
   :type 'integer
   :group 'acm-backend-lsp-workspace-symbol)
 
@@ -102,6 +112,12 @@ Anyway, if want use `acm-candidate-fuzzy-search' filter again in acm menu, turn 
   :type 'string
   :group 'acm-backend-lsp-workspace-symbol)
 
+(defun acm-backend-lsp-workspace-symbol-init ()
+  (setq-local acm-backend-lsp-workspace-symbol-cache-candidates nil)
+  (setq-local acm-backend-lsp-workspace-symbol-completion-position nil)
+  (setq-local acm-backend-lsp-workspace-symbol-completion-trigger-characters nil)
+  (setq-local acm-backend-lsp-workspace-symbol-server-names nil)
+  (setq-local acm-backend-lsp-workspace-symbol-items (make-hash-table :test 'equal)))
 
 (defun acm-backend-lsp-workspace-symbol-candidates (keyword)
   (let ((match-candidates
