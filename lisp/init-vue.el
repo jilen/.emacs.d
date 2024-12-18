@@ -25,40 +25,45 @@
   (flycheck-add-mode 'javascript-eslint 'vue-mode))
 
 ;; If use eglot
-
+(setq eglot-ignored-server-capabilities '(:signatureHelpProvider))
 (require 'f)
 (defun get-ts-sdk ()
   "Get ts sdk path."
   (let ((eglot-lsp-context t))
     (f-join (project-root (project-current)) "node_modules/typescript/lib")))
 
-(with-eval-after-load 'eglot
+(with-eval-after-load "eglot"
   (require 'init-eglot)
   (setq-default eglot-events-buffer-size 0)
-
   (cl-defmethod eglot-initialization-options (server)
-    "Passes through required vetur SERVER initialization options to EGLOT-VLS."
+    "Passes through required vetur SERVER initialization options to vue-language-server."
     `(:typescript
-      (:tsdk ,(get-ts-sdk))))
+      (:tsdk ,(get-ts-sdk))
+      :vue
+      (:hybridMode :json-false)
+      :languageFeatures (:completion
+                         (:defaultTagNameCase "both"
+                                              :defaultAttrNameCase "kebabCase"
+                                              :getDocumentNameCasesRequest :json-false
+                                              :getDocumentSelectionRequest :json-false)
+                         :diagnostics
+                         (:getDocumentVersionRequest :json-false))
+      :documentFeatures
+      (:selectionRange t :foldingRange t :linkedEditingRange t :documentSymbol t :documentColor t)
+      :serverMode 0
+      :diagnosticModel 1
+      :textDocumentSync 2))
 
   (add-to-list 'eglot-server-programs
                '(vue-mode . ("vue-language-server" "--stdio"))))
 
-(defun vue-lsp-bridge-hook ()
-  "Add lsp-bridge hooks."
-  (corfu-mode -1)
-  (add-to-list 'lsp-bridge-single-lang-server-mode-list '(vue-mode . "volar"))
-  (setq lsp-bridge-enable-log nil)
-  (lsp-bridge-mode))
-
 ;; If use lsp-bridge
 (with-eval-after-load "lsp-bridge"
-  (add-hook 'vue-mode-hook #'vue-lsp-bridge-hook))
+  (add-to-list 'lsp-bridge-single-lang-server-mode-list '(vue-mode . "volar"))
+  (add-hook 'vue-mode-hook 'lsp-bridge-mode))
 
 ;; If use lsp-mode
 (with-eval-after-load "lsp-mode"
-  (add-hook 'typescript-ts-mode-hook #'lsp-deferred)
-  (add-hook 'typescript-mode-hook #'lsp-deferred)
   (add-hook 'vue-mode-hook #'lsp-deferred))
 
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))

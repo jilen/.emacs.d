@@ -18,6 +18,13 @@
 (use-package add-node-modules-path
   :hook ((typescript-ts-mode tsx-ts-mode) . add-node-modules-path))
 
+(with-eval-after-load "lsp-bridge"
+  (add-hook 'typescript-ts-mode-hook 'lsp-bridge-mode)
+  (add-hook 'tsx-ts-mode 'lsp-bridge-mode))
+
+(with-eval-after-load "lsp-mode"
+  (add-hook 'typescript-ts-mode #'lsp-deferred))
+
 (provide 'init-typescript)
 
 ;;; init-typescript.el ends here

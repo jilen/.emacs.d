@@ -10,6 +10,8 @@
 
 (setq package-enable-at-startup nil)
 
+(setenv "LSP_USE_PLISTS" "true")
+
 ;; So we can detect this having been loaded
 (provide 'early-init)
 

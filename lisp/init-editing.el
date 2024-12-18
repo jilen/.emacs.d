@@ -102,6 +102,7 @@ point reaches the beginning or end of the buffer, stop there."
  set-keyboard-coding-system 'utf-8
  set-selection-coding-system 'utf-8
  prefer-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
 
 (when (boundp 'mac-carbon-version-string)
   (setq mac-option-modifier 'meta)
@@ -119,6 +120,11 @@ point reaches the beginning or end of the buffer, stop there."
 
 (add-hook 'before-save-hook
           'delete-trailing-whitespace)
+
+(defun wl-paste ()
+  (interactive)
+  nil ; should return nil if we're the current paste owner
+  (insert (shell-command-to-string "wl-paste -n")))
 
 (provide 'init-editing)
 

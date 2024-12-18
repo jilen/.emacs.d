@@ -22,9 +22,7 @@
 
 (setq max-lisp-eval-depth 10000)
 
-
 ;; Bootstrap config
-
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (require 'init-package)
@@ -32,12 +30,13 @@
 (require 'init-exec-path)
 (require 'init-appeareance)
 (require 'init-git)
+(require 'init-vterm)
 (require 'init-project)
 (require 'init-consult)
 (require 'init-node-path)
 (require 'init-corfu)
 (require 'init-codestyle)
-(require 'init-ligatures)
+;; (require 'init-ligatures)
 (require 'init-flycheck)
 (require 'init-javascript)
 (require 'init-scala)
@@ -46,11 +45,12 @@
 (require 'init-php)
 (require 'init-pyim)
 (require 'init-yaml)
-(require 'init-ensime)
+;; (require 'init-ensime)
 (require 'init-markdown)
 (require 'init-org)
 ;; (require 'init-codeium)
-;; (require 'init-lsp)
+(require 'init-lsp)
+;; (require 'init-lsp-bridge)
 (require 'init-eglot)
 (require 'init-kotlin)
 
@@ -58,3 +58,5 @@
 (provide 'init)
 
 ;;; init.el ends here
+(put 'list-threads 'disabled nil)
+(put 'upcase-region 'disabled nil)

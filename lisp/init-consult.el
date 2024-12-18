@@ -116,11 +116,11 @@
   :config
   (require 'wgrep))
 
-(use-package anzu
-  :demand t
-  :bind
-  (([remap query-replace] . #'anzu-query-replace)))
-
+(use-package visual-replace
+  :defer t
+  :bind (("C-c r" . visual-replace)
+         :map isearch-mode-map
+         ("C-c r" . visual-replace-from-isearch)))
 
 (provide 'init-consult)
 

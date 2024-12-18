@@ -69,7 +69,7 @@
   "Compile project command."
   (message (concat (project-root (project-current t)) "build.sc"))
   (when (file-exists-p (concat (project-root (project-current t)) "build.sc"))
-    (setq-local compile-command "mill -j 4 __.compile" )))
+    (setq-local compile-command "env TERM=dumb mill  --disable-prompt -s __:^TestModule.compile" )))
 
 (add-hook 'scala-mode-hook #'setup-compile)
 (add-hook 'scala-ts-mode-hook #'setup-compile)

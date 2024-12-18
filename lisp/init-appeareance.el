@@ -12,8 +12,10 @@
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
-;; (when (font-installed-p "LXGW WenKai Mono")
-;;   (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
+(set-face-attribute 'default nil :weight 'regular)
+
+(when (font-installed-p "LXGW WenKai Mono")
+  (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
 
 (use-package dashboard
   :custom
@@ -33,16 +35,12 @@
   :config
   (dashboard-setup-startup-hook))
 
-(when (font-installed-p "LXGW WenKai Mono")
-  (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
-
 (global-display-line-numbers-mode)
 
-(set-face-attribute 'default nil :weight 'semi-light)
 ;; Theme setup.
 (use-package ef-themes
   :config
-  (load-theme 'ef-maris-light t))
+  (load-theme 'ef-light t))
 
 (use-package doom-modeline
   ;; Enable mood-line
@@ -52,6 +50,18 @@
   :config
   (doom-modeline-mode))
 
+(use-package indent-bars
+  :config
+  (require 'indent-bars-ts)
+  :custom
+  (indent-bars-color '(highlight :face-bg t :blend 0.3))
+  (indent-bars-highlight-current-depth '(:blend 0.8))
+  (indent-bars-pattern "...")
+  (indent-bars-width-frac 0.1)
+  (indent-bars-treesit-support t)
+  (indent-bars-display-on-blank-lines nil)
+  :hook ((yaml-mode sgml-mode) . indent-bars-mode))
+
 (defun setup-indent-bars ()
   "Enable indentbars."
   (unless (derived-mode-p 'web-mode)
@@ -60,17 +70,7 @@
 
 (add-hook 'prog-mode-hook #'setup-indent-bars)
 
-(use-package indent-bars
-  :config
-  (require 'indent-bars-ts)
-  :custom
-  (indent-bars-color '(highlight :face-bg t :blend 0.3))
-  (indent-bars-highlight-current-depth '(:blend 0.8))
-  (indent-bars-pattern ".. .. ")
-  (indent-bars-width-frac 0.1)
-  (indent-bars-treesit-support t)
-  (indent-bars-display-on-blank-lines nil)
-  :hook ((yaml-mode sgml-mode) . indent-bars-mode))
+
 
 (use-package lin
   :init

@@ -11,6 +11,7 @@
   `((vue-mode . "package.json")
     (js-ts-mode . "package.json")
     (scala-mode . ".bsp")
+    (scala-ts-mode . ".bsp")
     (typescript-ts-mode . "package.json")))
 
 (defun project-find-with-marker (dir)
@@ -36,6 +37,11 @@
   :after (flycheck eglot)
   :config
   (global-flycheck-eglot-mode 1))
+
+(use-package eglot-booster
+  :load-path "~/.emacs.d/site-lisp/eglot-booster/"
+	:after eglot
+	:config	(eglot-booster-mode))
 
 (provide 'init-eglot)
 
