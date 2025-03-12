@@ -6,7 +6,8 @@
 
 (use-package web-mode)
 
-(define-derived-mode vue-mode web-mode "Vue" "Vue-SFC.")
+(define-derived-mode vue-mode web-mode "Vue" "Vue-SFC."
+  (setq web-mode-script-padding 0))
 
 (with-eval-after-load 'nerd-icons
   (add-to-list 'nerd-icons-mode-icon-alist '(vue-mode nerd-icons-sucicon "nf-seti-vue" :face nerd-icons-lgreen)))
@@ -42,10 +43,11 @@
       :vue
       (:hybridMode :json-false)
       :languageFeatures (:completion
-                         (:defaultTagNameCase "both"
-                                              :defaultAttrNameCase "kebabCase"
-                                              :getDocumentNameCasesRequest :json-false
-                                              :getDocumentSelectionRequest :json-false)
+                         (
+                          :defaultTagNameCase "both"
+                          :defaultAttrNameCase "kebabCase"
+                          :getDocumentNameCasesRequest :json-false
+                          :getDocumentSelectionRequest :json-false)
                          :diagnostics
                          (:getDocumentVersionRequest :json-false))
       :documentFeatures
@@ -68,7 +70,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
 
-(with-eval-after-load "vue"
+(with-eval-after-load "apheleia-mode"
   (add-to-list 'apheleia-mode-alist '(vue-mode . prettier)))
 
 (provide 'init-vue)

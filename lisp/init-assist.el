@@ -27,10 +27,11 @@
   :config
   (aidermacs-setup-minor-mode)
   :custom
-  (aidermacs-auto-commits t)
+  (aidermacs-backend 'vterm)
+  (aidermacs-auto-commits nil)
   (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "sonnet")
-  )
+  (aidermacs-default-model "deepseek/deepseek-chat")
+  (aidermacs-architect-model "r1"))
 
 (provide 'init-assist)
 ;;; init-assist.el ends here
