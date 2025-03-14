@@ -119,10 +119,8 @@ function to the relevant margin-formatters list."
   :init
   (setq cape-dict-case-fold t)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  ;; (add-to-list 'completion-at-point-functions #'cape-tex)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-abbrev))
+  (add-to-list
+   'completion-at-point-functions (cape-capf-super #'cape-dabbrev #'cape-keyword #'cape-abbrev)))
 
 (with-eval-after-load 'eglot
   (setq completion-category-defaults nil))

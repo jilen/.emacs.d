@@ -21,9 +21,7 @@
 
 
 (use-package aidermacs
-  :load-path "~/.emacs.d/site-lisp/aidermacs"
   :bind (("C-c a" . aidermacs-transient-menu))
-
   :config
   (aidermacs-setup-minor-mode)
   :custom
