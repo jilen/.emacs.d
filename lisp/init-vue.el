@@ -57,7 +57,7 @@
       :textDocumentSync 2))
 
   (add-to-list 'eglot-server-programs
-               '(vue-mode . ("vue-language-server" "--stdio"))))
+               '((vue-mode typescript-ts-mode js-ts-mode) . ("vue-language-server" "--stdio"))))
 
 ;; If use lsp-bridge
 (with-eval-after-load "lsp-bridge"

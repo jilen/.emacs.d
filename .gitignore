@@ -18,3 +18,4 @@ bookmarks
 *.out
 eshell/
 codeium/
+.aider*

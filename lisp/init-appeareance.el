@@ -12,10 +12,7 @@
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
-(set-face-attribute 'default nil :weight 'regular)
-
-(when (font-installed-p "LXGW WenKai Mono")
-  (set-fontset-font t '(#x4e00 . #x9fff) "LXGW WenKai Mono"))
+(set-face-attribute 'default nil)
 
 (use-package dashboard
   :custom
@@ -38,9 +35,9 @@
 (global-display-line-numbers-mode)
 
 ;; Theme setup.
-(use-package ef-themes
+(use-package modus-themes
   :config
-  (load-theme 'ef-light t))
+  (load-theme 'modus-operandi-tinted t))
 
 (use-package doom-modeline
   ;; Enable mood-line
@@ -70,7 +67,7 @@
 
 (add-hook 'prog-mode-hook #'setup-indent-bars)
 
-
+(set-face-attribute 'line-number nil :height 0.8)
 
 (use-package lin
   :init
@@ -121,6 +118,8 @@
   (add-hook 'after-init-hook 'global-color-identifiers-mode))
 
 (show-paren-mode 1)
+
+(setq-default eldoc-echo-area-use-multiline-p nil)
 
 (provide 'init-appeareance)
 

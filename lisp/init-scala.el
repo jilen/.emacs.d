@@ -68,7 +68,7 @@
 (defun setup-compile ()
   "Compile project command."
   (when (and (project-current) (file-exists-p (concat (project-root (project-current)) "build.sc")))
-    (setq-local compile-command "env TERM=dumb mill  --disable-prompt -s __:^TestModule.compile" )))
+    (setq-local compile-command "env TERM=dumb mill  --disable-prompt -s __.compile" )))
 
 (add-hook 'scala-mode-hook #'setup-compile)
 (add-hook 'scala-ts-mode-hook #'setup-compile)

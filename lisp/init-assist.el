@@ -25,11 +25,12 @@
   :config
   (aidermacs-setup-minor-mode)
   :custom
+  (aidermacs-show-diff-after-change nil)
   (aidermacs-backend 'vterm)
   (aidermacs-auto-commits nil)
   (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "deepseek/deepseek-chat")
-  (aidermacs-architect-model "r1"))
+  (aidermacs-architect-model "openrouter/google/gemini-2.5-flash-preview:thinking")
+  (aidermacs-default-model "openrouter/google/gemini-2.5-flash-preview"))
 
 (provide 'init-assist)
 ;;; init-assist.el ends here

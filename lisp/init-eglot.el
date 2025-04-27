@@ -35,12 +35,15 @@
 (use-package flycheck-eglot
   :ensure t
   :after (flycheck eglot)
+  :custom (flycheck-eglot-exclusive nil)
   :config
   (global-flycheck-eglot-mode 1))
 
 (use-package eglot-booster
   :load-path "~/.emacs.d/site-lisp/eglot-booster/"
 	:after eglot
+  :custom
+  (eglot-booster-io-only t)
 	:config  (eglot-booster-mode))
 
 (provide 'init-eglot)
