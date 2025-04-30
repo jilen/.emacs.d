@@ -23,7 +23,8 @@
   (add-hook 'tsx-ts-mode 'lsp-bridge-mode))
 
 (with-eval-after-load "lsp-mode"
-  (add-hook 'typescript-ts-mode-hook #'lsp-deferred))
+  (add-hook 'typescript-ts-mode-hook #'lsp-deferred)
+  (add-hook 'tsx-ts-mode-hook #'lsp-deferred))
 
 (provide 'init-typescript)
 
