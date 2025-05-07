@@ -89,14 +89,13 @@ matched prefix and appending the value. Otherwise, calls ORIG-FUN with ARGS."
 (defun setup-lsp-next-checkers ()
   "Configure flycheck to run other checkers after the 'lsp' checker.
 This function is intended to be added to `flycheck-mode-hook`."
-  (lsp-diagnostics-lsp-checker-if-needed)
   (when-let ((checker (cl-find-if (lambda (checker)
                                     (and (not (eq checker 'lsp))
                                          (flycheck-checker-supports-major-mode-p checker major-mode)))
                                   flycheck-checkers)))
-    (flycheck-add-next-checker 'lsp checker)))
+    (flycheck-add-next-checker 'lsp `(info . ,checker))))
 
-(add-hook 'lsp-managed-mode-hook #'setup-lsp-next-checkers)
+(add-hook 'lsp-diagnostics-mode-hook #'setup-lsp-next-checkers)
 
 ;; --- End Flycheck configuration ---
 
