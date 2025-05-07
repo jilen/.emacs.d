@@ -18,8 +18,7 @@
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless))) ;; Configure orderless
   :hook
-  (lsp-completion-mode . lsp-mode-setup-completion)
-  )
+  (lsp-completion-mode . lsp-mode-setup-completion))
 
 ;; Define the alist for custom project root remapping
 (defvar my-lsp-root-remap-alist
@@ -83,6 +82,24 @@ matched prefix and appending the value. Otherwise, calls ORIG-FUN with ARGS."
 (use-package eldoc-box
   :config
   (add-hook 'lsp-mode-hook #'eldoc-box-hover-at-point-mode t))
+
+;; --- Flycheck configuration ---
+
+
+(defun setup-lsp-next-checkers ()
+  "Configure flycheck to run other checkers after the 'lsp' checker.
+This function is intended to be added to `flycheck-mode-hook`."
+  (lsp-diagnostics-lsp-checker-if-needed)
+  (when-let ((checker (cl-find-if (lambda (checker)
+                                    (and (not (eq checker 'lsp))
+                                         (flycheck-checker-supports-major-mode-p checker major-mode)))
+                                  flycheck-checkers)))
+    (flycheck-add-next-checker 'lsp checker)))
+
+(add-hook 'lsp-managed-mode-hook #'setup-lsp-next-checkers)
+
+;; --- End Flycheck configuration ---
+
 
 (provide 'init-lsp)
 
