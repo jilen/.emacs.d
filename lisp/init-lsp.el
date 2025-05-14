@@ -66,7 +66,7 @@ matched prefix and appending the value. Otherwise, calls ORIG-FUN with ARGS."
 (advice-add 'lsp--calculate-root :around #'my-lsp-calculate-root-remap)
 
 
-(use-package "lsp-ui"
+(use-package lsp-ui
   :init
   (setq lsp-ui-sideline-enable nil)
   (setq lsp-ui-doc-enable nil) ;; use eldoc
