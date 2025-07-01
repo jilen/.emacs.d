@@ -1,0 +1,124 @@
+#+html: <a href="https://www.buymeacoffee.com/fxpy8fzgyxg" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 23px !important;width: 120px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+
+Lambda-line is a custom status-line (or "mode-line) for Emacs. It is
+configurable for use either as a header-line or as a footer-line.
+
+The status-line has the structure:
+
+[ status name (primary) tertiary secondary ]
+
+Information displayed depends on major mode. Not all segments display in every mode. 
+
+#+ATTR_HTML: :width 85%
+[[file:screenshots/read-write-dark.png]]
+#+ATTR_HTML: :width 85%
+[[file:screenshots/read-only-dark.png]]
+#+ATTR_HTML: :width 85%
+[[file:screenshots/write-dark-prog.png]]
+#+ATTR_HTML: :width 85%
+[[file:screenshots/read-write-light.png]]
+#+ATTR_HTML: :width 85%
+[[file:screenshots/read-only-light.png]]
+#+ATTR_HTML: :width 85%
+[[file:screenshots/line-time-icon.png]]
+#+ATTR_HTML: :width 85%
+[[file:screenshots/inverted-rw.png]]
+#+ATTR_HTML: :width 85%
+[[file:screenshots/inverted-ro.png]]
+
+
+To achieve the above coloration of the status-line see [[https://github.com/Lambda-Emacs/lambda-themes][lambda-themes]].
+
+* Installation
+
+Lambda-line is not yet on MELPA. In the meantime to use this package you'll
+have to clone or otherwise download the repo and put it into your load path.
+Here's a basic way of setting it up using [[https://github.com/jwiegley/use-package][use-package]] and [[https://github.com/raxod502/straight.el][straight]].
+
+#+begin_src emacs-lisp
+  (use-package lambda-line
+    :straight (:type git :host github :repo "lambda-emacs/lambda-line") 
+    :custom
+    (lambda-line-icon-time t) ;; requires ClockFace font (see below)
+    (lambda-line-clockface-update-fontset "ClockFaceRect") ;; set clock icon
+    (lambda-line-position 'top) ;; Set position of status-line 
+    (lambda-line-abbrev t) ;; abbreviate major modes
+    (lambda-line-hspace "  ")  ;; add some cushion
+    (lambda-line-prefix t) ;; use a prefix symbol
+    (lambda-line-prefix-padding nil) ;; no extra space for prefix 
+    (lambda-line-status-invert nil)  ;; no invert colors
+    (lambda-line-gui-ro-symbol  " ⨂") ;; symbols
+    (lambda-line-gui-mod-symbol " ⬤") 
+    (lambda-line-gui-rw-symbol  " ◯") 
+    (lambda-line-space-top +.50)  ;; padding on top and bottom of line
+    (lambda-line-space-bottom -.50)
+    (lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
+    :config
+    ;; activate lambda-line 
+    (lambda-line-mode) 
+    ;; set divider line in footer
+    (when (eq lambda-line-position 'top)
+      (setq-default mode-line-format (list "%_"))
+      (setq mode-line-format (list "%_"))))
+#+end_src
+
+* Options
+
+Lambda-line has a lot of different options for customization. Please see
+=M-x customize-group lambda-line= for full details.
+
+- Set =lambda-line-position= to header (top) or footer (bottom).
+- Use a prefix status icon in the status-line with =lambda-line-prefix t=.
+- Customize the various prefix status symbols in both GUI and TTY with
+  =lambda-line-GUI/TTY-RO/RW/MD-symbol=.
+   + *NOTE*: If you use symbols you should make sure you are using a font that
+        will display them properly. Here is one reliable way, using [[https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip][Symbola]] font:
+        #+begin_src emacs-lisp
+ (use-package fontset
+   :straight (:type built-in) ;; only include this if you use straight
+   :config
+   ;; Use symbola for proper unicode
+   (when (member "Symbola" (font-family-list))
+     (set-fontset-font
+      t 'symbol "Symbola" nil)))
+        #+end_src
+- Abbreviate major modes with =lambda-line-abbrev=.
+- Show current time (via dynamic icon font)
+   + Note that time is only shown when =display-time-mode= is non-nil.
+   + The time icon uses a specific set of fonts. Install [[https://github.com/ocodo/ClockFace-font][ClockFace Fonts]] and the time will be displayed using these fonts. You can download and install the fonts within Emacs via =M-x lambda-line-install-clockface-fonts=.
+   + You can choose which clock icon you'd prefer, via =M-x lambda-line-clockface-select-font=. To set it programmatically in your config, use the function =(lambda-line-clockface-update-fontset FONT)=; e.g. =(lambda-line-clockface-update-fontset "ClockFaceRect")=.
+       + Available styles are =ClockFace=, =ClockFaceSolid=, =ClockFaceRect=, =ClockFaceRectSolid=
+   + To display time as only an icon, set =lambda-line-icon-time= to =t=. When set to nil, the icon clock and text time will be displayed. To display time only as text, set =lambda-line-icon-time= to =-1= (the default).
+   
+- Show both vc project and branch in the modeline
+- Show the diff in the status-line with =lambda-line-git-diff-mode-line=.
+- Set the symbol for vc project buffers with =lambda-line-vc-symbol=.
+- Set a visual bell with =lambda-line-visual-bell=.
+- Set char length for truncating information using =lambda-line-truncate-value=. 
+- Control the right margin padding with =lambda-line-hspace=. 
+- Set the top and bottom padding of the status-line with =lambda-line-space-top=.
+  and =lambda-line-space-bottom=.
+- Set the position of the prefix status symbol with =lambda-line-symbol-position=.
+- Show flycheck/flymake report in status-line with =lambda-line-syntax=.
+   + If you use flymake, you might want to configure the status-line display with
+     the following, which provides a minimalist display:
+#+begin_src emacs-lisp
+(customize-set-variable 'flymake-mode-line-counter-format '("" flymake-mode-line-error-counter flymake-mode-line-warning-counter flymake-mode-line-note-counter ""))
+(customize-set-variable 'flymake-mode-line-format '(" " flymake-mode-line-exception flymake-mode-line-counters))
+#+end_src
+- Set the modes in which the status-line is formatted with
+  =lambda-line-mode-formats=. 
+- Set the default display function for the status-line with
+  =lambda-line-default-mode-format=. This is set to =lambda-line-default-mode= but
+  can be customized to any function the user wishes.
+
+  
+Lambda-line also sets a variety of faces that can be individually customized. 
+
+* Acknowledgments
+
+- The basic structure of the status line is heavily indebted to Rougier's work
+  on [[https://github.com/rougier/nano-modeline][nano-modeline]].
+- My [[https://github.com/mclear-tools/bespoke-modeline][bespoke-modeline]] was my first attempt to create a custom mode-line and the
+  original basis for much of the current code.
+- The idea for the flycheck/flymake segment function is originally from [[https://github.com/jessiehildebrandt/mood-line][mood-line]]. 
