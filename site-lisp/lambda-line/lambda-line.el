@@ -3,7 +3,7 @@
 ;; Author: Colin McLear
 ;; Maintainer: Colin McLear
 ;; Version: 0.2.0
-;; Package-Requires: ((emacs "27.1") (all-the-icons "5.0.0"))
+;; Package-Requires: ((emacs "27.1"))
 ;; Homepage: https://github.com/Lambda-Emacs/lambda-line
 ;; Keywords: mode-line faces
 
@@ -35,7 +35,6 @@
 
 (require 'face-remap)
 (require 'cl-lib)
-(require 'all-the-icons)
 
 ;;;; Group
 
@@ -248,7 +247,7 @@ Time info is only shown `display-time-mode' is non-nil"
     (completion-list-mode   :mode-p lambda-line-completion-list-mode-p
                             :format lambda-line-completion-list-mode)
     (deft-mode              :mode-p lambda-line-deft-mode-p
-      :format lambda-line-deft-mode)
+                            :format lambda-line-deft-mode)
     (doc-view-mode          :mode-p lambda-line-doc-view-mode-p
                             :format lambda-line-doc-view-mode)
     (elfeed-search-mode     :mode-p lambda-line-elfeed-search-mode-p
@@ -659,7 +658,7 @@ Otherwise show '-'."
 (defun lambda-line-show-func ()
   "Display `which-function-mode' output in mode-line."
   (if (and (boundp 'which-function-mode)
-       (default-value 'which-function-mode))
+           (default-value 'which-function-mode))
       (concat (format-mode-line which-func-format) " ")
     ""))
 
@@ -758,7 +757,7 @@ Optionally use another clockface font."
   "Return ClockFace icon unicode for HOURS and MINUTES."
   (let* ((minute (- minutes (% minutes 5)))
          (offset (round (+ (* (% hours 12) 12) (* 12 (/ minute 60.0))))))
-       (+ offset #xF0000)))
+    (+ offset #xF0000)))
 
 (defun lambda-line-time ()
   "Display the time when `display-time-mode' is non-nil."
@@ -767,13 +766,13 @@ Optionally use another clockface font."
             (cl-destructuring-bind (_ minute hour &rest n) (decode-time)
               (lambda-line-clockface-icons-unicode hour minute))))
       (concat
-        (unless lambda-line-icon-time
-          (if display-time-day-and-date
-              (propertize (format-time-string lambda-line-time-day-and-date-format))
-            (propertize (format-time-string lambda-line-time-format ) 'face `(:height 0.9))))
-        (propertize
-          (format lambda-line-time-icon-format (char-to-string time-unicode)
-           'display '(raise 0)))))))
+       (unless lambda-line-icon-time
+         (if display-time-day-and-date
+             (propertize (format-time-string lambda-line-time-day-and-date-format))
+           (propertize (format-time-string lambda-line-time-format ) 'face `(:height 0.9))))
+       (propertize
+        (format lambda-line-time-icon-format (char-to-string time-unicode)
+                'display '(raise 0)))))))
 
 ;;;;; Status
 (defun lambda-line-status ()
@@ -1149,10 +1148,10 @@ STATUS, NAME, PRIMARY, and SECONDARY are always displayed. TERTIARY is displayed
         (mode-name   (lambda-line-mode-name))
         (branch      (lambda-line-vc-project-branch))
         (page-number (concat
-                          (number-to-string (doc-view-current-page)) "/"
-                          (or (ignore-errors
-                                    (number-to-string (doc-view-last-page-number)))
-                              "???"))))
+                      (number-to-string (doc-view-current-page)) "/"
+                      (or (ignore-errors
+                            (number-to-string (doc-view-last-page-number)))
+                          "???"))))
     (lambda-line-compose
      (lambda-line-status)
      buffer-name
@@ -1261,8 +1260,8 @@ STATUS, NAME, PRIMARY, and SECONDARY are always displayed. TERTIARY is displayed
     (setq header-line-format "")
     (face-remap-add-relative
      'header-line `(:overline ,(face-foreground 'default)
-                    :height 0.5
-                    :background ,(face-background 'default)))))
+                              :height 0.5
+                              :background ,(face-background 'default)))))
 
 (defun lambda-line-calendar-activate ()
   (with-eval-after-load 'calendar
@@ -1335,7 +1334,7 @@ STATUS, NAME, PRIMARY, and SECONDARY are always displayed. TERTIARY is displayed
                                  (when branch
                                    branch)
                                  lambda-line-display-group-end)
-			 ""
+			                   ""
                          (concat
                           ;; Narrowed buffer
                           (when (buffer-narrowed-p)

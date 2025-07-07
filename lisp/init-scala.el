@@ -30,6 +30,7 @@
    'self-insert-command
    minibuffer-local-completion-map))
 
+
 (with-eval-after-load "eglot"
   (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals")))
   )
@@ -65,13 +66,6 @@
   (add-to-list 'apheleia-mode-alist '(scala-mode . scalafmt)))
 
 (require 'project)
-(defun setup-compile ()
-  "Compile project command."
-  (when (and (project-current) (file-exists-p (concat (project-root (project-current)) "build.sc")))
-    (setq-local compile-command "env TERM=dumb mill  --disable-prompt -s __.compile" )))
-
-(add-hook 'scala-mode-hook #'setup-compile)
-(add-hook 'scala-ts-mode-hook #'setup-compile)
 
 (require 'sbt-mode-project)
 
@@ -92,11 +86,13 @@
      ((file-exists-p ".scalafmt.conf") (scalafmt (buffer-file-name (current-buffer))))
      ((file-exists-p ".scalariform.conf") (scalariform ".scalariform.conf" (buffer-file-name (current-buffer)))))))
 
+(require 'init-vterm)
+
 (defun compile-project()
   "Compile project, sbt/mill."
   (interactive)
-  (if (file-exists-p (concat (project-root (project-current)) "build.sc"))
-      (project-compile)
+  (if (file-exists-p (concat (project-root (project-current)) "build.mill"))
+      (vterm-project-run "mill __.compile")
     (sbt-compile)))
 
 (global-set-key (kbd "C-c b b") 'compile-project)
