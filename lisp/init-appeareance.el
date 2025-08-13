@@ -12,7 +12,7 @@
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
-(set-face-attribute 'default nil)
+(setq default-frame-alist '((undecorated . t)))
 
 (use-package dashboard
   :custom
@@ -34,18 +34,21 @@
 
 (global-display-line-numbers-mode)
 
+(setq auto-window-vscroll nil)
+
 ;; Theme setup.
-(use-package modus-themes
+(use-package ef-themes
   :config
-  (load-theme 'modus-operandi-tinted t))
+  (load-theme 'ef-light t))
+
+
+(with-eval-after-load "eldoc-box"
+  (set-face-attribute 'eldoc-box-border nil :background (face-attribute 'child-frame-border :background)))
 
 (use-package doom-modeline
-  ;; Enable mood-line
   :init
-  (setq doom-modeline-enable-word-count nil)
-  (setq doom-modeline-height (truncate (* (frame-char-height) 1.5)))
-  :config
-  (doom-modeline-mode))
+  (setopt doom-modeline-height 30)
+  :hook (after-init . doom-modeline-mode))
 
 (use-package indent-bars
   :config
@@ -66,8 +69,6 @@
   (indent-bars-mode 1))
 
 (add-hook 'prog-mode-hook #'setup-indent-bars)
-
-(set-face-attribute 'line-number nil :height 0.8)
 
 (use-package lin
   :init
@@ -95,8 +96,12 @@
 
 (use-package nerd-icons
   :init
-  (add-to-list 'nerd-icons-extension-icon-alist
-               '("sc" nerd-icons-devicon "nf-dev-scala" :face nerd-icons-red)))
+  (dolist (entry '(
+                   ("sc" nerd-icons-devicon "nf-dev-scala" :face nerd-icons-red)
+                   ("mill" nerd-icons-devicon "nf-dev-scala" :face nerd-icons-red)
+                   ))
+    (add-to-list 'nerd-icons-extension-icon-alist entry))
+  (add-to-list 'nerd-icons-mode-icon-alist '(scala-ts-mode nerd-icons-devicon "nf-dev-scala" :face nerd-icons-red)))
 
 (use-package dired-subtree
   :bind
@@ -113,13 +118,8 @@
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
-(use-package color-identifiers-mode
-  :init
-  (add-hook 'after-init-hook 'global-color-identifiers-mode))
-
 (show-paren-mode 1)
 
-(setq-default eldoc-echo-area-use-multiline-p nil)
 
 (provide 'init-appeareance)
 

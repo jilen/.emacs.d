@@ -14,7 +14,8 @@
       (unless (get-buffer-window buffer-name)
         (switch-to-buffer-other-window buffer-name))
       (unless (derived-mode-p 'vterm-mode)
-        (let ((default-directory project-root))
+        (let ((default-directory project-root)
+              (vterm-buffer-name buffer-name))
           (vterm)))
       (vterm-send-string cmd)
       (vterm-send-string "

@@ -12,6 +12,7 @@
   :mode "\\.scala\\'"
   :init
   (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.mill\\'" . scala-ts-mode))
   (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode)))
 
 (use-package sbt-mode

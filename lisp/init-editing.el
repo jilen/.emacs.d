@@ -113,13 +113,22 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package apheleia
   :config
-  (apheleia-global-mode +1))
+  (apheleia-global-mode +1)
+  (add-to-list 'apheleia-formatters
+               '(prettier-javascript
+                 . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+                    (apheleia-formatters-js-indent "--use-tabs" "--tab-width"))))
+  )
 
 (add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
 
 (add-hook 'before-save-hook
           'delete-trailing-whitespace)
+
+(defun copy-buffer-file-name ()
+  (interactive)
+  (kill-new (buffer-file-name)))
 
 (defun wl-paste ()
   (interactive)

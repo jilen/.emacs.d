@@ -27,9 +27,7 @@
   :custom
   (aidermacs-show-diff-after-change nil)
   (aidermacs-backend 'vterm)
-  (aidermacs-auto-commits nil)
-  (aidermacs-use-architect-mode nil)
-  (aidermacs-default-model "openrouter/google/gemini-2.5-flash"))
+  (aidermacs-auto-commits nil))
 
 (provide 'init-assist)
 ;;; init-assist.el ends here

@@ -12,10 +12,11 @@
 ;; The fact that we have to do this is also quite embarrassing.
 (setq sentence-end-double-space nil)
 
+(require 'whitespace)
 (global-whitespace-mode 1)
 (setq whitespace-line-column 120)
 (setq whitespace-style '(face
-                         tabs spaces trailing lines space-before-tab newline
+                         tabs trailing lines space-before-tab newline
                          empty space-after-tab
                          tab-mark
                          missing-newline-at-eof))

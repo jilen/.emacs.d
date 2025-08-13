@@ -14,17 +14,17 @@
       (mapc
        (lambda (err)
          (funcall callback
-           (format "%s: %s"
-                   (let ((level (flycheck-error-level err)))
-                     (pcase level
-                       ('info (propertize "I" 'face 'flycheck-error-list-info))
-                       ('error (propertize "E" 'face 'flycheck-error-list-error))
-                       ('warning (propertize "W" 'face 'flycheck-error-list-warning))
-                       (_ level)))
-                   (flycheck-error-message err))
-           :thing (or (flycheck-error-id err)
-                      (flycheck-error-group err))
-           :face 'font-lock-doc-face))
+                  (format "%s: %s"
+                          (let ((level (flycheck-error-level err)))
+                            (pcase level
+                              ('info (propertize "I" 'face 'flycheck-error-list-info))
+                              ('error (propertize "E" 'face 'flycheck-error-list-error))
+                              ('warning (propertize "W" 'face 'flycheck-error-list-warning))
+                              (_ level)))
+                          (flycheck-error-message err))
+                  :thing (or (flycheck-error-id err)
+                             (flycheck-error-group err))
+                  :face 'font-lock-doc-face))
        flycheck-errors)))
 
   (defun mp-flycheck-prefer-eldoc ()
@@ -36,6 +36,18 @@
   :hook ((flycheck-mode . mp-flycheck-prefer-eldoc))
   :config
   (global-flycheck-mode))
+
+;; (use-package flyover
+;;   :init
+;;   (setopt flyover-text-tint-percent 100)
+;;   (setopt flyover-text-tint 'lighter)
+;;   (setopt flyover-use-theme-colors t)
+;;   (setopt flyover-show-virtual-line t)
+;;   (setopt flyover-virtual-line-type 'arrow)
+;;   (setopt flyover-show-at-eol t)
+
+;;   (setopt flyover-levels '(error warning info))
+;;   (add-hook 'flycheck-mode-hook #'flyover-mode))
 
 
 
