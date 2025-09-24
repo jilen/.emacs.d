@@ -90,7 +90,7 @@ float FRAC."
 
 (defsubst nerd-icon-formatted (kind)
   "Get icon for KIND."
-  (let* ((icon (alist-get kind corfu-kind-icon-mapping))
+  (let* ((icon (or (alist-get kind corfu-kind-icon-mapping) (alist-get 't corfu-kind-icon-mapping)))
          (icon-face (get-text-property 0 'face icon))
          (icon-bg (plist-get icon-face :inherit))
          (icon-pad (propertize " " 'face (append '(:height 0.5) icon-bg)))

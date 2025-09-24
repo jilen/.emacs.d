@@ -1,0 +1,19 @@
+# typescript-language-server
+[language-server.typescript-language-server]
+config.plugins = [
+  { name = "@vue/typescript-plugin", location = "/usr/lib/node_modules/@vue/typescript-plugin", languages = ["vue"], enableForWorkspaceTypeScriptVersions = true, configNamespace = "typescript" }
+]
+
+[language-server.vue-language-server]
+command = "vue-language-server"
+args = ["--stdio"]
+
+[[language]]
+name = "vue"
+roots = ["package.json"]
+language-id = "vue"
+file-types = ["vue"]
+language-servers = [
+  { name = "vue-language-server", except-features = ["goto-definition", "goto-implementation", "goto-type-definition", "goto-declaration", "goto-reference"] },
+  "typescript-language-server"
+]

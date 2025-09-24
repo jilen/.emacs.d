@@ -59,13 +59,12 @@
   (add-to-list 'eglot-server-programs
                '((vue-mode typescript-ts-mode js-ts-mode) . ("vue-language-server" "--stdio"))))
 
-;; If use lsp-bridge
-(with-eval-after-load "lsp-bridge"
-  (add-to-list 'lsp-bridge-single-lang-server-mode-list '(vue-mode . "volar"))
-  (add-hook 'vue-mode-hook 'lsp-bridge-mode))
 
-;; If use lsp-mode
-(with-eval-after-load "lsp-mode"
+;; If use lsp-proxy
+(with-eval-after-load "lsp-proxy"
+  (add-hook 'vue-mode-hook 'lsp-proxy-mode))
+
+(with-eval-after-load "init-lsp"
   (add-hook 'vue-mode-hook #'lsp-deferred))
 
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))

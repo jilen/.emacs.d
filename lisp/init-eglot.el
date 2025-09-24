@@ -41,10 +41,11 @@
 
 (use-package eglot-booster
   :load-path "~/.emacs.d/site-lisp/eglot-booster/"
-	:after eglot
+  :after eglot
   :custom
   (eglot-booster-io-only t)
-	:config  (eglot-booster-mode))
+  :config  (eglot-booster-mode))
+
 
 (provide 'init-eglot)
 
