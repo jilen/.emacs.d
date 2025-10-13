@@ -8,7 +8,7 @@
 (use-package yasnippet)
 (use-package ht)
 (use-package lsp-proxy
-  :load-path "/usr/share/emacs/site-lisp/lsp-proxy"
+  :load-path "~/.emacs.d/site-lisp/lsp-proxy"
   :config
   ;; TypeScript and JavaScript modes
   (add-hook 'tsx-ts-mode-hook #'lsp-proxy-mode)
