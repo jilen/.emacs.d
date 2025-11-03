@@ -48,6 +48,14 @@ Enabling event logging may slightly affect performance."
   :group 'lsp-proxy
   :type 'number)
 
+(defcustom lsp-proxy-enable-bytecode t
+  "Enable bytecode optimization for JSON-RPC communication.
+When enabled, lsp-proxy will use Emacs Lisp bytecode format for better
+performance. Disable this if you experience encoding issues with non-ASCII
+characters, especially in newer Emacs versions (31+)."
+  :type 'boolean
+  :group 'lsp-proxy)
+
 (defvar-local lsp-proxy--support-inlay-hints nil
   "Is there any server associated with this buffer
  that support `textDocument/inlayHint' request.")
@@ -67,6 +75,10 @@ that support `textDocument/signatureHelp' request.")
 (defvar-local lsp-proxy--support-pull-diagnostic nil
   "Is there any server associated with this buffer
 that support `textDocument/diagnostic' request.")
+
+(defvar-local lsp-proxy--support-hover nil
+  "Is there any server associated with this buffer
+that support `textDocument/hover' request.")
 
 (defvar-local lsp-proxy--text-document-sync-kind "incremental"
   "Text document synchronization mode: 'full' or 'incremental'.")
@@ -214,8 +226,8 @@ that support `textDocument/diagnostic' request.")
                   :notification-dispatcher #'lsp-proxy--handle-notification
                   :request-dispatcher #'lsp-proxy--handle-request
                   :process (make-process :name "lsp proxy agent"
-                                         :command (list lsp-proxy--exec-file "--stdio" "--config" lsp-proxy-user-languages-config "--log-level" (number-to-string lsp-proxy-log-level) "--log" lsp-proxy--log-file "--max-item" (number-to-string lsp-proxy-max-completion-item))
-                                         :coding 'utf-8-emacs-unix
+                                         :command (append (list lsp-proxy--exec-file "--stdio" "--config" lsp-proxy-user-languages-config "--log-level" (number-to-string lsp-proxy-log-level) "--log" lsp-proxy--log-file "--max-item" (number-to-string lsp-proxy-max-completion-item))
+                                                          (when lsp-proxy-enable-bytecode '("--bytecode")))
                                          :connection-type 'pipe
                                          :stderr (get-buffer-create "*lsp proxy stderr*")
                                          :noquery t))))
@@ -259,6 +271,7 @@ that support `textDocument/diagnostic' request.")
                        :supportSignatureHelp support-signature-help
                        :supportPullDiagnostic support-pull-diagnostic
                        :supportInlineCompletion support-inline-completion
+                       :supportHover support-hover
                        :textDocumentSyncKind text-document-sync-kind)
         msg
       (let* ((filepath (lsp-proxy--uri-to-path uri)))
@@ -270,6 +283,7 @@ that support `textDocument/diagnostic' request.")
             (setq-local lsp-proxy--support-document-symbols (not (eq support-document-symbols :json-false)))
             (setq-local lsp-proxy--support-signature-help (not (eq support-signature-help :json-false)))
             (setq-local lsp-proxy--support-pull-diagnostic (not (eq support-pull-diagnostic :json-false)))
+            (setq-local lsp-proxy--support-hover (not (eq support-hover :json-false)))
             (setq-local lsp-proxy--text-document-sync-kind (or text-document-sync-kind "incremental"))
             (lsp-proxy-activate-inlay-hints-mode)
             (lsp-proxy-diagnostics--request-pull-diagnostics)

@@ -42,8 +42,13 @@
   (load-theme 'ef-light t))
 
 
-(with-eval-after-load "eldoc-box"
-  (set-face-attribute 'eldoc-box-border nil :background (face-attribute 'child-frame-border :background)))
+(use-package eldoc-box
+  :hook (prog-mode . eldoc-box-hover-at-point-mode)
+  :config
+  (custom-set-faces
+   '(eldoc-box-border ((t (:inherit child-frame-border))))
+   ))
+
 
 (use-package doom-modeline
   :init

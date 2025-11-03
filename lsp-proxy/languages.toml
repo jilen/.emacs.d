@@ -3,6 +3,7 @@
 config.plugins = [
   { name = "@vue/typescript-plugin", location = "/usr/lib/node_modules/@vue/typescript-plugin", languages = ["vue"], enableForWorkspaceTypeScriptVersions = true, configNamespace = "typescript" }
 ]
+config.maxTsServerMemory = 6000
 
 [language-server.vue-language-server]
 command = "vue-language-server"
@@ -16,4 +17,13 @@ file-types = ["vue"]
 language-servers = [
   { name = "vue-language-server", except-features = ["goto-definition", "goto-implementation", "goto-type-definition", "goto-declaration", "goto-reference"] },
   "typescript-language-server"
+]
+
+
+[[language]]
+name = "typescript"
+roots = ["package.json"]
+language-id = "typescript"
+language-servers = [
+   { name = "typescript-language-server", except-features = ["format"] },
 ]

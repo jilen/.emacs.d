@@ -9,6 +9,10 @@
 (use-package ht)
 (use-package lsp-proxy
   :load-path "~/.emacs.d/site-lisp/lsp-proxy"
+  :init
+  ;; (setopt lsp-proxy-log-level 3)
+  (setopt lsp-proxy-enable-hover-eldoc t)
+  (setopt lsp-proxy-enable-symbol-highlighting nil)
   :config
   ;; TypeScript and JavaScript modes
   (add-hook 'tsx-ts-mode-hook #'lsp-proxy-mode)
