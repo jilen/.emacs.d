@@ -16,12 +16,10 @@
 (require 'cl-lib)
 (require 'eglot)
 (require 'dash)
+(require 'lsp-proxy-core)
 (require 'lsp-proxy-utils)
 
 (defvar lsp-proxy-inline-completion-mode)
-
-;;; External functions
-(declare-function lsp-proxy--async-request "lsp-proxy-core")
 
 ;;; Configuration
 
@@ -47,7 +45,6 @@ InlineCompletion will not be triggered if any predicate returns t."
   "Idle delay in seconds before showing inline completion."
   :type 'number
   :group 'lsp-proxy)
-(defvar eglot--versioned-identifier)
 
 ;;; Faces
 
@@ -171,26 +168,27 @@ To work around posn problems with after-string property.")
   (condition-case err
       (lsp-proxy--async-request
        'textDocument/inlineCompletion
-       (lsp-proxy--request-or-notify-params
+       (lsp-proxy--build-params
         (append (eglot--TextDocumentPositionParams)
                 `(:context (:triggerKind ,(if implicit 2 1))))
         `(:context
           (:triggerKind ,(if implicit 2 1)
            :selectedCompletionInfo nil
            :line ,(buffer-substring-no-properties (line-beginning-position) (line-end-position))
-           :docVersion ,eglot--versioned-identifier)))
+           :docVersion ,(lsp-proxy--doc-version))))
        :success-fn
        (lambda (resp)
          (when resp
            (let* ((doc-version (plist-get resp :docVersion))
                   (items (plist-get resp :items)))
-             (if (= doc-version eglot--versioned-identifier)
+             (if (= doc-version (lsp-proxy--doc-version))
                  (when (and items (> (length items) 0))
                    (setq lsp-proxy-inline-completion--items items)
                    (setq lsp-proxy-inline-completion--current 0)
                    (setq lsp-proxy-inline-completion--start-point (point))
                    (lsp-proxy-inline-completion-show-completion))
-               (lsp-proxy--warn "%s" "Mismatch version.")))))
+               (if (> lsp-proxy-log-level 1)
+                   (lsp-proxy--warn "%s" "Mismatch version."))))))
        :timeout-fn #'ignore)
     (t (lsp-proxy--error "Could not fetch completions: %s" err))))
 

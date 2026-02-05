@@ -50,8 +50,13 @@
 (require 'lsp-proxy-imenu)
 (require 'lsp-proxy-inlay-hints)
 (require 'lsp-proxy-inline-completion)
+(require 'lsp-proxy-org)
 
 (defvar lsp-proxy-mode)
+
+;; Declare functions from lsp-proxy-org to avoid compiler warnings
+(declare-function lsp-proxy-org-edit-special-advice "lsp-proxy-org")
+(declare-function lsp-proxy-org-edit-src-exit-advice "lsp-proxy-org")
 
 ;;; Configuration
 
@@ -85,7 +90,7 @@
   :type 'boolean
   :group 'lsp-proxy)
 
-(defcustom lsp-proxy-enable-hover-eldoc nil
+(defcustom lsp-proxy-enable-hover-eldoc t
   "Enable automatic hover at point."
   :type 'boolean
   :group 'lsp-proxy)
@@ -99,6 +104,9 @@
 
 (defvar-local lsp-proxy--highlights nil
   "Current document highlights for this buffer.")
+
+(defvar-local lsp-proxy--language nil
+  "Guess language based on major-mode.")
 
 ;;; Hash tables for project management
 
@@ -181,7 +189,7 @@
   (let ((orig-major-mode major-mode))
     (lsp-proxy--async-request
      'rust-analyzer/expandMacro
-     (lsp-proxy--request-or-notify-params (eglot--TextDocumentPositionParams))
+     (lsp-proxy--build-params (eglot--TextDocumentPositionParams))
      :success-fn
      (lambda (resp)
        (-if-let* ((expansion (plist-get resp :expansion))
@@ -198,13 +206,15 @@
 ;;; Hook functions
 
 (defun lsp-proxy--before-revert-hook ()
-  "Handle before revert hook."
-  (when lsp-proxy-mode
+  "Handle before revert hook.
+Skip closing/opening notifications for buffers not currently visible."
+  (when (and lsp-proxy-mode (lsp-proxy--buffer-visible-p))
     (lsp-proxy--on-doc-close)))
 
 (defun lsp-proxy--after-revert-hook ()
-  "Handle after revert hook."
-  (when lsp-proxy-mode
+  "Handle after revert hook.
+Skip reopening notifications for buffers not currently visible."
+  (when (and lsp-proxy-mode (lsp-proxy--buffer-visible-p))
     (lsp-proxy--on-doc-open)))
 
 (defun lsp-proxy--post-self-insert-hook ()
@@ -219,11 +229,15 @@
   "Post command hook."
   (lsp-proxy--cleanup-highlights-if-needed)
   (lsp-proxy--idle-reschedule (current-buffer))
+  (lsp-proxy-org-babel-check-lsp-server)
   (when this-command
     (lsp-proxy-inline-completion-handle-command)))
 
 (defun lsp-proxy--mode-off ()
   "Turn off lsp-proxy mode."
+  (when (and lsp-proxy-mode (lsp-proxy--buffer-visible-p))
+    (lsp-proxy--on-doc-close))
+  (setq-local lsp-proxy--language nil)
   (when lsp-proxy-mode
     (lsp-proxy-mode -1)))
 
@@ -242,6 +256,8 @@
 
 (defun lsp-proxy--mode-enter ()
   "Set up lsp proxy mode when entering."
+  ;; Guess language based on major-mode
+  (setq-local lsp-proxy--language (lsp-proxy-guess-language))
   ;; Add hooks
   (when buffer-file-name
     (dolist (hook lsp-proxy--internal-hooks)
@@ -276,8 +292,12 @@
                                          (add-hook 'window-configuration-change-hook #'lsp-proxy--init-if-visible)))))))))
 (defun lsp-proxy--cleanup ()
   "Clean up when restart."
-  ;; clear all opened buffer
-  (setq lsp-proxy--opened-buffers nil)
+  ;; clear all opened buffer flags
+  (dolist (buf (buffer-list))
+    (when (buffer-live-p buf)
+      (with-current-buffer buf
+        (when (and (boundp 'lsp-proxy--buffer-opened) lsp-proxy--buffer-opened)
+          (setq-local lsp-proxy--buffer-opened nil)))))
   ;; clear all progress in map
   (clrhash lsp-proxy--project-hashmap)
   ;; clear all diagnostics
@@ -286,7 +306,13 @@
   (when lsp-proxy--highlights
     (mapc #'delete-overlay lsp-proxy--highlights))
   ;; clear current buffer's inlay hints
-  (remove-overlays nil nil 'lsp-proxy--inlay-hint t))
+  (remove-overlays nil nil 'lsp-proxy--inlay-hint t)
+  (setq-local lsp-proxy--support-inlay-hints nil)
+  (setq-local lsp-proxy--support-document-highlight nil)
+  (setq-local lsp-proxy--support-document-symbols nil)
+  (setq-local lsp-proxy--support-signature-help nil)
+  (setq-local lsp-proxy--support-pull-diagnostic nil)
+  (setq-local lsp-proxy--support-hover nil))
 
 (defun lsp-proxy--mode-exit ()
   "Clean up lsp proxy mode when exiting."
@@ -353,6 +379,30 @@
           (insert (format "Flycheck Enabled: %s\n" flycheck-status))
           (insert (format "Flymake Enabled: %s\n" flymake-status))))
 
+      ;; Workspace information
+      (when (and buffer-file-name (lsp-proxy--connection-alivep))
+        (lsp-proxy--async-request
+         'emacs/getWorkspaceInfo
+         (lsp-proxy--build-params nil)
+         :success-fn
+         (lambda (workspace-info)
+           (with-current-buffer debug-buffer
+             (insert "\n=== Workspace Information ===\n")
+             (if workspace-info
+                 (progn
+                   (insert (format "File: %s\n" (plist-get workspace-info :filePath)))
+                   (insert (format "Workspace Root: %s\n" (plist-get workspace-info :workspaceRoot)))
+                   (insert "\nLanguage Servers:\n")
+                   (let ((servers (plist-get workspace-info :languageServers)))
+                     ;; Convert vector to list if needed
+                     (when (vectorp servers)
+                       (setq servers (append servers nil)))
+                     (dolist (ls servers)
+                       (insert (format "  - %s\n" (plist-get ls :name)))
+                       (insert (format "    Root: %s\n" (plist-get ls :rootPath)))
+                       (insert (format "    Support Workspace: %s\n"
+                                       (if (eq (plist-get ls :supportWorkspace) :json-false) "No" (plist-get ls :supportWorkspace)))))))
+               (insert "No workspace information available\n"))))))
 
       ;; Print diagnostics for current buffer if available
       (when (and buffer-file-name (hash-table-p lsp-proxy--diagnostics-map))
@@ -361,16 +411,29 @@
                                            (lsp-proxy-project-root)
                                            lsp-proxy--diagnostics-map))))
           (with-current-buffer debug-buffer
-            (insert (format "\nCurrent Buffer Diagnostics (%s):\n" file))
+            (insert (format "\n=== Current Buffer Diagnostics ===\nFile: %s\n" file))
             (if diagnostics
                 (dolist (diag diagnostics)
                   (insert (format "- %s: %s\n"
                                   (plist-get diag :severity)
                                   (plist-get diag :message))))
-              (insert "No diagnostics found\n"))
-            (insert "\n=== End of Report ===\n")
-            ;; (view-mode 1)
-            ))))
+              (insert "No diagnostics found\n")))))
+
+      ;; Languages configuration
+      (when (lsp-proxy--connection-alivep)
+        (lsp-proxy--async-request
+         'emacs/getLanguagesConfig
+         (lsp-proxy--build-params nil)
+         :success-fn
+         (lambda (config-json)
+           (with-current-buffer debug-buffer
+             (insert "\n=== Merged Languages Configuration ===\n")
+             (insert config-json)
+             (insert "\n\n=== End of Report ===\n")))))
+
+      (unless (lsp-proxy--connection-alivep)
+        (with-current-buffer debug-buffer
+          (insert "\n=== End of Report ===\n"))))
     (display-buffer debug-buffer)))
 
 ;;; Workspace restart
@@ -381,15 +444,18 @@
   (interactive)
   (lsp-proxy--async-request
    'emacs/workspaceRestart
-   (lsp-proxy--request-or-notify-params nil)
+   (lsp-proxy--build-params nil)
    :success-fn (lambda (data)
                  ;; Clean up opened files for the project
                  (let ((paths (seq-into data 'list)))
-                   (setq lsp-proxy--opened-buffers
-                         (cl-remove-if
-                          (lambda (elt)
-                            (member (buffer-file-name elt) paths))
-                          lsp-proxy--opened-buffers)))
+                   (dolist (buf (buffer-list))
+                     (when (and (buffer-live-p buf)
+                                (buffer-local-value 'lsp-proxy-mode buf)
+                                (buffer-local-value 'lsp-proxy--buffer-opened buf))
+                       (with-current-buffer buf
+                         (when (and buffer-file-name
+                                    (member buffer-file-name paths))
+                           (setq-local lsp-proxy--buffer-opened nil))))))
                  ;; Clean up diagnostics information
                  (lsp-proxy--remove-project (lsp-proxy-project-root) lsp-proxy--diagnostics-map)
                  ;; Clean up progress information
@@ -400,7 +466,7 @@
 
 (defun lsp-proxy--get-commands ()
   "Get support commands from server."
-  (lsp-proxy--request 'emacs/getCommands (lsp-proxy--request-or-notify-params nil)))
+  (lsp-proxy--request 'emacs/getCommands (lsp-proxy--build-params nil)))
 
 (defun lsp-proxy--select-command (commands)
   "Select a command to execute from COMMANDS."
@@ -421,7 +487,7 @@
   (let ((params (list :command command :arguments arguments)))
     (lsp-proxy--async-request
      'workspace/executeCommand
-     (lsp-proxy--request-or-notify-params
+     (lsp-proxy--build-params
       params
       `(:context (:language-server-id ,server-id))))))
 
@@ -446,7 +512,7 @@
   "Retrieve the code actions for the active region or the current line."
   (lsp-proxy--request
    'textDocument/codeAction
-   (lsp-proxy--request-or-notify-params
+   (lsp-proxy--build-params
     (list
      :textDocument (eglot--TextDocumentIdentifier)
      :range (if (use-region-p)
@@ -501,7 +567,7 @@ Request codeAction/resolve for more info if server supports."
       (if (and (not command) (not edit))
           (lsp-proxy--async-request
            'codeAction/resolve
-           (lsp-proxy--request-or-notify-params item `(:context (:language-server-id ,ls-id)))
+           (lsp-proxy--build-params item `(:context (:language-server-id ,ls-id)))
            :success-fn (lambda (action)
                          (if action
                              (lsp-proxy--execute-code-action action)
@@ -531,7 +597,7 @@ Request codeAction/resolve for more info if server supports."
           (symbol-name (symbol-at-point)))))
   (lsp-proxy--async-request
    'textDocument/rename
-   (lsp-proxy--request-or-notify-params
+   (lsp-proxy--build-params
     (append (eglot--TextDocumentPositionParams) `(:newName ,newname)))
    :success-fn (lambda (edits)
                  (if edits
@@ -602,7 +668,7 @@ Request codeAction/resolve for more info if server supports."
   (interactive)
   (lsp-proxy--async-request
    'textDocument/formatting
-   (lsp-proxy--request-or-notify-params
+   (lsp-proxy--build-params
     (list
      :options (list
                :tabSize (symbol-value (lsp-proxy--get-indent-width major-mode))
@@ -630,7 +696,7 @@ Request codeAction/resolve for more info if server supports."
   (interactive)
   (lsp-proxy--async-request
    'textDocument/hover
-   (lsp-proxy--request-or-notify-params (eglot--TextDocumentPositionParams))
+   (lsp-proxy--build-params (eglot--TextDocumentPositionParams))
    :success-fn (lambda (hover-help)
                  (if (and hover-help (not (equal hover-help "")))
                      (with-current-buffer (get-buffer-create lsp-proxy-hover-buffer)
@@ -642,19 +708,21 @@ Request codeAction/resolve for more info if server supports."
                    (lsp-proxy--info "%s" "No content at point.")))))
 
 (defun lsp-proxy-hover-eldoc-function (cb &rest _ignored)
-  "A member of `eldoc-documentation-functions', for hover."
+  "A member of `eldoc-documentation-functions' for hover."
   (when (and lsp-proxy--support-hover
              lsp-proxy-enable-hover-eldoc)
     (let ((buf (current-buffer)))
       (lsp-proxy--async-request
        'textDocument/hover
-       (lsp-proxy--request-or-notify-params (eglot--TextDocumentPositionParams))
+       (lsp-proxy--build-params (eglot--TextDocumentPositionParams))
        :success-fn (lambda (hover-help)
                      (eglot--when-buffer-window buf
-                       (let ((info (unless (string-empty-p hover-help)
-                                     (eglot--format-markup hover-help))))
-                         (funcall cb info
-                                  :echo (and info (string-match "\n" info))))))))
+                       (let* ((info (unless (string-empty-p hover-help)
+                                     (eglot--format-markup hover-help)))
+                             (pos (and  info (string-match "\n" info))))
+                         (while (and pos (get-text-property pos 'invisible info))
+                           (setq pos (string-match "\n" info (1+ pos))))
+                         (funcall cb info :echo pos))))))
     t))
 
 ;;; Symbol highlighting
@@ -690,7 +758,7 @@ most recently requested highlights.")
         (setq lsp-proxy--symbol-bounds-of-last-highlight-invocation curr-sym-bounds)
         (lsp-proxy--async-request
          'textDocument/documentHighlight
-         (lsp-proxy--request-or-notify-params (eglot--TextDocumentPositionParams))
+         (lsp-proxy--build-params (eglot--TextDocumentPositionParams))
          :success-fn
          (lambda (highlights)
            (mapc #'delete-overlay lsp-proxy--highlights)
@@ -724,6 +792,15 @@ most recently requested highlights.")
            nil)
          :deferred 'textDocument/documentHighlight))
       nil)))
+
+;;; Guess language
+
+(defun lsp-proxy-guess-language ()
+  "Guess the programming language based on the current major-mode name.
+Take the first part of the major-mode name before the first dash."
+  (when major-mode
+    (let ((mode-name (symbol-name major-mode)))
+      (car (split-string mode-name "-")))))
 
 
 ;;; Mode definition

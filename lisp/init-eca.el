@@ -1,4 +1,4 @@
-;;; init-eca.el --- Setup ECA for emacs.
+;;; init-eca.el --- Setup ECA for emacs.  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;

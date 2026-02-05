@@ -20,6 +20,15 @@
 (require 'lsp-proxy-utils)
 (require 'lsp-proxy-core)
 
+;;; External declarations
+
+(declare-function org-element-property "ext:org-element")
+(declare-function lsp-proxy-org-babel--elisp-language-p "lsp-proxy-org")
+
+;; External variables from lsp-proxy-org.el
+(defvar lsp-proxy-enable-org-babel)
+(defvar lsp-proxy-org-babel--info-cache)
+
 ;;; Variables
 
 (defcustom lsp-proxy-max-completion-item 20
@@ -89,9 +98,15 @@ Or nil if none."
      trigger-characters)))
 
 ;;; Main completion at point function
+(cl-defun lsp-proxy-completion-at-point ()
+  "Get lsp completions.
+For org-babel blocks with elisp/emacs-lisp, use `elisp-completion-at-point'
+instead of sending LSP requests."
+  ;; Special case: use elisp completion for elisp/emacs-lisp org babel blocks
+  (when (lsp-proxy-org-babel--elisp-language-p)
+    (cl-return-from lsp-proxy-completion-at-point
+      (elisp-completion-at-point)))
 
-(defun lsp-proxy-completion-at-point ()
-  "Get lsp completions."
   (let* ((trigger-characters lsp-proxy--completion-trigger-characters)
          (bounds-start (if-let* ((bounds (lsp-proxy--get-english-dash-string-boundaries)))
                            (cl-first bounds)
@@ -102,14 +117,15 @@ Or nil if none."
             (let* ((prefix (buffer-substring-no-properties bounds-start (point)))
                    (resp (lsp-proxy--request
                           'textDocument/completion
-                          (lsp-proxy--request-or-notify-params
+                          (lsp-proxy--build-params
                            (eglot--TextDocumentPositionParams)
                            `(:context
                              (:line ,(buffer-substring-no-properties (line-beginning-position) (line-end-position))
                               :prefix ,prefix
                               :boundsStart ,bounds-start
                               :startPoint ,(point)
-                              :triggerKind ,(if (null lsp-proxy--last-inserted-char) 1 2)))) ;; 只用来区分是否是空字符触发的，如果是空认为是主动触发，否则就是自动触发
+                              ;; Used to distinguish trigger type: 1 for manual invocation (no character), 2 for automatic trigger (character typed)
+                              :triggerKind ,(if (null lsp-proxy--last-inserted-char) 1 2))))
                           :cancel-on-input t))
                    (items (mapcar (lambda (candidate)
                                     (let* ((item (plist-get candidate :item))
@@ -144,8 +160,11 @@ Or nil if none."
   "Return ITEM's kind."
   (let* ((proxy-item (get-text-property 0 'lsp-proxy--item item))
          (completion-item (plist-get proxy-item :item))
-         (kind (and completion-item (plist-get completion-item :kind))))
-    (alist-get kind eglot--kind-names)))
+         (kind (alist-get (and completion-item (plist-get completion-item :kind)) eglot--kind-names)))
+    (pcase kind
+      ("EnumMember" 'enum-member)
+      ("TypeParameter" 'type-parameter)
+      (_ (intern (downcase kind))))))
 
 (defun lsp-proxy--annotate (item)
   "Annotate ITEM detail."
@@ -190,7 +209,7 @@ Or nil if none."
               (item (plist-get proxy-item :item)))
     (lsp-proxy--request
      'completionItem/resolve
-     (lsp-proxy--request-or-notify-params
+     (lsp-proxy--build-params
       item
       `(:context (:language-server-id ,language-server-id :start ,start :end ,end)))
      :cancel-on-input t)))
@@ -204,7 +223,7 @@ The CLEANUP-FN will be called to cleanup."
               (item (plist-get proxy-item :item)))
     (lsp-proxy--async-request
      'completionItem/resolve
-     (lsp-proxy--request-or-notify-params item `(:context (:language-server-id ,language-server-id :start ,start :end ,end)))
+     (lsp-proxy--build-params item `(:context (:language-server-id ,language-server-id :start ,start :end ,end)))
      :success-fn (lambda (resolved-item)
                    (if-let* ((complete-item (plist-get resolved-item :item))
                              (additionalTextEdits (plist-get complete-item :additionalTextEdits)))
@@ -225,7 +244,8 @@ Apply text edits in CANDIDATE when STATUS is finished or exact."
            (marker (copy-marker (point) t)))
       (unless proxy-item
         (message "no lsp-proxy--item in post-completion %s" proxy-item))
-      (if (equal language-server-name "typescript-language-server")
+      ;; typescript-language-server and vtsls does not provide the proper insertText without resolving.
+      (if (or (equal language-server-name "typescript-language-server") (equal language-server-name "vtsls"))
           (if resolved-item
               (lsp-proxy--company-post-completion-item resolved-item candidate marker)
             (let ((resolved (lsp-proxy--sync-resolve proxy-item)))

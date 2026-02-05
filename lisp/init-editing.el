@@ -28,23 +28,27 @@
 ;; Overwrite selection for input
 (delete-selection-mode t)
 
-(setq
+(setopt
  backup-by-copying t      ; don't clobber symlinks
  backup-directory-alist
  '(("." . "~/.cache/emacs/backup/"))    ; don't litter my fs tree
  delete-old-versions t
  kept-new-versions 6
  kept-old-versions 2
+ create-lockfiles nil
  version-control t)       ; use versioned backups
 
-(setq auto-save-file-name-transforms
-      `((".*" "~/.cache/emacs/autosave" t)))
+(setopt auto-save-file-name-transforms
+        `((".*" "~/.cache/emacs/autosave" t)))
 
 
 
 (use-package expand-region
   :commands er/expand-region
   :bind ("C-=" . er/expand-region))
+
+
+(setopt dired-dwim-target t)
 
 (setq split-width-threshold nil)
 (setq split-height-threshold nil)

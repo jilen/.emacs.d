@@ -15,6 +15,7 @@
 
 (require 'cl-lib)
 (require 'eglot)
+(require 'lsp-proxy-core)
 (require 'lsp-proxy-utils)
 
 (defcustom lsp-proxy-enable-imenu t
@@ -22,19 +23,13 @@
   :type 'boolean
   :group 'lsp-proxy)
 
-;;; External functions
-(declare-function lsp-proxy--request "lsp-proxy-core")
-
-;;; External variables
-(defvar lsp-proxy--support-document-symbols)
-
 (cl-defun lsp-proxy-imenu ()
   "LSP-Proxy's `imenu-create-index-function'.
 Returns a list as described in docstring of `imenu--index-alist'."
   (unless lsp-proxy--support-document-symbols
     (cl-return-from lsp-proxy-imenu))
   (let* ((res (lsp-proxy--request 'textDocument/documentSymbol
-                                  (lsp-proxy--request-or-notify-params
+                                  (lsp-proxy--build-params
                                    (list :textDocument (eglot--TextDocumentIdentifier)))
                                   :cancel-on-input non-essential)))
     (lsp-proxy--convert-imenu-format res)))
@@ -58,11 +53,18 @@ Returns a list as described in docstring of `imenu--index-alist'."
 
 (defun lsp-proxy--imenu-lsp-goto (_name pos)
   "Jump to imenu entry NAME at POS."
-  (let ((line (car pos))
-        (character (cdr pos)))
-    (goto-char (point-min))
-    (forward-line line)
-    (forward-char character)))
+  (if (markerp pos)
+      (progn
+        (if (or (< pos (point-min))
+                (> pos (point-max)))
+            ;; Widen if outside narrowing.
+            (widen))
+        (goto-char pos))
+    (let ((line (car pos))
+          (character (cdr pos)))
+      (goto-char (point-min))
+      (forward-line line)
+      (forward-char character))))
 
 ;;; Setup and teardown
 

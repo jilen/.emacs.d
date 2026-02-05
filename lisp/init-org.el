@@ -10,6 +10,9 @@
   (add-hook 'org-mode-hook #'org-modern-mode)
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
 
+(use-package ox-typst
+  :after org)
+
 (when (file-directory-p "~/Workspaces/tasks/")
   (defconst agendar-base-dir '("~/Workspaces/tasks/")
     "Location store agenda files.")
