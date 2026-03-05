@@ -52,7 +52,7 @@
 
 (use-package doom-modeline
   :init
-  (setopt doom-modeline-height 30)
+  ;; (setopt doom-modeline-height 30)
   :hook (after-init . doom-modeline-mode))
 
 (use-package indent-bars
