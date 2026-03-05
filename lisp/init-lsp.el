@@ -44,11 +44,8 @@
 (defun setup-lsp-next-checkers ()
   "Configure flycheck to run other checkers after the 'lsp' checker.
 This function is intended to be added to `flycheck-mode-hook`."
-  (when-let ((checker (cl-find-if (lambda (checker)
-                                    (and (not (eq checker 'lsp))
-                                         (flycheck-checker-supports-major-mode-p checker major-mode)))
-                                  flycheck-checkers)))
-    (flycheck-add-next-checker 'lsp `(info . ,checker))))
+  (when (fboundp 'mp-flycheck-setup-next-checker)
+    (mp-flycheck-setup-next-checker 'lsp 'javascript-biome)))
 
 (add-hook 'lsp-diagnostics-mode-hook #'setup-lsp-next-checkers)
 
